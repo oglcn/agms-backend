@@ -20,36 +20,33 @@ public class AuthenticationService {
     private UserRepository userRepository;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        // Check if username or email already exists
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists");
-        }
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
 
         var user = User.builder()
-                .username(request.getUsername())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(request.getPassword()) // In a real application, you should hash the password
                 .role(Role.ROLE_USER)
                 .build();
         userRepository.save(user);
-        
+
         return AuthenticationResponse.builder()
                 .message("User registered successfully")
                 .build();
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        Optional<User> userOptional = userRepository.findByUsername(request.getUsername());
-        
+        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
+
         if (userOptional.isEmpty()) {
             throw new RuntimeException("User not found");
         }
 
         User user = userOptional.get();
-        if (!user.getPassword().equals(request.getPassword())) { // In a real application, you should compare hashed passwords
+        if (!user.getPassword().equals(request.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
 
@@ -57,4 +54,4 @@ public class AuthenticationService {
                 .message("Login successful")
                 .build();
     }
-} 
+}

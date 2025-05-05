@@ -14,29 +14,31 @@ import lombok.Builder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = "username"),
+@Table(name = "users", uniqueConstraints = {
                 @UniqueConstraint(columnNames = "email")
-        })
+})
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @NotBlank
-    @Size(max = 20)
-    private String username;
+        @NotBlank
+        @Size(max = 20)
+        private String firstName;
 
-    @NotBlank
-    @Size(max = 50)
-    @Email
-    private String email;
+        @NotBlank
+        @Size(max = 20)
+        private String lastName;
 
-    @NotBlank
-    @Size(max = 120)
-    private String password;
+        @NotBlank
+        @Size(max = 50)
+        @Email
+        private String email;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
-} 
+        @NotBlank
+        @Size(max = 120)
+        private String password;
+
+        @Enumerated(EnumType.STRING)
+        private Role role;
+}

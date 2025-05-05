@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class AgmsBackendApplication {
 
 	public static void main(String[] args) {
-		// Load environment variables from .env.local
+		// Load environment variables from .env.local in the root directory
 		Dotenv dotenv = Dotenv.configure()
 				.filename(".env.local")
 				.load();
