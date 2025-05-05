@@ -32,17 +32,15 @@ cd agms-backend
 2. Configure PostgreSQL:
 
    - Install PostgreSQL if not already installed
-   - Create a new database named `agms_db`
-   - Update `application.properties` with your database credentials
+   - Create a new database named `agms`
+   - Create `.env.local` for `application.properties`
 
-3. Configure application.properties:
+3. Create .env.local:
 
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/agms_db
-spring.datasource.username=your_username
-spring.datasource.password=your_password
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+DB_URL=jdbc:postgresql://localhost:5432/agms
+DB_USERNAME={userName}
+DB_PASSWORD={password}
 ```
 
 4. Run the application:
@@ -50,8 +48,6 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 ```bash
 mvn spring-boot:run
 ```
-
-The application will be available at `http://localhost:8080`
 
 ## 🔐 JWT Authentication
 
