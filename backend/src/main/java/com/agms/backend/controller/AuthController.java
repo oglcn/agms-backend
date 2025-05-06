@@ -3,6 +3,7 @@ package com.agms.backend.controller;
 import com.agms.backend.dto.AuthenticationRequest;
 import com.agms.backend.dto.AuthenticationResponse;
 import com.agms.backend.dto.RegisterRequest;
+import com.agms.backend.dto.NavigateToResetPasswordRequest;
 import com.agms.backend.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,5 +40,11 @@ public class AuthController {
                             .message(e.getMessage())
                             .build());
         }
+    }
+
+    @PostMapping("/navigate-to-reset-password")
+    public ResponseEntity<AuthenticationResponse> navigateToResetPassword(
+            @RequestBody NavigateToResetPasswordRequest request) {
+        return ResponseEntity.ok(authenticationService.navigateToResetPassword(request));
     }
 }

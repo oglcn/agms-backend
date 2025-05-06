@@ -13,6 +13,10 @@ import com.agms.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.agms.backend.dto.LogoutResponse;
+import com.agms.backend.dto.NavigateToResetPasswordRequest;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +26,9 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final StudentRepository studentRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     public AuthenticationResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -166,5 +173,32 @@ public class AuthenticationService {
             // If any error occurs, default to NOT_REQUESTED
             return GraduationRequestStatus.NOT_REQUESTED;
         }
+    }
+
+    public AuthenticationResponse navigateToResetPassword(NavigateToResetPasswordRequest request) {
+        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
+
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        User user = userOptional.get();
+
+        // Send email with reset password instructions
+        String subject = "Reset Your Password - AGMS";
+        String body = "Dear " + user.getFirstName() + ",\n\n" +
+                "We received a request to reset your password for your AGMS account. " +
+                "Please click on the link below to reset your password:\n\n" +
+                "http://localhost:3000/reset-password?email=" + user.getEmail() + "\n\n" +
+                "If you did not request a password reset, please ignore this email or contact support if you have concerns.\n\n"
+                +
+                "Best regards,\n" +
+                "AGMS Team";
+
+        emailService.sendEmail(user.getEmail(), subject, body);
+
+        return AuthenticationResponse.builder()
+                .message("Password reset instructions sent to your email")
+                .build();
     }
 }
