@@ -30,7 +30,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest request) {
-        System.out.println("Authenticating user: " + request.getEmail());
         try {
             return ResponseEntity.ok(authenticationService.authenticate(request));
         } catch (RuntimeException e) {
