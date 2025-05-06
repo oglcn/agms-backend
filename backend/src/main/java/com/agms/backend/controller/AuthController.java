@@ -3,6 +3,7 @@ package com.agms.backend.controller;
 import com.agms.backend.dto.AuthenticationRequest;
 import com.agms.backend.dto.AuthenticationResponse;
 import com.agms.backend.dto.RegisterRequest;
+import com.agms.backend.dto.ResetPasswordRequest;
 import com.agms.backend.dto.NavigateToResetPasswordRequest;
 import com.agms.backend.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -47,4 +48,11 @@ public class AuthController {
             @RequestBody NavigateToResetPasswordRequest request) {
         return ResponseEntity.ok(authenticationService.navigateToResetPassword(request));
     }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<AuthenticationResponse> resetPassword(
+            @RequestBody ResetPasswordRequest request) {
+        return ResponseEntity.ok(authenticationService.resetPassword(request));
+    }
+
 }

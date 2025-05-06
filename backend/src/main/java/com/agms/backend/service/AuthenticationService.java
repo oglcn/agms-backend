@@ -4,6 +4,7 @@ package com.agms.backend.service;
 import com.agms.backend.dto.AuthenticationRequest;
 import com.agms.backend.dto.AuthenticationResponse;
 import com.agms.backend.dto.RegisterRequest;
+import com.agms.backend.dto.ResetPasswordRequest;
 import com.agms.backend.entity.GraduationRequestStatus;
 import com.agms.backend.entity.Role;
 import com.agms.backend.entity.Student;
@@ -11,6 +12,7 @@ import com.agms.backend.entity.User;
 import com.agms.backend.repository.StudentRepository;
 import com.agms.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.agms.backend.dto.LogoutResponse;
@@ -189,7 +191,7 @@ public class AuthenticationService {
         String body = "Dear " + user.getFirstName() + ",\n\n" +
                 "We received a request to reset your password for your AGMS account. " +
                 "Please click on the link below to reset your password:\n\n" +
-                "http://localhost:3000/reset-password?email=" + user.getEmail() + "\n\n" +
+                "http://localhost:3000/reset-password?token=" + jwtService.generateToken(user) + "\n\n" +
                 "If you did not request a password reset, please ignore this email or contact support if you have concerns.\n\n"
                 +
                 "Best regards,\n" +
@@ -199,6 +201,32 @@ public class AuthenticationService {
 
         return AuthenticationResponse.builder()
                 .message("Password reset instructions sent to your email")
+                .build();
+    }
+
+    public AuthenticationResponse resetPassword(ResetPasswordRequest request) {
+        // Extract username (email) from the JWT token
+        String email;
+        try {
+            email = jwtService.extractEmail(request.getToken());
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid token");
+        }
+
+        // Find user by email
+        Optional<User> userOptional = userRepository.findByEmail(email);
+
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        User user = userOptional.get();
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        return AuthenticationResponse.builder()
+                .message("Password reset successfully")
                 .build();
     }
 }
