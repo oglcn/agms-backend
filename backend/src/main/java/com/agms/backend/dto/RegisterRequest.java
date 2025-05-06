@@ -1,3 +1,4 @@
+// path: backend/src/main/java/com/agms/backend/dto/RegisterRequest.java
 package com.agms.backend.dto;
 
 import com.agms.backend.entity.GraduationRequestStatus;

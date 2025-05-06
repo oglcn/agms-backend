@@ -1,3 +1,4 @@
+// path: backend/src/main/java/com/agms/backend/service/AuthenticationService.java
 package com.agms.backend.service;
 
 import com.agms.backend.dto.AuthenticationRequest;
@@ -10,11 +11,8 @@ import com.agms.backend.entity.User;
 import com.agms.backend.repository.StudentRepository;
 import com.agms.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.agms.backend.dto.LogoutResponse;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -63,6 +61,7 @@ public class AuthenticationService {
         }
 
         return AuthenticationResponse.builder()
+                .token(jwtToken)
                 .message("User registered successfully")
                 .build();
     }
@@ -86,18 +85,17 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (userOptional.isEmpty()) {
-            throw new RuntimeException("User not found");
-        }
-
-        User user = userOptional.get();
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
 
+        var jwtToken = jwtService.generateToken(user);
+
         return AuthenticationResponse.builder()
+                .token(jwtToken)
                 .message("Login successful")
                 .build();
     }
