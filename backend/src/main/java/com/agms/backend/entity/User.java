@@ -33,10 +33,12 @@ public class User implements UserDetails {
 
     @NotBlank
     @Size(max = 20)
+    @Column(name = "first_name") // Explicitly define column name
     private String firstName;
 
     @NotBlank
     @Size(max = 20)
+    @Column(name = "last_name") // Explicitly define column name
     private String lastName;
 
     @Enumerated(EnumType.STRING)
