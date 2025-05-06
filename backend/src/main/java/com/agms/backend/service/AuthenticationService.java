@@ -191,7 +191,7 @@ public class AuthenticationService {
         String body = "Dear " + user.getFirstName() + ",\n\n" +
                 "We received a request to reset your password for your AGMS account. " +
                 "Please click on the link below to reset your password:\n\n" +
-                "http://localhost:3000/reset-password?token=" + jwtService.generateToken(user) + "\n\n" +
+                "http://localhost:3000/auth/reset-password?token=" + jwtService.generateToken(user) + "\n\n" +
                 "If you did not request a password reset, please ignore this email or contact support if you have concerns.\n\n"
                 +
                 "Best regards,\n" +
