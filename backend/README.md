@@ -39,8 +39,11 @@ cd agms-backend
 
 ```properties
 DB_URL=jdbc:postgresql://localhost:5432/agms
-DB_USERNAME={userName}
-DB_PASSWORD={password}
+DB_USERNAME=userName
+DB_PASSWORD=password
+
+EMAIL_PASSWORD=password
+EMAIL_ADDRESS=...@std.iyte.edu.tr
 ```
 
 4. Run the application:
