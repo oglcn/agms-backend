@@ -10,7 +10,7 @@ public class AgmsBackendApplication {
 	public static void main(String[] args) {
 		// Load environment variables from .env.local
 		Dotenv dotenv = Dotenv.configure()
-				.filename(".env.local")
+				.filename("env.local")
 				.load();
 
 		// Set system properties for Spring to use

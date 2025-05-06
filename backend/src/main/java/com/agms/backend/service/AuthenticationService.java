@@ -9,6 +9,7 @@ import com.agms.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.agms.backend.dto.LogoutResponse;
 
 import java.util.Optional;
 
@@ -55,6 +56,23 @@ public class AuthenticationService {
 
         return AuthenticationResponse.builder()
                 .message("Login successful")
+                .build();
+    }
+
+    public LogoutResponse logout(String username) {
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        // Here you would typically:
+        // 1. Invalidate any active sessions/tokens (when you implement them)
+        // 2. Clear any cached user data
+        // 3. Perform any necessary cleanup
+
+        return LogoutResponse.builder()
+                .message("Logged out successfully")
                 .build();
     }
 } 

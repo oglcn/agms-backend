@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import com.agms.backend.dto.LogoutResponse;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -30,5 +32,10 @@ public class AuthController {
             @RequestBody AuthenticationRequest request
     ) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<LogoutResponse> logout(@RequestParam String username) {
+        return ResponseEntity.ok(authenticationService.logout(username));
     }
 } 
