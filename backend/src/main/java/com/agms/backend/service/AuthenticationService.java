@@ -18,11 +18,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private StudentRepository studentRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final StudentRepository studentRepository;
 
     public AuthenticationResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -41,7 +40,8 @@ public class AuthenticationService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
-                .password(request.getPassword()) // In a real application, you should hash the password
+                .password(passwordEncoder.encode(request.getPassword())) // In a real application, you should hash the
+                                                                         // password
                 .role(userRole)
                 .build();
         userRepository.save(user);
@@ -60,6 +60,7 @@ public class AuthenticationService {
             createStudentRecord(user, request.getStudentId(), status);
         }
 
+        var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .message("User registered successfully")

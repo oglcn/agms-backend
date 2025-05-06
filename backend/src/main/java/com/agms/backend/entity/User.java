@@ -2,6 +2,8 @@
 package com.agms.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +30,14 @@ public class User implements UserDetails {
     private String email;
     @Column(nullable = false)
     private String password;
+
+    @NotBlank
+    @Size(max = 20)
+    private String firstName;
+
+    @NotBlank
+    @Size(max = 20)
+    private String lastName;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -66,4 +76,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }
