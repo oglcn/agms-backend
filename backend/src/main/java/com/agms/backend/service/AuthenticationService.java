@@ -1,3 +1,4 @@
+// path: backend/src/main/java/com/agms/backend/service/AuthenticationService.java
 package com.agms.backend.service;
 
 import com.agms.backend.dto.AuthenticationRequest;
@@ -7,51 +8,48 @@ import com.agms.backend.entity.Role;
 import com.agms.backend.entity.User;
 import com.agms.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.agms.backend.dto.LogoutResponse;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public AuthenticationResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
 
-        var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+        User user = User.builder()
                 .email(request.getEmail())
-                .password(request.getPassword()) // In a real application, you should hash the password
+                .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ROLE_USER)
                 .build();
         userRepository.save(user);
-
+        
+        var jwtToken = jwtService.generateToken(user);
+        
         return AuthenticationResponse.builder()
+                .token(jwtToken)
                 .message("User registered successfully")
                 .build();
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (userOptional.isEmpty()) {
-            throw new RuntimeException("User not found");
-        }
-
-        User user = userOptional.get();
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
 
+        var jwtToken = jwtService.generateToken(user);
+        
         return AuthenticationResponse.builder()
+                .token(jwtToken)
                 .message("Login successful")
                 .build();
     }

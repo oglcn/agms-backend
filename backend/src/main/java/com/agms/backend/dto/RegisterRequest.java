@@ -1,3 +1,4 @@
+// path: backend/src/main/java/com/agms/backend/dto/RegisterRequest.java
 package com.agms.backend.dto;
 
 import lombok.AllArgsConstructor;
@@ -14,4 +15,6 @@ public class RegisterRequest {
     private String lastName;
     private String email;
     private String password;
+    private String role;
+    private String studentId;
 }
