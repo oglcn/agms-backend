@@ -23,17 +23,6 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping("/profile")
-    public ResponseEntity<UserProfileResponse> getCurrentStudentProfile() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()
-                || "anonymousUser".equals(authentication.getPrincipal())) {
-            return ResponseEntity.status(401).build();
-        }
-        String currentPrincipalName = authentication.getName();
-        return ResponseEntity.ok(studentService.getStudentProfile(currentPrincipalName));
-    }
-
     // Create a new student
     @PostMapping
     public ResponseEntity<Student> createStudent(@RequestBody Student student) {
