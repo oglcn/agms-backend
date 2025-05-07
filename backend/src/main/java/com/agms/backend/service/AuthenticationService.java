@@ -19,6 +19,9 @@ import com.agms.backend.dto.LogoutResponse;
 import com.agms.backend.dto.NavigateToResetPasswordRequest;
 import com.agms.backend.dto.UserProfileResponse;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import com.agms.backend.exception.EmailAlreadyExistsException;
+import com.agms.backend.exception.ForbiddenException;
+import com.agms.backend.exception.ResourceNotFoundException;
 
 import java.util.Optional;
 
@@ -36,7 +39,7 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new EmailAlreadyExistsException("Email already exists");
         }
 
         // Determine the role from either the Role object or the string representation
@@ -98,10 +101,10 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new ForbiddenException("Invalid password");
         }
 
         var jwtToken = jwtService.generateToken(user);
@@ -183,7 +186,7 @@ public class AuthenticationService {
         Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
 
         if (userOptional.isEmpty()) {
-            throw new RuntimeException("User not found");
+            throw new ResourceNotFoundException("User not found");
         }
 
         User user = userOptional.get();
@@ -212,14 +215,14 @@ public class AuthenticationService {
         try {
             email = jwtService.extractEmail(request.getToken());
         } catch (Exception e) {
-            throw new RuntimeException("Invalid token");
+            throw new ForbiddenException("Invalid token");
         }
 
         // Find user by email
         Optional<User> userOptional = userRepository.findByEmail(email);
 
         if (userOptional.isEmpty()) {
-            throw new RuntimeException("User not found");
+            throw new ResourceNotFoundException("User not found");
         }
 
         User user = userOptional.get();
