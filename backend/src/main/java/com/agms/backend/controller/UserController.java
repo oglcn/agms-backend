@@ -1,9 +1,7 @@
 package com.agms.backend.controller;
 
 import com.agms.backend.dto.UserProfileResponse;
-import com.agms.backend.service.AuthenticationService;
-// UserService will be added later for other CRUD operations
-// import com.agms.backend.service.UserService;
+import com.agms.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,17 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final AuthenticationService authenticationService;
-    // private final UserService userService; // To be injected later
+    private final UserService userService;
 
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponse> getCurrentUserProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
-            return ResponseEntity.status(401).build(); // Or throw an exception
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(401).build();
         }
-        String currentPrincipalName = authentication.getName(); // This is the email
-        return ResponseEntity.ok(authenticationService.getUserProfile(currentPrincipalName));
+        String currentPrincipalName = authentication.getName();
+        return ResponseEntity.ok(userService.getUserProfile(currentPrincipalName));
     }
 
     // Other CRUD endpoints for User will be added here later
@@ -36,10 +34,12 @@ public class UserController {
     // public ResponseEntity<User> getUserById(@PathVariable Integer id) { ... }
     //
     // @PostMapping
-    // public ResponseEntity<User> createUser(@RequestBody UserCreateRequest request) { ... }
+    // public ResponseEntity<User> createUser(@RequestBody UserCreateRequest
+    // request) { ... }
     //
     // @PutMapping("/{id}")
-    // public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody UserUpdateRequest request) { ... }
+    // public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody
+    // UserUpdateRequest request) { ... }
     //
     // @DeleteMapping("/{id}")
     // public ResponseEntity<Void> deleteUser(@PathVariable Integer id) { ... }

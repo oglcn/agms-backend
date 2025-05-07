@@ -231,27 +231,4 @@ public class AuthenticationService {
                 .message("Password reset successfully")
                 .build();
     }
-
-    public UserProfileResponse getUserProfile(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-
-        UserProfileResponse.UserProfileResponseBuilder profileBuilder = UserProfileResponse.builder()
-                .userId(user.getId())
-                .email(user.getEmail())
-                .firstname(user.getFirstName())
-                .lastname(user.getLastName())
-                .role(user.getRole());
-
-        // Check if the user is a student and add student-specific details
-        if (user.getRole() == Role.ROLE_STUDENT || user.getRole() == Role.ROLE_USER) { // Or however you identify students
-            Optional<Student> studentOpt = studentRepository.findByUser(user);
-            if (studentOpt.isPresent()) {
-                Student student = studentOpt.get();
-                profileBuilder.studentId(student.getStudentId());
-                profileBuilder.graduationRequestStatus(student.getGraduationRequestStatus());
-            }
-        }
-        return profileBuilder.build();
-    }
 }
