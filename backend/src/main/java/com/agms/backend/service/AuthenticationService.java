@@ -224,6 +224,11 @@ public class AuthenticationService {
 
         User user = userOptional.get();
 
+        // Check if new password is the same as the old password
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new RuntimeException("New password must be different from the old password");
+        }
+
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
 
