@@ -1,8 +1,11 @@
 package com.agms.backend.controller;
 
+import com.agms.backend.dto.UserProfileResponse;
 import com.agms.backend.entity.Student; // Assuming Student entity exists
 import com.agms.backend.service.StudentService; // Assuming StudentService exists
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +21,17 @@ public class StudentController {
     @Autowired
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserProfileResponse> getCurrentStudentProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(401).build();
+        }
+        String currentPrincipalName = authentication.getName();
+        return ResponseEntity.ok(studentService.getStudentProfile(currentPrincipalName));
     }
 
     // Create a new student
