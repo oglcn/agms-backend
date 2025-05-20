@@ -1,8 +1,6 @@
 package com.agms.backend.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,14 +13,19 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "students")
 public class Student {
+
     @Id
+    @Column(nullable = false)
     private String studentId;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    @Column(name = "graduation_request_status")
-    @Enumerated(EnumType.STRING)
-    private GraduationRequestStatus graduationRequestStatus;
+    @ManyToOne(cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "advisorListId")
+    private AdvisorList advisorList;
+
+    @Column(name = "graduation_status")
+    private String graduationStatus;
 }

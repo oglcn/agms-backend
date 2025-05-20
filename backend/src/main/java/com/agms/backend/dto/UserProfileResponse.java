@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserProfileResponse {
-    private Long userId; // Changed from Integer to Long
+    private String userId;
     private String email;
     private String firstname;
     private String lastname;

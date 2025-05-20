@@ -23,8 +23,7 @@ import java.util.List;
 @Table(name = "users")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue
-    private Long id;
+    private String id;
     // private String username; // Removed
     @Column(unique = true, nullable = false) // Make email unique and not null
     private String email;

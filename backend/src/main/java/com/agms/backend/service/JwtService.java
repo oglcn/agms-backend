@@ -3,8 +3,8 @@ package com.agms.backend.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +12,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import javax.crypto.SecretKey; // Add this import
+import javax.crypto.SecretKey;
+import static io.jsonwebtoken.Jwts.SIG;
 
 @Service
 public class JwtService {
-    // In production, use a secure key management system
-    private static final String SECRET_KEY = "your_very_long_and_secure_secret_key_here_at_least_256_bits";
+    @Value("${jwt.secret-key}")
+    private String secretKey;
+    
+    @Value("${jwt.expiration}")
+    private long jwtExpiration;
+    
+    @Value("${jwt.reset-token-expiration}")
+    private long resetTokenExpiration;
 
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -33,13 +40,11 @@ public class JwtService {
     }
 
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts.builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24)) // 24 hours
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
+        return generateToken(extraClaims, userDetails, jwtExpiration);
+    }
+
+    public String generatePasswordResetToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(), userDetails, resetTokenExpiration);
     }
 
     private boolean isTokenExpired(String token) {
@@ -64,7 +69,17 @@ public class JwtService {
     }
 
     private SecretKey getSigningKey() { // Ensure the return type is SecretKey
-        byte[] keyBytes = SECRET_KEY.getBytes();
+        byte[] keyBytes = secretKey.getBytes();
         return Keys.hmacShaKeyFor(keyBytes); // This correctly returns a SecretKey
+    }
+
+    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
+        return Jwts.builder()
+                .claims(extraClaims)
+                .subject(userDetails.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey(), SIG.HS256)
+                .compact();
     }
 }

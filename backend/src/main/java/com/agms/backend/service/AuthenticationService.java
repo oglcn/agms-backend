@@ -5,23 +5,21 @@ import com.agms.backend.dto.AuthenticationRequest;
 import com.agms.backend.dto.AuthenticationResponse;
 import com.agms.backend.dto.RegisterRequest;
 import com.agms.backend.dto.ResetPasswordRequest;
+import com.agms.backend.dto.NavigateToResetPasswordRequest;
 import com.agms.backend.entity.GraduationRequestStatus;
 import com.agms.backend.entity.Role;
 import com.agms.backend.entity.Student;
 import com.agms.backend.entity.User;
 import com.agms.backend.repository.StudentRepository;
 import com.agms.backend.repository.UserRepository;
+import com.agms.backend.exception.EmailAlreadyExistsException;
+import com.agms.backend.exception.ForbiddenException;
+import com.agms.backend.exception.ResourceNotFoundException;
+import com.agms.backend.exception.InvalidRoleException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.agms.backend.dto.LogoutResponse;
-import com.agms.backend.dto.NavigateToResetPasswordRequest;
-import com.agms.backend.dto.UserProfileResponse;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import com.agms.backend.exception.EmailAlreadyExistsException;
-import com.agms.backend.exception.ForbiddenException;
-import com.agms.backend.exception.ResourceNotFoundException;
 
 import java.util.Optional;
 
@@ -42,26 +40,31 @@ public class AuthenticationService {
             throw new EmailAlreadyExistsException("Email already exists");
         }
 
-        // Determine the role from either the Role object or the string representation
-        Role userRole = Role.ROLE_USER;
+        // Get role from the request
+        Role userRole;
         if (request.getRole() != null) {
             userRole = request.getRole();
         } else if (request.getRoleString() != null && !request.getRoleString().isEmpty()) {
             userRole = parseRole(request.getRoleString());
+        } else {
+            throw new InvalidRoleException("Role must be specified");
         }
 
         var user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword())) // In a real application, you should hash the
-                                                                         // password
+                .password(passwordEncoder.encode(request.getPassword()))
                 .role(userRole)
                 .build();
         userRepository.save(user);
 
-        // If the role is ROLE_STUDENT, create a student record
-        if (userRole == Role.ROLE_STUDENT) {
+        // If the role is STUDENT, create a student record
+        if (userRole == Role.STUDENT) {
+            if (request.getStudentId() == null || request.getStudentId().isEmpty()) {
+                throw new InvalidRoleException("Student ID is required for student registration");
+            }
+
             // Determine the graduation request status
             GraduationRequestStatus status = GraduationRequestStatus.NOT_REQUESTED;
             if (request.getGraduationRequestStatus() != null) {
@@ -90,11 +93,10 @@ public class AuthenticationService {
      *                                record
      */
     private void createStudentRecord(User user, String studentId, GraduationRequestStatus graduationRequestStatus) {
-        // Create and save the student record
         Student student = Student.builder()
                 .studentId(studentId)
                 .user(user)
-                .graduationRequestStatus(graduationRequestStatus)
+                .graduationStatus(graduationRequestStatus.toString())
                 .build();
         studentRepository.save(student);
     }
@@ -119,44 +121,27 @@ public class AuthenticationService {
      * Parse a string representation of a role into a Role enum value
      * 
      * @param roleStr String representation of the role (case insensitive)
-     * @return The corresponding Role enum value, or Role.ROLE_USER if the role is
-     *         invalid
+     * @return The corresponding Role enum value
+     * @throws InvalidRoleException if the role string is invalid
      */
     public Role parseRole(String roleStr) {
         if (roleStr == null || roleStr.isEmpty()) {
-            return Role.ROLE_USER;
+            throw new InvalidRoleException("Role cannot be empty");
         }
 
         try {
-            // Format the role string properly for enum comparison
-            String formattedRole = roleStr.toUpperCase();
-            if (!formattedRole.startsWith("ROLE_")) {
-                formattedRole = "ROLE_" + formattedRole;
-            }
-
-            // Try to find a matching enum value
-            for (Role role : Role.values()) {
-                if (role.name().equals(formattedRole)) {
-                    return role;
-                }
-            }
-
-            // No matching role found
-            return Role.ROLE_USER;
-        } catch (Exception e) {
-            // If any error occurs, default to ROLE_USER
-            return Role.ROLE_USER;
+            return Role.valueOf(roleStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidRoleException("Invalid role: " + roleStr + ". Valid roles are: " + 
+                String.join(", ", java.util.Arrays.stream(Role.values())
+                    .map(Role::name)
+                    .toArray(String[]::new)));
         }
     }
 
     /**
      * Parse a string representation of a graduation request status into a
      * GraduationRequestStatus enum value
-     * 
-     * @param statusStr String representation of the graduation request status (case
-     *                  insensitive)
-     * @return The corresponding GraduationRequestStatus enum value, or
-     *         GraduationRequestStatus.NOT_REQUESTED if invalid
      */
     public GraduationRequestStatus parseGraduationRequestStatus(String statusStr) {
         if (statusStr == null || statusStr.isEmpty()) {
@@ -164,20 +149,8 @@ public class AuthenticationService {
         }
 
         try {
-            // Convert to uppercase for enum comparison
-            String formattedStatus = statusStr.toUpperCase();
-
-            // Try to find a matching enum value
-            for (GraduationRequestStatus status : GraduationRequestStatus.values()) {
-                if (status.name().equals(formattedStatus)) {
-                    return status;
-                }
-            }
-
-            // No matching status found
-            return GraduationRequestStatus.NOT_REQUESTED;
-        } catch (Exception e) {
-            // If any error occurs, default to NOT_REQUESTED
+            return GraduationRequestStatus.valueOf(statusStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
             return GraduationRequestStatus.NOT_REQUESTED;
         }
     }
@@ -196,9 +169,8 @@ public class AuthenticationService {
         String body = "Dear " + user.getFirstName() + ",\n\n" +
                 "We received a request to reset your password for your AGMS account. " +
                 "Please click on the link below to reset your password:\n\n" +
-                "http://localhost:3000/auth/reset-password?token=" + jwtService.generateToken(user) + "\n\n" +
-                "If you did not request a password reset, please ignore this email or contact support if you have concerns.\n\n"
-                +
+                "http://localhost:3000/auth/reset-password?token=" + jwtService.generatePasswordResetToken(user) + "\n\n" +
+                "If you did not request a password reset, please ignore this email or contact support if you have concerns.\n\n" +
                 "Best regards,\n" +
                 "AGMS Team";
 

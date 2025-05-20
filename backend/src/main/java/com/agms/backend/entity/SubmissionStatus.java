@@ -1,0 +1,7 @@
+package com.agms.backend.entity;
+
+public enum SubmissionStatus {
+    PENDING,
+    APPROVED,
+    REJECTED
+} 
