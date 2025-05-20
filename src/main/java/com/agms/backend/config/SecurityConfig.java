@@ -1,6 +1,8 @@
 // path: backend/src/main/java/com/agms/backend/config/SecurityConfig.java
 package com.agms.backend.config;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
@@ -21,6 +23,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -37,6 +40,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers(
                             "/api/auth/**",
                             "/swagger-ui/**",

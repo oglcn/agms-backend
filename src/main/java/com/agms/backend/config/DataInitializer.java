@@ -42,6 +42,7 @@ public class DataInitializer {
                 if (userRepository.count() == 0) {
                     log.info("Starting data initialization...");
 
+
                     // Create Student Affairs Officer
                     log.debug("Creating Student Affairs Officer...");
                     var studentAffairsOfficer = createUser("Student", "Affairs", "studentaffairs@iyte.edu.tr",
@@ -120,6 +121,7 @@ public class DataInitializer {
         };
     }
 
+
     private User createUser(String firstName, String lastName, String email, String password, Role role,
             String userId) {
         try {
@@ -186,6 +188,7 @@ public class DataInitializer {
         studentRepository.save(student);
     }
 
+
     private Graduation createGraduation(String graduationId, LocalDate requestDate, String term,
             String studentAffairsId) {
         var studentAffairs = studentAffairsRepository.findByEmpId(studentAffairsId).orElseThrow();
@@ -207,6 +210,7 @@ public class DataInitializer {
         return graduationListRepository.save(graduationList);
     }
 
+
     private FacultyList createFacultyList(String facultyListId, String faculty, String deanOfficerId,
             GraduationList graduationList) {
         var deanOfficer = deanOfficerRepository.findByEmpId(deanOfficerId).orElseThrow();
@@ -219,6 +223,7 @@ public class DataInitializer {
                 .build();
         return facultyListRepository.save(facultyList);
     }
+
 
     private DepartmentList createDepartmentList(String deptListId, String department, String secretaryId,
             FacultyList facultyList) {
@@ -249,4 +254,5 @@ public class DataInitializer {
         student.setAdvisorList(advisorList);
         studentRepository.save(student);
     }
+
 }

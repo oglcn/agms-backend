@@ -1,6 +1,7 @@
 package com.agms.backend.entity;
 
 public enum Role {
+
     ADMIN,
     STUDENT,
     ADVISOR,

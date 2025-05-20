@@ -1,5 +1,6 @@
 package com.agms.backend.controller;
 
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,10 +31,12 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/auth") // Changed from /api/v1/auth to /api/auth to match UserController
 @RequiredArgsConstructor
+
 @Tag(name = "Authentication", description = "APIs for user authentication and authorization")
 public class AuthController {
 
     private final AuthenticationService authenticationService; // Renamed from 'service' for clarity
+
 
     @Operation(summary = "Register new user", description = "Registers a new user in the system")
     @ApiResponses(value = {
@@ -56,6 +59,7 @@ public class AuthController {
                             .build());
         }
     }
+
 
     @Operation(summary = "User login", description = "Authenticates a user and returns a JWT token")
     @ApiResponses(value = {
@@ -85,6 +89,7 @@ public class AuthController {
         }
     }
 
+
     @Operation(summary = "Initiate password reset", description = "Sends a password reset link to the user's email")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Password reset link sent successfully",
@@ -105,6 +110,7 @@ public class AuthController {
                             .build());
         }
     }
+
 
     @Operation(summary = "Reset password", description = "Resets the user's password using the reset token")
     @ApiResponses(value = {

@@ -3,9 +3,17 @@ package com.agms.backend;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
-public class AgmsBackendApplication {
+public class AgmsBackendApplication extends SpringBootServletInitializer {
+
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application.sources(AgmsBackendApplication.class);
+	}
+
 
 	public static void main(String[] args) {
 		// Load environment variables from .env.local in the root directory

@@ -1,11 +1,13 @@
 package com.agms.backend.controller;
 
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 
 import com.agms.backend.dto.UserProfileResponse;
 import com.agms.backend.service.UserService;
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
     private final UserService userService;
+
 
     @Operation(summary = "Get current user profile", description = "Retrieves the profile of the currently authenticated user")
     @ApiResponses(value = {
