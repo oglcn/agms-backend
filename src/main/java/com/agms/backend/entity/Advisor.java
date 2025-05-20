@@ -22,5 +22,6 @@ public class Advisor {
     private User user;
 
     @OneToMany(mappedBy = "advisor")
-    private List<AdvisorList> advisorLists;
-} 
+
+    private List<AdvisorList> advisorList;
+}

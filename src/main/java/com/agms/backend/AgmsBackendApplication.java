@@ -14,6 +14,7 @@ public class AgmsBackendApplication extends SpringBootServletInitializer {
 		return application.sources(AgmsBackendApplication.class);
 	}
 
+
 	public static void main(String[] args) {
 		// Load environment variables from .env.local in the root directory
 		Dotenv dotenv = Dotenv.configure()

@@ -41,52 +41,71 @@ public class DataInitializer {
             try {
                 if (userRepository.count() == 0) {
                     log.info("Starting data initialization...");
-                    
+
+
                     // Create Student Affairs Officer
                     log.debug("Creating Student Affairs Officer...");
-                    var studentAffairsOfficer = createUser("Student", "Affairs", "studentaffairs@iyte.edu.tr", "password", Role.STUDENT_AFFAIRS, "U101");
+                    var studentAffairsOfficer = createUser("Student", "Affairs", "studentaffairs@iyte.edu.tr",
+                            "password", Role.STUDENT_AFFAIRS, "U101");
                     createStudentAffairs(studentAffairsOfficer, "SA101");
 
-                    // Create Dean Officer
-                    log.debug("Creating Dean Officer...");
-                    var deanOfficer = createUser("Dean", "Officer", "dean@iyte.edu.tr", "password", Role.DEAN_OFFICER, "U102");
-                    createDeanOfficer(deanOfficer, "DO102");
+                    // Create Dean Officers
+                    log.debug("Creating Dean Officers...");
+                    var deanOfficer1 = createUser("Dean", "Officer1", "dean1@iyte.edu.tr", "password",
+                            Role.DEAN_OFFICER,
+                            "U102");
+                    createDeanOfficer(deanOfficer1, "DO102");
 
-                    // Create Department Secretary
-                    log.debug("Creating Department Secretary...");
-                    var secretary = createUser("Department", "Secretary", "secretary@iyte.edu.tr", "password", Role.DEPARTMENT_SECRETARY, "U103");
-                    createDepartmentSecretary(secretary, "DS103");
+                    var deanOfficer2 = createUser("Dean", "Officer2", "dean2@iyte.edu.tr", "password",
+                            Role.DEAN_OFFICER,
+                            "U106");
+                    createDeanOfficer(deanOfficer2, "DO106");
 
-                    // Create Advisor
-                    log.debug("Creating Advisor...");
-                    var advisor = createUser("Professor", "Advisor", "advisor@iyte.edu.tr", "password", Role.ADVISOR, "U104");
-                    createAdvisor(advisor, "ADV104");
+                    // Create Department Secretaries
+                    log.debug("Creating Department Secretaries...");
+                    var secretary1 = createUser("Department", "Secretary1", "secretary1@iyte.edu.tr", "password",
+                            Role.DEPARTMENT_SECRETARY, "U103");
+                    createDepartmentSecretary(secretary1, "DS103");
 
-                    // Create Student
-                    log.debug("Creating Student...");
-                    var student = createUser("Student", "Test", "student@std.iyte.edu.tr", "password", Role.STUDENT, "U105");
-                    createStudent(student, "CS105");
+                    var secretary2 = createUser("Department", "Secretary2", "secretary2@iyte.edu.tr", "password",
+                            Role.DEPARTMENT_SECRETARY, "U107");
+                    createDepartmentSecretary(secretary2, "DS107");
 
-                    // Create Graduation Records
-                    log.debug("Creating Graduation Records...");
-                    var graduation = createGraduation("GR101", LocalDate.now(), "Spring 2024", "SA101");
-                    var graduationList = createGraduationList("GL101", graduation);
+                    // Create Advisors
+                    log.debug("Creating Advisors...");
+                    var advisor1 = createUser("Professor", "Advisor1", "advisor1@iyte.edu.tr", "password", Role.ADVISOR,
+                            "U104");
+                    createAdvisor(advisor1, "ADV104");
 
-                    // Create Faculty Lists
-                    log.debug("Creating Faculty Lists...");
-                    var facultyList = createFacultyList("FL101", "Engineering", "DO102", graduationList);
+                    var advisor2 = createUser("Professor", "Advisor2", "advisor2@iyte.edu.tr", "password", Role.ADVISOR,
+                            "U108");
+                    createAdvisor(advisor2, "ADV108");
 
-                    // Create Department Lists
-                    log.debug("Creating Department Lists...");
-                    var departmentList = createDepartmentList("DL101", "Computer Engineering", "DS103", facultyList);
+                    // Create Students
+                    log.debug("Creating Students...");
+                    var student1 = createUser("Student1", "Test", "student1@std.iyte.edu.tr", "password", Role.STUDENT,
+                            "U105");
+                    createStudent(student1, "CS105");
 
-                    // Create Advisor Lists
-                    log.debug("Creating Advisor Lists...");
-                    var advisorList = createAdvisorList("AL101", "ADV104", departmentList);
+                    var student2 = createUser("Student2", "Test", "student2@std.iyte.edu.tr", "password", Role.STUDENT,
+                            "U109");
+                    createStudent(student2, "CS109");
 
-                    // Assign advisor to student
-                    log.debug("Assigning advisor to student...");
-                    assignAdvisorToStudent("CS105", advisorList);
+                    var student3 = createUser("Student3", "Test", "student3@std.iyte.edu.tr", "password", Role.STUDENT,
+                            "U110");
+                    createStudent(student3, "CS110");
+
+                    var student4 = createUser("Student4", "Test", "student4@std.iyte.edu.tr", "password", Role.STUDENT,
+                            "U111");
+                    createStudent(student4, "CS111");
+
+                    var student5 = createUser("Student5", "Test", "student5@std.iyte.edu.tr", "password", Role.STUDENT,
+                            "U112");
+                    createStudent(student5, "CS112");
+
+                    var student6 = createUser("Student6", "Test", "student6@std.iyte.edu.tr", "password", Role.STUDENT,
+                            "U113");
+                    createStudent(student6, "CS113");
 
                     log.info("Data initialization completed successfully!");
                 } else {
@@ -102,7 +121,9 @@ public class DataInitializer {
         };
     }
 
-    private User createUser(String firstName, String lastName, String email, String password, Role role, String userId) {
+
+    private User createUser(String firstName, String lastName, String email, String password, Role role,
+            String userId) {
         try {
             var request = RegisterRequest.builder()
                     .firstName(firstName)
@@ -167,7 +188,9 @@ public class DataInitializer {
         studentRepository.save(student);
     }
 
-    private Graduation createGraduation(String graduationId, LocalDate requestDate, String term, String studentAffairsId) {
+
+    private Graduation createGraduation(String graduationId, LocalDate requestDate, String term,
+            String studentAffairsId) {
         var studentAffairs = studentAffairsRepository.findByEmpId(studentAffairsId).orElseThrow();
         var graduation = Graduation.builder()
                 .graduationId(graduationId)
@@ -187,7 +210,9 @@ public class DataInitializer {
         return graduationListRepository.save(graduationList);
     }
 
-    private FacultyList createFacultyList(String facultyListId, String faculty, String deanOfficerId, GraduationList graduationList) {
+
+    private FacultyList createFacultyList(String facultyListId, String faculty, String deanOfficerId,
+            GraduationList graduationList) {
         var deanOfficer = deanOfficerRepository.findByEmpId(deanOfficerId).orElseThrow();
         var facultyList = FacultyList.builder()
                 .facultyListId(facultyListId)
@@ -199,7 +224,9 @@ public class DataInitializer {
         return facultyListRepository.save(facultyList);
     }
 
-    private DepartmentList createDepartmentList(String deptListId, String department, String secretaryId, FacultyList facultyList) {
+
+    private DepartmentList createDepartmentList(String deptListId, String department, String secretaryId,
+            FacultyList facultyList) {
         var secretary = secretaryRepository.findByEmpId(secretaryId).orElseThrow();
         var departmentList = DepartmentList.builder()
                 .deptListId(deptListId)
@@ -227,4 +254,5 @@ public class DataInitializer {
         student.setAdvisorList(advisorList);
         studentRepository.save(student);
     }
-} 
+
+}

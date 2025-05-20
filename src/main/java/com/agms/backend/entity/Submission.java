@@ -34,4 +34,5 @@ public class Submission {
 
     @OneToMany(mappedBy = "submission")
     private List<File> files;
-} 
+
+}
