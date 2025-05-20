@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "students")
 public class Student {
-
     @Id
     @Column(nullable = false)
     private String studentId;
