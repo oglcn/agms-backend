@@ -50,7 +50,9 @@ public class SecurityConfig {
                             "/swagger-ui/swagger-ui-bundle.js",
                             "/swagger-ui/swagger-ui-standalone-preset.js",
                             "/swagger-ui/swagger-initializer.js",
-                            "/v3/api-docs.yaml"
+                            "/v3/api-docs.yaml",
+                            "/swagger-ui/favicon-32x32.png",
+                            "/swagger-ui/favicon-16x16.png"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
