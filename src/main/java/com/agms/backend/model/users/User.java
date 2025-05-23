@@ -36,12 +36,12 @@ public abstract class User implements UserDetails {
     @NotBlank
     @Size(max = 20)
     @Column(name = "first_name")
-    private String firstName;
+    private String first_name;
 
     @NotBlank
     @Size(max = 20)
     @Column(name = "last_name")
-    private String lastName;
+    private String last_name;
 
     public abstract Role getRole();
 
