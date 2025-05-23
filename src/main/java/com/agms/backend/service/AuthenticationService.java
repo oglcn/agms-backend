@@ -9,8 +9,16 @@ import com.agms.backend.dto.NavigateToResetPasswordRequest;
 import com.agms.backend.entity.GraduationRequestStatus;
 import com.agms.backend.entity.Role;
 import com.agms.backend.entity.Student;
+import com.agms.backend.entity.Advisor;
+import com.agms.backend.entity.DeanOfficer;
+import com.agms.backend.entity.DepartmentSecretary;
+import com.agms.backend.entity.StudentAffairs;
 import com.agms.backend.entity.User;
 import com.agms.backend.repository.StudentRepository;
+import com.agms.backend.repository.AdvisorRepository;
+import com.agms.backend.repository.DeanOfficerRepository;
+import com.agms.backend.repository.DepartmentSecretaryRepository;
+import com.agms.backend.repository.StudentAffairsRepository;
 import com.agms.backend.repository.UserRepository;
 import com.agms.backend.exception.EmailAlreadyExistsException;
 import com.agms.backend.exception.ForbiddenException;
@@ -22,6 +30,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +40,10 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final StudentRepository studentRepository;
+    private final AdvisorRepository advisorRepository;
+    private final DeanOfficerRepository deanOfficerRepository;
+    private final DepartmentSecretaryRepository departmentSecretaryRepository;
+    private final StudentAffairsRepository studentAffairsRepository;
 
     @Autowired
     private EmailService emailService;
@@ -50,32 +63,7 @@ public class AuthenticationService {
             throw new InvalidRoleException("Role must be specified");
         }
 
-        var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(userRole)
-                .build();
-        userRepository.save(user);
-
-        // If the role is STUDENT, create a student record
-        if (userRole == Role.STUDENT) {
-            if (request.getStudentId() == null || request.getStudentId().isEmpty()) {
-                throw new InvalidRoleException("Student ID is required for student registration");
-            }
-
-            // Determine the graduation request status
-            GraduationRequestStatus status = GraduationRequestStatus.NOT_REQUESTED;
-            if (request.getGraduationRequestStatus() != null) {
-                status = request.getGraduationRequestStatus();
-            } else if (request.getGraduationRequestStatusString() != null
-                    && !request.getGraduationRequestStatusString().isEmpty()) {
-                status = parseGraduationRequestStatus(request.getGraduationRequestStatusString());
-            }
-
-            createStudentRecord(user, request.getStudentId(), status);
-        }
+        User user = createUserByRole(request, userRole);
 
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
@@ -84,21 +72,91 @@ public class AuthenticationService {
                 .build();
     }
 
-    /**
-     * Create a student record for a user with ROLE_STUDENT
-     * 
-     * @param user                    The user for whom to create a student record
-     * @param studentId               The student ID for the student record
-     * @param graduationRequestStatus The graduation request status for the student
-     *                                record
-     */
-    private void createStudentRecord(User user, String studentId, GraduationRequestStatus graduationRequestStatus) {
-        Student student = Student.builder()
-                .studentId(studentId)
-                .user(user)
-                .graduationStatus(graduationRequestStatus.toString())
-                .build();
-        studentRepository.save(student);
+    private User createUserByRole(RegisterRequest request, Role role) {
+        String userId = UUID.randomUUID().toString();
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
+        switch (role) {
+            case STUDENT:
+                if (request.getStudentId() == null || request.getStudentId().isEmpty()) {
+                    throw new InvalidRoleException("Student ID is required for student registration");
+                }
+
+                // Determine the graduation request status
+                GraduationRequestStatus status = GraduationRequestStatus.NOT_REQUESTED;
+                if (request.getGraduationRequestStatus() != null) {
+                    status = request.getGraduationRequestStatus();
+                } else if (request.getGraduationRequestStatusString() != null
+                        && !request.getGraduationRequestStatusString().isEmpty()) {
+                    status = parseGraduationRequestStatus(request.getGraduationRequestStatusString());
+                }
+
+                Student student = Student.builder()
+                        .id(userId)
+                        .firstName(request.getFirstName())
+                        .lastName(request.getLastName())
+                        .email(request.getEmail())
+                        .password(encodedPassword)
+                        .studentId(request.getStudentId())
+                        .graduationStatus(status.toString())
+                        .build();
+                return studentRepository.save(student);
+
+            case ADVISOR:
+                String advisorEmpId = generateEmpId();
+                Advisor advisor = Advisor.builder()
+                        .id(userId)
+                        .firstName(request.getFirstName())
+                        .lastName(request.getLastName())
+                        .email(request.getEmail())
+                        .password(encodedPassword)
+                        .empId(advisorEmpId)
+                        .build();
+                return advisorRepository.save(advisor);
+
+            case DEAN_OFFICER:
+                String deanEmpId = generateEmpId();
+                DeanOfficer deanOfficer = DeanOfficer.builder()
+                        .id(userId)
+                        .firstName(request.getFirstName())
+                        .lastName(request.getLastName())
+                        .email(request.getEmail())
+                        .password(encodedPassword)
+                        .empId(deanEmpId)
+                        .build();
+                return deanOfficerRepository.save(deanOfficer);
+
+            case DEPARTMENT_SECRETARY:
+                String secretaryEmpId = generateEmpId();
+                DepartmentSecretary secretary = DepartmentSecretary.builder()
+                        .id(userId)
+                        .firstName(request.getFirstName())
+                        .lastName(request.getLastName())
+                        .email(request.getEmail())
+                        .password(encodedPassword)
+                        .empId(secretaryEmpId)
+                        .build();
+                return departmentSecretaryRepository.save(secretary);
+
+            case STUDENT_AFFAIRS:
+                String studentAffairsEmpId = generateEmpId();
+                StudentAffairs studentAffairs = StudentAffairs.builder()
+                        .id(userId)
+                        .firstName(request.getFirstName())
+                        .lastName(request.getLastName())
+                        .email(request.getEmail())
+                        .password(encodedPassword)
+                        .empId(studentAffairsEmpId)
+                        .build();
+                return studentAffairsRepository.save(studentAffairs);
+
+            default:
+                throw new InvalidRoleException("Unsupported role: " + role);
+        }
+    }
+
+    private String generateEmpId() {
+        return "EMP" + System.currentTimeMillis();
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -132,10 +190,10 @@ public class AuthenticationService {
         try {
             return Role.valueOf(roleStr.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new InvalidRoleException("Invalid role: " + roleStr + ". Valid roles are: " + 
-                String.join(", ", java.util.Arrays.stream(Role.values())
-                    .map(Role::name)
-                    .toArray(String[]::new)));
+            throw new InvalidRoleException("Invalid role: " + roleStr + ". Valid roles are: " +
+                    String.join(", ", java.util.Arrays.stream(Role.values())
+                            .map(Role::name)
+                            .toArray(String[]::new)));
         }
     }
 
@@ -169,8 +227,10 @@ public class AuthenticationService {
         String body = "Dear " + user.getFirstName() + ",\n\n" +
                 "We received a request to reset your password for your AGMS account. " +
                 "Please click on the link below to reset your password:\n\n" +
-                "http://localhost:3000/auth/reset-password?token=" + jwtService.generatePasswordResetToken(user) + "\n\n" +
-                "If you did not request a password reset, please ignore this email or contact support if you have concerns.\n\n" +
+                "http://localhost:3000/auth/reset-password?token=" + jwtService.generatePasswordResetToken(user)
+                + "\n\n" +
+                "If you did not request a password reset, please ignore this email or contact support if you have concerns.\n\n"
+                +
                 "Best regards,\n" +
                 "AGMS Team";
 

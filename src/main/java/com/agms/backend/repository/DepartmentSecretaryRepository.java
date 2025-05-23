@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface DepartmentSecretaryRepository extends JpaRepository<DepartmentSecretary, String> {
     Optional<DepartmentSecretary> findByEmpId(String empId);
+
     boolean existsByEmpId(String empId);
-} 
+}

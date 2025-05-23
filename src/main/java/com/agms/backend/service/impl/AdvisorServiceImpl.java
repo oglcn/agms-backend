@@ -39,12 +39,18 @@ public class AdvisorServiceImpl implements AdvisorService {
     @Override
     @Transactional
     public Advisor createAdvisor(String empId, String userId) {
+        // This method is now deprecated since Advisor creation should go through
+        // AuthenticationService
+        // But if we need to support it, we need to find the existing user and cast it
+        // to Advisor
         User user = userService.findById(userId);
 
-        Advisor advisor = Advisor.builder()
-                .empId(empId)
-                .user(user)
-                .build();
+        if (!(user instanceof Advisor)) {
+            throw new IllegalArgumentException("User with ID " + userId + " is not an Advisor");
+        }
+
+        Advisor advisor = (Advisor) user;
+        advisor.setEmpId(empId);
 
         return advisorRepository.save(advisor);
     }
@@ -82,4 +88,4 @@ public class AdvisorServiceImpl implements AdvisorService {
         return advisorListRepository.findById(advisorListId)
                 .orElseThrow(() -> new ResourceNotFoundException("AdvisorList not found with ID: " + advisorListId));
     }
-} 
+}

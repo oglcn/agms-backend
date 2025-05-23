@@ -5,9 +5,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,36 +16,38 @@ import java.util.Collection;
 import java.util.List;
 
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
+public abstract class User implements UserDetails {
     @Id
     private String id;
-    // private String username; // Removed
-    @Column(unique = true, nullable = false) // Make email unique and not null
+
+    @Column(unique = true, nullable = false)
     private String email;
+
     @Column(nullable = false)
     private String password;
 
     @NotBlank
     @Size(max = 20)
-    @Column(name = "first_name") // Explicitly define column name
+    @Column(name = "first_name")
     private String firstName;
 
     @NotBlank
     @Size(max = 20)
-    @Column(name = "last_name") // Explicitly define column name
+    @Column(name = "last_name")
     private String lastName;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    public abstract Role getRole();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority(getRole().name()));
     }
 
     @Override
@@ -55,7 +57,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email; // <--- CRUCIAL CHANGE: UserDetails.getUsername() now returns email
+        return email;
     }
 
     @Override
@@ -77,5 +79,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 }

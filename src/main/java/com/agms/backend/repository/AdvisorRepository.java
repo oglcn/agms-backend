@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface AdvisorRepository extends JpaRepository<Advisor, String> {
     Optional<Advisor> findByEmpId(String empId);
+
     boolean existsByEmpId(String empId);
-} 
+}

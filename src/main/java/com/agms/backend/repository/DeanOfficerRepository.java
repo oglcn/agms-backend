@@ -9,4 +9,4 @@ import java.util.Optional;
 @Repository
 public interface DeanOfficerRepository extends JpaRepository<DeanOfficer, String> {
     Optional<DeanOfficer> findByEmpId(String empId);
-} 
+}

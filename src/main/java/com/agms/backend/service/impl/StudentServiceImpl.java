@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -49,19 +50,16 @@ public class StudentServiceImpl implements StudentService {
             throw new EmailAlreadyExistsException("Student ID already exists");
         }
 
-        User user = User.builder()
+        Student student = Student.builder()
+                .id(UUID.randomUUID().toString())
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.STUDENT)
-                .build();
-        
-        user = userRepository.save(user);
-
-        Student student = Student.builder()
-                .user(user)
                 .studentId(request.getStudentId())
+                .graduationStatus(
+                        request.getGraduationRequestStatus() != null ? request.getGraduationRequestStatus().toString()
+                                : "NOT_REQUESTED")
                 .build();
 
         return studentRepository.save(student);
@@ -81,20 +79,17 @@ public class StudentServiceImpl implements StudentService {
     public Student updateStudent(String studentId, Student studentDetails) {
         Student student = studentRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + studentId));
-        
-        // Update allowed fields
-        if (studentDetails.getUser() != null) {
-            if (studentDetails.getUser().getFirstName() != null) {
-                student.getUser().setFirstName(studentDetails.getUser().getFirstName());
-            }
-            if (studentDetails.getUser().getLastName() != null) {
-                student.getUser().setLastName(studentDetails.getUser().getLastName());
-            }
-            if (studentDetails.getUser().getEmail() != null) {
-                student.getUser().setEmail(studentDetails.getUser().getEmail());
-            }
-        }
 
+        // Update allowed fields
+        if (studentDetails.getFirstName() != null) {
+            student.setFirstName(studentDetails.getFirstName());
+        }
+        if (studentDetails.getLastName() != null) {
+            student.setLastName(studentDetails.getLastName());
+        }
+        if (studentDetails.getEmail() != null) {
+            student.setEmail(studentDetails.getEmail());
+        }
         if (studentDetails.getGraduationStatus() != null) {
             student.setGraduationStatus(studentDetails.getGraduationStatus());
         }
@@ -122,7 +117,7 @@ public class StudentServiceImpl implements StudentService {
     public void assignAdvisor(String studentId, String advisorListId) {
         Student student = studentRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + studentId));
-        
+
         AdvisorList advisorList = advisorListRepository.findById(advisorListId)
                 .orElseThrow(() -> new ResourceNotFoundException("Advisor list not found with ID: " + advisorListId));
 
@@ -135,8 +130,8 @@ public class StudentServiceImpl implements StudentService {
     public void removeAdvisor(String studentId) {
         Student student = studentRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + studentId));
-        
+
         student.setAdvisorList(null);
         studentRepository.save(student);
     }
-} 
+}

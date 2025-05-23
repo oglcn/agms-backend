@@ -23,22 +23,11 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    @Transactional
     public User createUser(String firstName, String lastName, String email, String password, Role role) {
-        if (existsByEmail(email)) {
-            throw new IllegalArgumentException("Email already exists");
-        }
-
-        User user = User.builder()
-                .id("U" + System.currentTimeMillis())
-                .firstName(firstName)
-                .lastName(lastName)
-                .email(email)
-                .password(passwordEncoder.encode(password))
-                .role(role)
-                .build();
-
-        return userRepository.save(user);
+        // This method should now be implemented differently based on the role
+        // For now, throwing an exception as creation should go through
+        // AuthenticationService
+        throw new UnsupportedOperationException("User creation should go through AuthenticationService");
     }
 
     @Override
@@ -69,13 +58,11 @@ public class UserServiceImpl implements UserService {
                 .role(user.getRole());
 
         // Check if the user is a student and add student-specific details
-        if (user.getRole() == Role.STUDENT) {
-            Optional<Student> studentOpt = studentRepository.findByUser(user);
-            if (studentOpt.isPresent()) {
-                Student student = studentOpt.get();
-                profileBuilder.studentId(student.getStudentId().toString());
-            }
+        if (user.getRole() == Role.STUDENT && user instanceof Student) {
+            Student student = (Student) user;
+            profileBuilder.studentId(student.getStudentId());
         }
+
         return profileBuilder.build();
     }
-} 
+}
