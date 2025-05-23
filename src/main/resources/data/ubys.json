@@ -1,0 +1,156 @@
+{
+    "studentAffairs": {
+        "SA101": {
+            "empId": "SA101",
+            "user": {
+                "id": "U101",
+                "firstName": "Student",
+                "lastName": "Affairs",
+                "email": "studentaffairs@iyte.edu.tr",
+                "role": "STUDENT_AFFAIRS"
+            }
+        }
+    },
+    "deanOfficers": {
+        "DO102": {
+            "empId": "DO102",
+            "faculty": "Engineering",
+            "user": {
+                "id": "U102",
+                "firstName": "Dean",
+                "lastName": "Officer1",
+                "email": "dean1@iyte.edu.tr",
+                "role": "DEAN_OFFICER"
+            }
+        },
+        "DO106": {
+            "empId": "DO106",
+            "faculty": "Science",
+            "user": {
+                "id": "U106",
+                "firstName": "Dean",
+                "lastName": "Officer2",
+                "email": "dean2@iyte.edu.tr",
+                "role": "DEAN_OFFICER"
+            }
+        }
+    },
+    "departmentSecretaries": {
+        "DS103": {
+            "empId": "DS103",
+            "department": "Computer Engineering",
+            "deanOfficerId": "DO102",
+            "user": {
+                "id": "U103",
+                "firstName": "Department",
+                "lastName": "Secretary1",
+                "email": "secretary1@iyte.edu.tr",
+                "role": "DEPARTMENT_SECRETARY"
+            }
+        },
+        "DS107": {
+            "empId": "DS107",
+            "department": "Mathematics",
+            "deanOfficerId": "DO106",
+            "user": {
+                "id": "U107",
+                "firstName": "Department",
+                "lastName": "Secretary2",
+                "email": "secretary2@iyte.edu.tr",
+                "role": "DEPARTMENT_SECRETARY"
+            }
+        }
+    },
+    "advisors": {
+        "ADV104": {
+            "empId": "ADV104",
+            "departmentSecretaryId": "DS103",
+            "user": {
+                "id": "U104",
+                "firstName": "Professor",
+                "lastName": "Advisor1",
+                "email": "advisor1@iyte.edu.tr",
+                "role": "ADVISOR"
+            }
+        },
+        "ADV108": {
+            "empId": "ADV108",
+            "departmentSecretaryId": "DS107",
+            "user": {
+                "id": "U108",
+                "firstName": "Professor",
+                "lastName": "Advisor2",
+                "email": "advisor2@iyte.edu.tr",
+                "role": "ADVISOR"
+            }
+        }
+    },
+    "students": {
+        "S2023001": {
+            "studentNumber": "S2023001",
+            "advisorId": "ADV104",
+            "user": {
+                "id": "U201",
+                "firstName": "John",
+                "lastName": "Doe",
+                "email": "john.doe@std.iyte.edu.tr",
+                "role": "STUDENT"
+            },
+            "gpa": 3.45,
+            "totalCredit": 87,
+            "courses": [
+                {
+                    "code": "CSE101",
+                    "name": "Introduction to Programming",
+                    "grade": "AA",
+                    "credit": 6
+                },
+                {
+                    "code": "MATH101",
+                    "name": "Calculus I",
+                    "grade": "BA",
+                    "credit": 6
+                },
+                {
+                    "code": "PHYS101",
+                    "name": "Physics I",
+                    "grade": "AA",
+                    "credit": 6
+                }
+            ]
+        },
+        "S2023002": {
+            "studentNumber": "S2023002",
+            "advisorId": "ADV108",
+            "user": {
+                "id": "U202",
+                "firstName": "Jane",
+                "lastName": "Smith",
+                "email": "jane.smith@std.iyte.edu.tr",
+                "role": "STUDENT"
+            },
+            "gpa": 3.75,
+            "totalCredit": 93,
+            "courses": [
+                {
+                    "code": "CSE101",
+                    "name": "Introduction to Programming",
+                    "grade": "AA",
+                    "credit": 6
+                },
+                {
+                    "code": "MATH101",
+                    "name": "Calculus I",
+                    "grade": "AA",
+                    "credit": 6
+                },
+                {
+                    "code": "PHYS101",
+                    "name": "Physics I",
+                    "grade": "BA",
+                    "credit": 6
+                }
+            ]
+        }
+    }
+} 

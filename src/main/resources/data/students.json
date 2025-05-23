@@ -1,0 +1,42 @@
+{
+    "2023001": {
+        "studentNumber": "2023001",
+        "firstName": "John",
+        "lastName": "Doe",
+        "department": "Computer Engineering",
+        "gpa": 3.75,
+        "semester": 4,
+        "courses": [
+            {
+                "code": "CENG101",
+                "name": "Introduction to Programming",
+                "grade": "A"
+            },
+            {
+                "code": "CENG102",
+                "name": "Data Structures",
+                "grade": "A-"
+            }
+        ]
+    },
+    "2023002": {
+        "studentNumber": "2023002",
+        "firstName": "Jane",
+        "lastName": "Smith",
+        "department": "Electrical Engineering",
+        "gpa": 3.85,
+        "semester": 3,
+        "courses": [
+            {
+                "code": "EENG101",
+                "name": "Circuit Analysis",
+                "grade": "A"
+            },
+            {
+                "code": "EENG102",
+                "name": "Digital Electronics",
+                "grade": "A+"
+            }
+        ]
+    }
+} 

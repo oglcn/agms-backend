@@ -39,30 +39,35 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.deny())
+                        .xssProtection(xss -> xss.disable())
+                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"))
+                        .contentTypeOptions(content -> {
+                        })
+                        .cacheControl(cache -> cache.disable()))
                 .authorizeHttpRequests(auth -> auth
-
                         .requestMatchers(
-                            "/api/auth/**",
-                            "/swagger-ui/**",
-                            "/v3/api-docs/**",
-                            "/swagger-ui.html",
-                            "/api-docs/**",
-                            "/swagger-resources/**",
-                            "/webjars/**",
-                            "/swagger-ui/index.html",
-                            "/swagger-ui/swagger-ui.css",
-                            "/swagger-ui/swagger-ui-bundle.js",
-                            "/swagger-ui/swagger-ui-standalone-preset.js",
-                            "/swagger-ui/swagger-initializer.js",
-                            "/v3/api-docs.yaml",
-                            "/swagger-ui/favicon-32x32.png",
-                            "/swagger-ui/favicon-16x16.png"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
+                                "/api/auth/**",
+                                "/api/ubys/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**",
+                                "/swagger-ui/index.html",
+                                "/swagger-ui/swagger-ui.css",
+                                "/swagger-ui/swagger-ui-bundle.js",
+                                "/swagger-ui/swagger-ui-standalone-preset.js",
+                                "/swagger-ui/swagger-initializer.js",
+                                "/v3/api-docs.yaml",
+                                "/swagger-ui/favicon-32x32.png",
+                                "/swagger-ui/favicon-16x16.png")
+                        .permitAll()
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

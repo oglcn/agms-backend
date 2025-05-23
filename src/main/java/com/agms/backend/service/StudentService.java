@@ -13,23 +13,27 @@ public interface StudentService {
      * Student Creation and Profile Management
      */
     Student createStudent(CreateStudentRequest request);
+
     Student updateStudent(String studentId, Student studentDetails);
+
     void deleteStudent(String studentId);
-    
+
     /**
      * Student Queries
      */
     List<Student> getAllStudents();
+
     Optional<Student> getStudentByStudentId(String studentId);
-    
+
     /**
      * Graduation Management
      */
     void updateGraduationRequestStatus(String studentId, String status);
-    
+
     /**
      * Advisor Assignment
      */
     void assignAdvisor(String studentId, String advisorId);
+
     void removeAdvisor(String studentId);
 }
