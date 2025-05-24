@@ -4,6 +4,10 @@ import com.agms.backend.dto.UserProfileResponse;
 import com.agms.backend.model.users.Role;
 import com.agms.backend.model.users.Student;
 import com.agms.backend.model.users.User;
+import com.agms.backend.model.users.Advisor;
+import com.agms.backend.model.users.DepartmentSecretary;
+import com.agms.backend.model.users.DeanOfficer;
+import com.agms.backend.model.users.StudentAffairs;
 import com.agms.backend.repository.StudentRepository;
 import com.agms.backend.repository.UserRepository;
 import com.agms.backend.service.UserService;
@@ -57,13 +61,49 @@ public class UserServiceImpl implements UserService {
                 .lastname(user.getLastName())
                 .role(user.getRole());
 
-        // Check if the user is a student and add student-specific details
-        if (user.getRole() == Role.STUDENT && user instanceof Student) {
-            Student student = (Student) user;
-            profileBuilder.studentNumber(student.getStudentNumber());
-            // Note: Graduation status is now handled through submissions, not directly on student
+        // Set institute number based on user role
+        String instituteNumber = getInstituteNumber(user);
+        if (instituteNumber != null) {
+            profileBuilder.instituteNumber(instituteNumber);
         }
 
         return profileBuilder.build();
+    }
+
+    /**
+     * Get the institute number for a user based on their role
+     * 
+     * @param user The user
+     * @return Student number for students, employee ID for employees
+     */
+    private String getInstituteNumber(User user) {
+        switch (user.getRole()) {
+            case STUDENT:
+                if (user instanceof Student) {
+                    return ((Student) user).getStudentNumber();
+                }
+                break;
+            case ADVISOR:
+                if (user instanceof Advisor) {
+                    return ((Advisor) user).getEmpId();
+                }
+                break;
+            case DEPARTMENT_SECRETARY:
+                if (user instanceof DepartmentSecretary) {
+                    return ((DepartmentSecretary) user).getEmpId();
+                }
+                break;
+            case DEAN_OFFICER:
+                if (user instanceof DeanOfficer) {
+                    return ((DeanOfficer) user).getEmpId();
+                }
+                break;
+            case STUDENT_AFFAIRS:
+                if (user instanceof StudentAffairs) {
+                    return ((StudentAffairs) user).getEmpId();
+                }
+                break;
+        }
+        return null;
     }
 }

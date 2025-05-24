@@ -16,5 +16,9 @@ public class UserProfileResponse {
     private String firstname;
     private String lastname;
     private Role role;
-    private String studentNumber; // Nullable, only if the user is a student    // Note: Graduation status is now handled through submissions, not directly on student
+    /**
+     * For students: studentNumber
+     * For employees: employeeId
+     */
+    private String instituteNumber;
 }

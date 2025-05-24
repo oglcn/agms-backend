@@ -14,15 +14,18 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SubmissionResponse {
-    
+
     private String submissionId;
     private LocalDate submissionDate;
     private String content;
     private SubmissionStatus status;
+    /**
+     * Student number - submissions are only for students
+     */
     private String studentNumber;
     private String studentName;
     private String advisorListId;
-    
+
     @Data
     @Builder
     @NoArgsConstructor
@@ -34,6 +37,6 @@ public class SubmissionResponse {
         private LocalDate uploadDate;
         private String uploaderName;
     }
-    
+
     private List<FileInfo> files;
-} 
+}
