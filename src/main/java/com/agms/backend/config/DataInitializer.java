@@ -80,6 +80,9 @@ public class DataInitializer {
             // Step 5: Create Students (depends on Advisors)
             initializeStudentsFromUbys();
             
+            // Step 6: Create complete organizational hierarchy for graduation system
+            initializeGraduationHierarchy();
+            
             log.info("All entities initialized successfully from ubys.json");
             
         } catch (Exception e) {
@@ -445,5 +448,115 @@ public class DataInitializer {
                 .departmentList(departmentList)
                 .build();
         return advisorListRepository.save(advisorList);
+    }
+
+    private void initializeGraduationHierarchy() {
+        log.debug("Initializing graduation hierarchy...");
+        
+        try {
+            // Create a default graduation for current term
+            StudentAffairs studentAffairs = studentAffairsRepository.findAll().get(0);
+            Graduation graduation = createGraduation("GRAD_2025_SPRING", LocalDate.now(), "Spring 2025", studentAffairs.getEmpId());
+            
+            // Create graduation list
+            GraduationList graduationList = createGraduationList("GL_2025_SPRING", graduation);
+            
+            // Create faculty lists for each dean officer
+            List<DeanOfficer> deanOfficers = deanOfficerRepository.findAll();
+            Map<String, FacultyList> facultyListMap = new HashMap<>();
+            
+            for (DeanOfficer deanOfficer : deanOfficers) {
+                String facultyName = getFacultyName(deanOfficer.getEmpId());
+                String facultyListId = "FL_" + deanOfficer.getEmpId();
+                FacultyList facultyList = createFacultyList(facultyListId, facultyName, deanOfficer.getEmpId(), graduationList);
+                facultyListMap.put(deanOfficer.getEmpId(), facultyList);
+                log.debug("Created FacultyList: {} for dean officer: {}", facultyListId, deanOfficer.getEmpId());
+            }
+            
+            // Create department lists for each department secretary
+            List<DepartmentSecretary> departmentSecretaries = secretaryRepository.findAll();
+            Map<String, DepartmentList> departmentListMap = new HashMap<>();
+            
+            for (DepartmentSecretary secretary : departmentSecretaries) {
+                String deanOfficerId = getDeanOfficerForSecretary(secretary.getEmpId());
+                FacultyList facultyList = facultyListMap.get(deanOfficerId);
+                
+                if (facultyList != null) {
+                    String departmentName = getDepartmentName(secretary.getEmpId());
+                    String deptListId = "DL_" + secretary.getEmpId();
+                    DepartmentList departmentList = createDepartmentList(deptListId, departmentName, secretary.getEmpId(), facultyList);
+                    departmentListMap.put(secretary.getEmpId(), departmentList);
+                    log.debug("Created DepartmentList: {} for secretary: {}", deptListId, secretary.getEmpId());
+                }
+            }
+            
+            // Create advisor lists for each advisor
+            List<Advisor> advisors = advisorRepository.findAll();
+            
+            for (Advisor advisor : advisors) {
+                String departmentSecretaryId = getDepartmentSecretaryForAdvisor(advisor.getEmpId());
+                DepartmentList departmentList = departmentListMap.get(departmentSecretaryId);
+                
+                if (departmentList != null) {
+                    String advisorListId = "AL_" + advisor.getEmpId();
+                    AdvisorList advisorList = createAdvisorList(advisorListId, advisor.getEmpId(), departmentList);
+                    log.debug("Created AdvisorList: {} for advisor: {}", advisorListId, advisor.getEmpId());
+                } else {
+                    log.warn("Could not find department list for advisor: {}", advisor.getEmpId());
+                }
+            }
+            
+            log.info("Graduation hierarchy initialized successfully");
+            
+        } catch (Exception e) {
+            log.error("Error initializing graduation hierarchy: {}", e.getMessage());
+            throw new RuntimeException("Failed to initialize graduation hierarchy", e);
+        }
+    }
+    
+    private String getFacultyName(String deanOfficerId) {
+        switch (deanOfficerId) {
+            case "DO101": return "Faculty of Engineering";
+            case "DO102": return "Faculty of Science";
+            case "DO103": return "Faculty of Arts";
+            default: return "Faculty of " + deanOfficerId;
+        }
+    }
+    
+    private String getDepartmentName(String secretaryId) {
+        // Map secretary IDs to department names
+        switch (secretaryId) {
+            case "DS101": return "Computer Engineering";
+            case "DS102": return "Software Engineering";
+            case "DS103": return "Electrical Engineering";
+            case "DS104": return "Mechanical Engineering";
+            case "DS105": return "Civil Engineering";
+            case "DS106": return "Industrial Engineering";
+            case "DS107": return "Environmental Engineering";
+            case "DS108": return "Biomedical Engineering";
+            case "DS109": return "Aerospace Engineering";
+            case "DS110": return "Chemical Engineering";
+            case "DS111": return "Mathematics";
+            case "DS112": return "Physics";
+            case "DS113": return "Chemistry";
+            case "DS114": return "Biology";
+            case "DS115": return "Statistics";
+            case "DS116": return "Philosophy";
+            case "DS117": return "History";
+            case "DS118": return "Literature";
+            default: return "Department of " + secretaryId;
+        }
+    }
+    
+    private String getDeanOfficerForSecretary(String secretaryId) {
+        // Based on our existing relationship mapping
+        Map<String, String> relationships = getDeanOfficerRelationships();
+        return relationships.get(secretaryId);
+    }
+    
+    private String getDepartmentSecretaryForAdvisor(String advisorId) {
+        // Based on our existing relationship mapping
+        Map<String, String> relationships = getDepartmentSecretaryRelationships();
+        return relationships.get(advisorId);
     }
 }
