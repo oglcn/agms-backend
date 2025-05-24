@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired; // Assuming Student entity exists
 import org.springframework.http.HttpStatus; // Assuming StudentService exists
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.agms.backend.dto.CreateStudentRequest;
+import com.agms.backend.dto.StudentProfileResponse;
 import com.agms.backend.model.users.Student;
 import com.agms.backend.exception.EmailAlreadyExistsException;
 import com.agms.backend.exception.ResourceNotFoundException;
@@ -40,6 +43,23 @@ public class StudentController {
     @Autowired
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
+    }
+
+    @Operation(summary = "Get current student profile", description = "Retrieves profile information for the currently authenticated student including student number, email, department, and advisor details")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Student profile retrieved successfully", content = @Content(schema = @Schema(implementation = StudentProfileResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Not authenticated"),
+            @ApiResponse(responseCode = "404", description = "Student not found")
+    })
+    @GetMapping("/profile")
+    public ResponseEntity<StudentProfileResponse> getCurrentStudentProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(401).build();
+        }
+        String currentPrincipalName = authentication.getName();
+        return ResponseEntity.ok(studentService.getStudentProfileByEmail(currentPrincipalName));
     }
 
     @Operation(summary = "Create a new student", description = "Creates a new student with the provided information")

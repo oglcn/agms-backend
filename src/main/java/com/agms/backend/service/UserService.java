@@ -4,6 +4,7 @@ package com.agms.backend.service;
 import com.agms.backend.model.users.Role;
 import com.agms.backend.model.users.User;
 import com.agms.backend.dto.UserProfileResponse;
+import com.agms.backend.dto.UserRoleResponse;
 
 public interface UserService {
     // User management
@@ -14,4 +15,7 @@ public interface UserService {
     
     // Profile operations
     UserProfileResponse getUserProfile(String email);
+    
+    // Role operations
+    UserRoleResponse getUserRole(String email);
 }

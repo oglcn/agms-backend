@@ -1,9 +1,12 @@
 package com.agms.backend.service.impl;
 
 import com.agms.backend.dto.CreateStudentRequest;
+import com.agms.backend.dto.StudentProfileResponse;
 import com.agms.backend.model.users.Student;
 import com.agms.backend.model.users.User;
 import com.agms.backend.model.users.Role;
+import com.agms.backend.model.users.Advisor;
+import com.agms.backend.model.users.DepartmentSecretary;
 import com.agms.backend.model.AdvisorList;
 import com.agms.backend.repository.StudentRepository;
 import com.agms.backend.repository.UserRepository;
@@ -11,6 +14,7 @@ import com.agms.backend.repository.AdvisorListRepository;
 import com.agms.backend.exception.ResourceNotFoundException;
 import com.agms.backend.exception.EmailAlreadyExistsException;
 import com.agms.backend.service.StudentService;
+import com.agms.backend.service.UbysService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Map;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -26,17 +31,20 @@ public class StudentServiceImpl implements StudentService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AdvisorListRepository advisorListRepository;
+    private final UbysService ubysService;
 
     @Autowired
     public StudentServiceImpl(
             StudentRepository studentRepository,
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            AdvisorListRepository advisorListRepository) {
+            AdvisorListRepository advisorListRepository,
+            UbysService ubysService) {
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.advisorListRepository = advisorListRepository;
+        this.ubysService = ubysService;
     }
 
     @Override
@@ -126,5 +134,83 @@ public class StudentServiceImpl implements StudentService {
 
         student.setAdvisorList(null);
         studentRepository.save(student);
+    }
+
+    @Override
+    public StudentProfileResponse getStudentProfileByEmail(String email) {
+        // Get student from database
+        Student student = studentRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with email: " + email));
+
+        // Get enhanced student data from ubys.json (includes academic info)
+        Student enhancedStudent;
+        try {
+            enhancedStudent = ubysService.getStudentWithTransientAttributes(student.getStudentNumber());
+        } catch (ResourceNotFoundException e) {
+            // If not found in ubys.json, use database student
+            enhancedStudent = student;
+        }
+
+        // Get department information from advisor relationship
+        String department = null;
+        String faculty = null;
+        StudentProfileResponse.AdvisorInfo advisorInfo = null;
+
+        if (student.getAdvisor() != null) {
+            Advisor advisor = student.getAdvisor();
+            advisorInfo = StudentProfileResponse.AdvisorInfo.builder()
+                    .empId(advisor.getEmpId())
+                    .firstName(advisor.getFirstName())
+                    .lastName(advisor.getLastName())
+                    .email(advisor.getEmail())
+                    .build();
+
+            // Get department from advisor's department secretary
+            if (advisor.getDepartmentSecretary() != null) {
+                DepartmentSecretary departmentSecretary = advisor.getDepartmentSecretary();
+                
+                // Get department and faculty info from ubys.json
+                try {
+                    Map<String, Object> allData = ubysService.getAllData();
+                    Map<String, Object> departmentSecretariesSection = (Map<String, Object>) allData.get("departmentSecretaries");
+                    
+                    if (departmentSecretariesSection != null) {
+                        Map<String, Object> deptSecData = (Map<String, Object>) departmentSecretariesSection.get(departmentSecretary.getEmpId());
+                        if (deptSecData != null) {
+                            department = (String) deptSecData.get("department");
+                            
+                            // Get faculty from dean officer
+                            String deanOfficerId = (String) deptSecData.get("deanOfficerId");
+                            if (deanOfficerId != null) {
+                                Map<String, Object> deanOfficersSection = (Map<String, Object>) allData.get("deanOfficers");
+                                if (deanOfficersSection != null) {
+                                    Map<String, Object> deanOfficerData = (Map<String, Object>) deanOfficersSection.get(deanOfficerId);
+                                    if (deanOfficerData != null) {
+                                        faculty = (String) deanOfficerData.get("faculty");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    // Log error but continue - we'll just not have department/faculty info
+                    System.err.println("Error getting department/faculty info: " + e.getMessage());
+                }
+            }
+        }
+
+        return StudentProfileResponse.builder()
+                .studentNumber(student.getStudentNumber())
+                .email(student.getEmail())
+                .firstName(student.getFirstName())
+                .lastName(student.getLastName())
+                .role(student.getRole())
+                .department(department)
+                .faculty(faculty)
+                .advisor(advisorInfo)
+                .gpa(enhancedStudent.getGpa() > 0 ? enhancedStudent.getGpa() : null)
+                .totalCredits(enhancedStudent.getTotalCredit() > 0 ? enhancedStudent.getTotalCredit() : null)
+                .semester(enhancedStudent.getSemester() > 0 ? enhancedStudent.getSemester() : null)
+                .build();
     }
 }

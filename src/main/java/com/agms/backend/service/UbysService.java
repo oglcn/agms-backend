@@ -26,7 +26,7 @@ public class UbysService {
     /**
      * Retrieves all data from ubys.json
      */
-    private Map<String, Object> getAllData() throws IOException {
+    public Map<String, Object> getAllData() throws IOException {
         ClassPathResource resource = new ClassPathResource("data/ubys.json");
         return objectMapper.readValue(
             resource.getInputStream(),

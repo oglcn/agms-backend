@@ -1,6 +1,7 @@
 package com.agms.backend.service;
 
 import com.agms.backend.dto.CreateStudentRequest;
+import com.agms.backend.dto.StudentProfileResponse;
 import com.agms.backend.model.users.Student;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,11 @@ public interface StudentService {
     List<Student> getAllStudents();
 
     Optional<Student> getStudentByStudentNumber(String studentNumber);
+
+    /**
+     * Get student profile information by email (for authenticated user)
+     */
+    StudentProfileResponse getStudentProfileByEmail(String email);
 
     /**
      * Graduation Management
