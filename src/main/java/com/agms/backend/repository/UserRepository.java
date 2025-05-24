@@ -1,6 +1,6 @@
 package com.agms.backend.repository;
 
-import com.agms.backend.entity.User;
+import com.agms.backend.model.users.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -6,14 +6,14 @@ import com.agms.backend.dto.AuthenticationResponse;
 import com.agms.backend.dto.RegisterRequest;
 import com.agms.backend.dto.ResetPasswordRequest;
 import com.agms.backend.dto.NavigateToResetPasswordRequest;
-import com.agms.backend.entity.GraduationRequestStatus;
-import com.agms.backend.entity.Role;
-import com.agms.backend.entity.Student;
-import com.agms.backend.entity.Advisor;
-import com.agms.backend.entity.DeanOfficer;
-import com.agms.backend.entity.DepartmentSecretary;
-import com.agms.backend.entity.StudentAffairs;
-import com.agms.backend.entity.User;
+import com.agms.backend.model.users.GraduationRequestStatus;
+import com.agms.backend.model.users.Role;
+import com.agms.backend.model.users.Student;
+import com.agms.backend.model.users.Advisor;
+import com.agms.backend.model.users.DeanOfficer;
+import com.agms.backend.model.users.DepartmentSecretary;
+import com.agms.backend.model.users.StudentAffairs;
+import com.agms.backend.model.users.User;
 import com.agms.backend.repository.StudentRepository;
 import com.agms.backend.repository.AdvisorRepository;
 import com.agms.backend.repository.DeanOfficerRepository;
@@ -78,8 +78,8 @@ public class AuthenticationService {
 
         switch (role) {
             case STUDENT:
-                if (request.getStudentId() == null || request.getStudentId().isEmpty()) {
-                    throw new InvalidRoleException("Student ID is required for student registration");
+                if (request.getStudentNumber() == null || request.getStudentNumber().isEmpty()) {
+                    throw new InvalidRoleException("Student number is required for student registration");
                 }
 
                 // Determine the graduation request status
@@ -97,8 +97,7 @@ public class AuthenticationService {
                         .lastName(request.getLastName())
                         .email(request.getEmail())
                         .password(encodedPassword)
-                        .studentId(request.getStudentId())
-                        .graduationStatus(status.toString())
+                        .studentNumber(request.getStudentNumber())
                         .build();
                 return studentRepository.save(student);
 

@@ -16,8 +16,8 @@ public interface TestDataService {
      * @param lastName Last name of the student
      * @param email Email of the student
      * @param password Password for the student
-     * @param studentId Student ID
+     * @param studentNumber Student number
      * @return Created student's ID
      */
-    String createTestStudent(String firstName, String lastName, String email, String password, String studentId);
+    String createTestStudent(String firstName, String lastName, String email, String password, String studentNumber);
 } 

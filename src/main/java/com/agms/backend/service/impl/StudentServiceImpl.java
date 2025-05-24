@@ -1,10 +1,10 @@
 package com.agms.backend.service.impl;
 
 import com.agms.backend.dto.CreateStudentRequest;
-import com.agms.backend.entity.Student;
-import com.agms.backend.entity.User;
-import com.agms.backend.entity.Role;
-import com.agms.backend.entity.AdvisorList;
+import com.agms.backend.model.users.Student;
+import com.agms.backend.model.users.User;
+import com.agms.backend.model.users.Role;
+import com.agms.backend.model.AdvisorList;
 import com.agms.backend.repository.StudentRepository;
 import com.agms.backend.repository.UserRepository;
 import com.agms.backend.repository.AdvisorListRepository;
@@ -46,8 +46,8 @@ public class StudentServiceImpl implements StudentService {
             throw new EmailAlreadyExistsException("Email already exists");
         }
 
-        if (studentRepository.existsByStudentId(request.getStudentId())) {
-            throw new EmailAlreadyExistsException("Student ID already exists");
+        if (studentRepository.existsByStudentNumber(request.getStudentNumber())) {
+            throw new EmailAlreadyExistsException("Student number already exists");
         }
 
         Student student = Student.builder()
@@ -56,10 +56,7 @@ public class StudentServiceImpl implements StudentService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .studentId(request.getStudentId())
-                .graduationStatus(
-                        request.getGraduationRequestStatus() != null ? request.getGraduationRequestStatus().toString()
-                                : "NOT_REQUESTED")
+                .studentNumber(request.getStudentNumber())
                 .build();
 
         return studentRepository.save(student);
@@ -71,14 +68,14 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Optional<Student> getStudentByStudentId(String studentId) {
-        return studentRepository.findByStudentId(studentId);
+    public Optional<Student> getStudentByStudentNumber(String studentNumber) {
+        return studentRepository.findByStudentNumber(studentNumber);
     }
 
     @Override
-    public Student updateStudent(String studentId, Student studentDetails) {
-        Student student = studentRepository.findByStudentId(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + studentId));
+    public Student updateStudent(String studentNumber, Student studentDetails) {
+        Student student = studentRepository.findByStudentNumber(studentNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with number: " + studentNumber));
 
         // Update allowed fields
         if (studentDetails.getFirstName() != null) {
@@ -90,33 +87,30 @@ public class StudentServiceImpl implements StudentService {
         if (studentDetails.getEmail() != null) {
             student.setEmail(studentDetails.getEmail());
         }
-        if (studentDetails.getGraduationStatus() != null) {
-            student.setGraduationStatus(studentDetails.getGraduationStatus());
-        }
+        // Note: Graduation status is now handled through submissions, not directly on student
 
         return studentRepository.save(student);
     }
 
     @Override
-    public void deleteStudent(String studentId) {
-        Student student = studentRepository.findByStudentId(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + studentId));
+    public void deleteStudent(String studentNumber) {
+        Student student = studentRepository.findByStudentNumber(studentNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with number: " + studentNumber));
         studentRepository.delete(student);
     }
 
     @Override
-    public void updateGraduationRequestStatus(String studentId, String status) {
-        Student student = studentRepository.findByStudentId(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + studentId));
-        student.setGraduationStatus(status);
-        studentRepository.save(student);
+    public void updateGraduationRequestStatus(String studentNumber, String status) {
+        // Note: Graduation status is now handled through submissions, not directly on student
+        // This method should create or update a submission with the given status
+        throw new UnsupportedOperationException("Graduation status is now handled through submissions. Use submission service instead.");
     }
 
     @Override
     @Transactional
-    public void assignAdvisor(String studentId, String advisorListId) {
-        Student student = studentRepository.findByStudentId(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + studentId));
+    public void assignAdvisor(String studentNumber, String advisorListId) {
+        Student student = studentRepository.findByStudentNumber(studentNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with number: " + studentNumber));
 
         AdvisorList advisorList = advisorListRepository.findById(advisorListId)
                 .orElseThrow(() -> new ResourceNotFoundException("Advisor list not found with ID: " + advisorListId));
@@ -127,9 +121,9 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional
-    public void removeAdvisor(String studentId) {
-        Student student = studentRepository.findByStudentId(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + studentId));
+    public void removeAdvisor(String studentNumber) {
+        Student student = studentRepository.findByStudentNumber(studentNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with number: " + studentNumber));
 
         student.setAdvisorList(null);
         studentRepository.save(student);

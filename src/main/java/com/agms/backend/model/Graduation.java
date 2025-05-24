@@ -1,10 +1,11 @@
-package com.agms.backend.entity;
+package com.agms.backend.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.agms.backend.model.users.StudentAffairs;
 import java.time.LocalDate;
 import java.util.List;
 

@@ -1,9 +1,9 @@
 package com.agms.backend.service.impl;
 
-import com.agms.backend.entity.DepartmentList;
-import com.agms.backend.entity.DepartmentSecretary;
-import com.agms.backend.entity.User;
-import com.agms.backend.entity.FacultyList;
+import com.agms.backend.model.DepartmentList;
+import com.agms.backend.model.users.DepartmentSecretary;
+import com.agms.backend.model.users.User;
+import com.agms.backend.model.FacultyList;
 import com.agms.backend.repository.DepartmentListRepository;
 import com.agms.backend.repository.DepartmentSecretaryRepository;
 import com.agms.backend.repository.UserRepository;

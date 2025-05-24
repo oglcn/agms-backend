@@ -1,6 +1,6 @@
 package com.agms.backend.repository;
 
-import com.agms.backend.entity.DeanOfficer;
+import com.agms.backend.model.users.DeanOfficer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

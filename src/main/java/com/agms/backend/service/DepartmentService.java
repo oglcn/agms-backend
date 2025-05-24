@@ -1,7 +1,7 @@
 package com.agms.backend.service;
 
-import com.agms.backend.entity.DepartmentList;
-import com.agms.backend.entity.DepartmentSecretary;
+import com.agms.backend.model.DepartmentList;
+import com.agms.backend.model.users.DepartmentSecretary;
 import java.util.List;
 
 public interface DepartmentService {

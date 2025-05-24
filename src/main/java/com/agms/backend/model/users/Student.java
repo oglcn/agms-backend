@@ -1,8 +1,10 @@
-package com.agms.backend.entity;
+package com.agms.backend.model.users;
 
-import java.beans.Transient;
 import java.util.List;
 
+import com.agms.backend.model.Course;
+import com.agms.backend.model.AdvisorList;
+import com.agms.backend.model.Submission;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +25,9 @@ public class Student extends User {
     @Column(name = "student_number", nullable = false, unique = true)
     private String studentNumber;
 
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Submission> submissions;
+
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "advisor_list_id")
     private AdvisorList advisorList;
@@ -37,7 +42,7 @@ public class Student extends User {
     }
 
     @Transient
-    private int gpa;
+    private double gpa;
 
     @Transient
     private int totalCredit;
@@ -47,4 +52,34 @@ public class Student extends User {
 
     @Transient
     private int semester;
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+        calculateAcademicMetrics();
+    }
+
+    /**
+     * Calculates GPA and total credits from the student's courses and updates the attributes.
+     * Call this method after setting courses to update GPA and totalCredit.
+     */
+    public void calculateAcademicMetrics() {
+        if (courses == null || courses.isEmpty()) {
+            this.gpa = 0.0;
+            this.totalCredit = 0;
+            return;
+        }
+
+        double totalGpaPoints = 0.0;
+        int totalCredits = 0;
+
+        for (Course course : courses) {
+            if (course != null && course.getCredit() > 0) {
+                totalCredits += course.getCredit();
+                totalGpaPoints += (course.getGpaPoints() * course.getCredit());
+            }
+        }
+
+        this.totalCredit = totalCredits;
+        this.gpa = totalCredits > 0 ? Math.round((totalGpaPoints / totalCredits) * 100.0) / 100.0 : 0.0;
+    }
 }

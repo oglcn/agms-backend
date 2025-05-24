@@ -1,7 +1,7 @@
 package com.agms.backend.service;
 
-import com.agms.backend.entity.Advisor;
-import com.agms.backend.entity.AdvisorList;
+import com.agms.backend.model.users.Advisor;
+import com.agms.backend.model.AdvisorList;
 import java.util.List;
 
 public interface AdvisorService {

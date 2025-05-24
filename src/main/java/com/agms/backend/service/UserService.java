@@ -1,8 +1,8 @@
 // path: backend/src/main/java/com/agms/backend/service/AuthenticationService.java
 package com.agms.backend.service;
 
-import com.agms.backend.entity.Role;
-import com.agms.backend.entity.User;
+import com.agms.backend.model.users.Role;
+import com.agms.backend.model.users.User;
 import com.agms.backend.dto.UserProfileResponse;
 
 public interface UserService {

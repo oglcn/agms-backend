@@ -1,7 +1,7 @@
 package com.agms.backend.service;
 
 import com.agms.backend.dto.CreateStudentRequest;
-import com.agms.backend.entity.Student;
+import com.agms.backend.model.users.Student;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,26 +14,26 @@ public interface StudentService {
      */
     Student createStudent(CreateStudentRequest request);
 
-    Student updateStudent(String studentId, Student studentDetails);
+    Student updateStudent(String studentNumber, Student studentDetails);
 
-    void deleteStudent(String studentId);
+    void deleteStudent(String studentNumber);
 
     /**
      * Student Queries
      */
     List<Student> getAllStudents();
 
-    Optional<Student> getStudentByStudentId(String studentId);
+    Optional<Student> getStudentByStudentNumber(String studentNumber);
 
     /**
      * Graduation Management
      */
-    void updateGraduationRequestStatus(String studentId, String status);
+    void updateGraduationRequestStatus(String studentNumber, String status);
 
     /**
      * Advisor Assignment
      */
-    void assignAdvisor(String studentId, String advisorId);
+    void assignAdvisor(String studentNumber, String advisorId);
 
-    void removeAdvisor(String studentId);
+    void removeAdvisor(String studentNumber);
 }

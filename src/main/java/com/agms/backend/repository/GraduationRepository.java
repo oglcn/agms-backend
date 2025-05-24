@@ -1,6 +1,6 @@
 package com.agms.backend.repository;
 
-import com.agms.backend.entity.Graduation;
+import com.agms.backend.model.Graduation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,9 +1,9 @@
 package com.agms.backend.service.impl;
 
-import com.agms.backend.entity.Advisor;
-import com.agms.backend.entity.AdvisorList;
-import com.agms.backend.entity.User;
-import com.agms.backend.entity.DepartmentList;
+import com.agms.backend.model.users.Advisor;
+import com.agms.backend.model.AdvisorList;
+import com.agms.backend.model.users.User;
+import com.agms.backend.model.DepartmentList;
 import com.agms.backend.repository.AdvisorRepository;
 import com.agms.backend.repository.AdvisorListRepository;
 import com.agms.backend.service.AdvisorService;

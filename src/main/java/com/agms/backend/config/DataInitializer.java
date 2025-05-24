@@ -1,6 +1,7 @@
 package com.agms.backend.config;
 
-import com.agms.backend.entity.*;
+import com.agms.backend.model.*;
+import com.agms.backend.model.users.Role;
 import com.agms.backend.repository.*;
 import com.agms.backend.service.AuthenticationService;
 import com.agms.backend.dto.RegisterRequest;
@@ -119,8 +120,8 @@ public class DataInitializer {
                         // For students, we need to provide a student ID
                         if (role == Role.STUDENT) {
                                 // Extract student ID from userId (assuming format like "U105" -> "CS105")
-                                String studentId = "CS" + userId.substring(1);
-                                request.setStudentId(studentId);
+                                String studentNumber = "CS" + userId.substring(1);
+                                request.setStudentNumber(studentNumber);
                         }
 
                         // Use AuthenticationService to create the user with proper inheritance
@@ -189,8 +190,8 @@ public class DataInitializer {
                 return advisorListRepository.save(advisorList);
         }
 
-        private void assignAdvisorToStudent(String studentId, AdvisorList advisorList) {
-                var student = studentRepository.findByStudentId(studentId).orElseThrow();
+        private void assignAdvisorToStudent(String studentNumber, AdvisorList advisorList) {
+                var student = studentRepository.findByStudentNumber(studentNumber).orElseThrow();
                 student.setAdvisorList(advisorList);
                 studentRepository.save(student);
         }

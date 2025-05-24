@@ -1,6 +1,6 @@
 package com.agms.backend.repository;
 
-import com.agms.backend.entity.AdvisorList;
+import com.agms.backend.model.AdvisorList;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,5 +1,4 @@
-// path: backend/src/main/java/com/agms/backend/entity/User.java
-package com.agms.backend.entity;
+package com.agms.backend.model.users;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
