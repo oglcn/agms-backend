@@ -99,26 +99,6 @@ public class SubmissionController {
     }
 
     /**
-     * Update submission status (for advisors)
-     */
-    @PutMapping("/{submissionId}/status")
-    @PreAuthorize("hasRole('ADVISOR')")
-    @Operation(summary = "Update the status of a specific submission for an advisor")
-    public ResponseEntity<SubmissionResponse> updateSubmissionStatus(
-            @PathVariable String submissionId,
-            @RequestParam SubmissionStatus status) {
-        log.info("Updating submission {} status to: {}", submissionId, status);
-        
-        try {
-            SubmissionResponse response = submissionService.updateSubmissionStatus(submissionId, status);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("Error updating submission status: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    /**
      * Get submissions by status
      */
     @GetMapping("/status/{status}")
@@ -172,6 +152,134 @@ public class SubmissionController {
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             log.error("Error deleting submission: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Get submissions pending for advisor review
+     */
+    @GetMapping("/advisor/{advisorEmpId}/pending")
+    @PreAuthorize("hasRole('ADVISOR')")
+    @Operation(summary = "Get submissions pending for advisor review")
+    public ResponseEntity<List<SubmissionResponse>> getPendingSubmissionsForAdvisor(@PathVariable String advisorEmpId) {
+        log.debug("Getting pending submissions for advisor: {}", advisorEmpId);
+        List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(advisorEmpId, "ADVISOR");
+        return ResponseEntity.ok(submissions);
+    }
+
+    /**
+     * Update submission status by advisor
+     */
+    @PutMapping("/{submissionId}/advisor-review")
+    @PreAuthorize("hasRole('ADVISOR')")
+    @Operation(summary = "Update submission status by advisor")
+    public ResponseEntity<SubmissionResponse> reviewSubmissionByAdvisor(
+            @PathVariable String submissionId,
+            @RequestParam SubmissionStatus status) {
+        log.info("Advisor reviewing submission {} with status: {}", submissionId, status);
+        
+        try {
+            SubmissionResponse response = submissionService.updateSubmissionStatusByAdvisor(submissionId, status);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error updating submission status by advisor: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Get submissions pending for department secretary review
+     */
+    @GetMapping("/department-secretary/{deptSecretaryEmpId}/pending")
+    @PreAuthorize("hasRole('DEPARTMENT_SECRETARY')")
+    @Operation(summary = "Get submissions pending for department secretary review")
+    public ResponseEntity<List<SubmissionResponse>> getPendingSubmissionsForDepartmentSecretary(@PathVariable String deptSecretaryEmpId) {
+        log.debug("Getting pending submissions for department secretary: {}", deptSecretaryEmpId);
+        List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(deptSecretaryEmpId, "DEPARTMENT_SECRETARY");
+        return ResponseEntity.ok(submissions);
+    }
+
+    /**
+     * Update submission status by department secretary
+     */
+    @PutMapping("/{submissionId}/department-review")
+    @PreAuthorize("hasRole('DEPARTMENT_SECRETARY')")
+    @Operation(summary = "Update submission status by department secretary")
+    public ResponseEntity<SubmissionResponse> reviewSubmissionByDepartmentSecretary(
+            @PathVariable String submissionId,
+            @RequestParam SubmissionStatus status) {
+        log.info("Department secretary reviewing submission {} with status: {}", submissionId, status);
+        
+        try {
+            SubmissionResponse response = submissionService.updateSubmissionStatusByDepartmentSecretary(submissionId, status);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error updating submission status by department secretary: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Get submissions pending for dean officer review
+     */
+    @GetMapping("/dean-officer/{deanOfficerEmpId}/pending")
+    @PreAuthorize("hasRole('DEAN_OFFICER')")
+    @Operation(summary = "Get submissions pending for dean officer review")
+    public ResponseEntity<List<SubmissionResponse>> getPendingSubmissionsForDeanOfficer(@PathVariable String deanOfficerEmpId) {
+        log.debug("Getting pending submissions for dean officer: {}", deanOfficerEmpId);
+        List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(deanOfficerEmpId, "DEAN_OFFICER");
+        return ResponseEntity.ok(submissions);
+    }
+
+    /**
+     * Update submission status by dean officer
+     */
+    @PutMapping("/{submissionId}/dean-review")
+    @PreAuthorize("hasRole('DEAN_OFFICER')")
+    @Operation(summary = "Update submission status by dean officer")
+    public ResponseEntity<SubmissionResponse> reviewSubmissionByDeanOfficer(
+            @PathVariable String submissionId,
+            @RequestParam SubmissionStatus status) {
+        log.info("Dean officer reviewing submission {} with status: {}", submissionId, status);
+        
+        try {
+            SubmissionResponse response = submissionService.updateSubmissionStatusByDeanOfficer(submissionId, status);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error updating submission status by dean officer: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Get submissions pending for student affairs review
+     */
+    @GetMapping("/student-affairs/{studentAffairsEmpId}/pending")
+    @PreAuthorize("hasRole('STUDENT_AFFAIRS')")
+    @Operation(summary = "Get submissions pending for student affairs review")
+    public ResponseEntity<List<SubmissionResponse>> getPendingSubmissionsForStudentAffairs(@PathVariable String studentAffairsEmpId) {
+        log.debug("Getting pending submissions for student affairs: {}", studentAffairsEmpId);
+        List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(studentAffairsEmpId, "STUDENT_AFFAIRS");
+        return ResponseEntity.ok(submissions);
+    }
+
+    /**
+     * Update submission status by student affairs (final review)
+     */
+    @PutMapping("/{submissionId}/final-review")
+    @PreAuthorize("hasRole('STUDENT_AFFAIRS')")
+    @Operation(summary = "Final review of submission by student affairs")
+    public ResponseEntity<SubmissionResponse> finalReviewByStudentAffairs(
+            @PathVariable String submissionId,
+            @RequestParam SubmissionStatus status) {
+        log.info("Student affairs final review of submission {} with status: {}", submissionId, status);
+        
+        try {
+            SubmissionResponse response = submissionService.updateSubmissionStatusByStudentAffairs(submissionId, status);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error in final review by student affairs: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

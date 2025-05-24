@@ -4,13 +4,21 @@ import com.agms.backend.dto.CreateSubmissionRequest;
 import com.agms.backend.dto.SubmissionResponse;
 import com.agms.backend.exception.ResourceNotFoundException;
 import com.agms.backend.model.AdvisorList;
+import com.agms.backend.model.DepartmentList;
+import com.agms.backend.model.FacultyList;
 import com.agms.backend.model.File;
 import com.agms.backend.model.Submission;
 import com.agms.backend.model.SubmissionStatus;
 import com.agms.backend.model.users.Advisor;
+import com.agms.backend.model.users.DeanOfficer;
+import com.agms.backend.model.users.DepartmentSecretary;
 import com.agms.backend.model.users.Student;
+import com.agms.backend.model.users.StudentAffairs;
 import com.agms.backend.repository.AdvisorListRepository;
 import com.agms.backend.repository.AdvisorRepository;
+import com.agms.backend.repository.DeanOfficerRepository;
+import com.agms.backend.repository.DepartmentSecretaryRepository;
+import com.agms.backend.repository.StudentAffairsRepository;
 import com.agms.backend.repository.StudentRepository;
 import com.agms.backend.repository.SubmissionRepository;
 import com.agms.backend.service.SubmissionService;
@@ -20,8 +28,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,6 +43,9 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final StudentRepository studentRepository;
     private final AdvisorRepository advisorRepository;
     private final AdvisorListRepository advisorListRepository;
+    private final DeanOfficerRepository deanOfficerRepository;
+    private final StudentAffairsRepository studentAffairsRepository;
+    private final DepartmentSecretaryRepository departmentSecretaryRepository;
 
     @Override
     @Transactional
@@ -175,6 +188,248 @@ public class SubmissionServiceImpl implements SubmissionService {
         log.info("Deleted submission: {}", submissionId);
     }
 
+    @Override
+    public List<SubmissionResponse> getSubmissionsPendingForRole(String empId, String role) {
+        switch (role) {
+            case "ADVISOR":
+                return getSubmissionsForAdvisor(empId, SubmissionStatus.PENDING);
+            case "DEPARTMENT_SECRETARY":
+                return getSubmissionsForDepartmentSecretary(empId, SubmissionStatus.APPROVED_BY_ADVISOR);
+            case "DEAN_OFFICER":
+                return getSubmissionsForDeanOfficer(empId, SubmissionStatus.APPROVED_BY_DEPT);
+            case "STUDENT_AFFAIRS":
+                return getSubmissionsForStudentAffairs(empId, SubmissionStatus.APPROVED_BY_DEAN);
+            default:
+                throw new IllegalArgumentException("Invalid role: " + role);
+        }
+    }
+
+    @Override
+    @Transactional
+    public SubmissionResponse updateSubmissionStatusByAdvisor(String submissionId, SubmissionStatus status) {
+        validateAdvisorStatusTransition(status);
+        return updateSubmissionWithWorkflow(submissionId, status, "ADVISOR");
+    }
+
+    @Override
+    @Transactional
+    public SubmissionResponse updateSubmissionStatusByDepartmentSecretary(String submissionId, SubmissionStatus status) {
+        validateDepartmentSecretaryStatusTransition(status);
+        return updateSubmissionWithWorkflow(submissionId, status, "DEPARTMENT_SECRETARY");
+    }
+
+    @Override
+    @Transactional
+    public SubmissionResponse updateSubmissionStatusByDeanOfficer(String submissionId, SubmissionStatus status) {
+        validateDeanOfficerStatusTransition(status);
+        return updateSubmissionWithWorkflow(submissionId, status, "DEAN_OFFICER");
+    }
+
+    @Override
+    @Transactional
+    public SubmissionResponse updateSubmissionStatusByStudentAffairs(String submissionId, SubmissionStatus status) {
+        validateStudentAffairsStatusTransition(status);
+        return updateSubmissionWithWorkflow(submissionId, status, "STUDENT_AFFAIRS");
+    }
+
+    private SubmissionResponse updateSubmissionWithWorkflow(String submissionId, SubmissionStatus newStatus, String reviewerRole) {
+        Submission submission = submissionRepository.findById(submissionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Submission not found with ID: " + submissionId));
+
+        SubmissionStatus oldStatus = submission.getStatus();
+        submission.setStatus(newStatus);
+        Submission updatedSubmission = submissionRepository.save(submission);
+
+        handleWorkflowProgression(updatedSubmission, oldStatus, newStatus, reviewerRole);
+
+        log.info("Updated submission {} status from {} to {} by {}", submissionId, oldStatus, newStatus, reviewerRole);
+        return convertToResponse(updatedSubmission);
+    }
+
+    private void handleWorkflowProgression(Submission submission, SubmissionStatus oldStatus, SubmissionStatus newStatus, String reviewerRole) {
+        if (isApprovalStatus(newStatus)) {
+            forwardToNextLevel(submission, newStatus);
+        } else if (isRejectionStatus(newStatus)) {
+            handleRejection(submission, reviewerRole);
+        }
+    }
+
+    private boolean isApprovalStatus(SubmissionStatus status) {
+        return status == SubmissionStatus.APPROVED_BY_ADVISOR ||
+               status == SubmissionStatus.APPROVED_BY_DEPT ||
+               status == SubmissionStatus.APPROVED_BY_DEAN ||
+               status == SubmissionStatus.FINAL_APPROVED;
+    }
+
+    private boolean isRejectionStatus(SubmissionStatus status) {
+        return status == SubmissionStatus.REJECTED_BY_ADVISOR ||
+               status == SubmissionStatus.REJECTED_BY_DEPT ||
+               status == SubmissionStatus.REJECTED_BY_DEAN ||
+               status == SubmissionStatus.FINAL_REJECTED;
+    }
+
+    private void forwardToNextLevel(Submission submission, SubmissionStatus currentStatus) {
+        String nextLevel = determineNextLevel(currentStatus);
+        log.info("Forwarding submission {} to {}", submission.getSubmissionId(), nextLevel);
+        
+        // Here you could add notification logic, workflow tracking, etc.
+        switch (nextLevel) {
+            case "DEPARTMENT_SECRETARY":
+                notifyDepartmentSecretary(submission);
+                break;
+            case "DEAN_OFFICER":
+                notifyDeanOfficer(submission);
+                break;
+            case "STUDENT_AFFAIRS":
+                notifyStudentAffairs(submission);
+                break;
+            case "COMPLETED":
+                handleFinalApproval(submission);
+                break;
+        }
+    }
+
+    private String determineNextLevel(SubmissionStatus status) {
+        switch (status) {
+            case APPROVED_BY_ADVISOR:
+                return "DEPARTMENT_SECRETARY";
+            case APPROVED_BY_DEPT:
+                return "DEAN_OFFICER";
+            case APPROVED_BY_DEAN:
+                return "STUDENT_AFFAIRS";
+            case FINAL_APPROVED:
+                return "COMPLETED";
+            default:
+                return "UNKNOWN";
+        }
+    }
+
+    // Validation methods for each role
+    private void validateAdvisorStatusTransition(SubmissionStatus status) {
+        if (status != SubmissionStatus.APPROVED_BY_ADVISOR && status != SubmissionStatus.REJECTED_BY_ADVISOR) {
+            throw new IllegalArgumentException("Advisor can only approve or reject submissions");
+        }
+    }
+
+    private void validateDepartmentSecretaryStatusTransition(SubmissionStatus status) {
+        if (status != SubmissionStatus.APPROVED_BY_DEPT && status != SubmissionStatus.REJECTED_BY_DEPT) {
+            throw new IllegalArgumentException("Department Secretary can only approve or reject submissions");
+        }
+    }
+
+    private void validateDeanOfficerStatusTransition(SubmissionStatus status) {
+        if (status != SubmissionStatus.APPROVED_BY_DEAN && status != SubmissionStatus.REJECTED_BY_DEAN) {
+            throw new IllegalArgumentException("Dean Officer can only approve or reject submissions");
+        }
+    }
+
+    private void validateStudentAffairsStatusTransition(SubmissionStatus status) {
+        if (status != SubmissionStatus.FINAL_APPROVED && status != SubmissionStatus.FINAL_REJECTED) {
+            throw new IllegalArgumentException("Student Affairs can only give final approval or rejection");
+        }
+    }
+
+    // Notification/workflow methods (implement as needed)
+    private void notifyDepartmentSecretary(Submission submission) {
+        log.info("Notifying department secretary about submission: {}", submission.getSubmissionId());
+        // Implement notification logic
+    }
+
+    private void notifyDeanOfficer(Submission submission) {
+        log.info("Notifying dean officer about submission: {}", submission.getSubmissionId());
+        // Implement notification logic
+    }
+
+    private void notifyStudentAffairs(Submission submission) {
+        log.info("Notifying student affairs about submission: {}", submission.getSubmissionId());
+        // Implement notification logic
+    }
+
+    private void handleFinalApproval(Submission submission) {
+        log.info("Submission {} has received final approval", submission.getSubmissionId());
+        // Implement final approval logic (e.g., generate graduation certificate, notify student, etc.)
+    }
+
+    private void handleRejection(Submission submission, String reviewerRole) {
+        log.info("Submission {} rejected by {}", submission.getSubmissionId(), reviewerRole);
+        // Implement rejection notification logic
+    }
+
+    // Helper methods to get submissions for each role with specific status
+    private List<SubmissionResponse> getSubmissionsForAdvisor(String advisorEmpId, SubmissionStatus status) {
+        // Implementation similar to existing getSubmissionsByAdvisor but filtered by status
+        Advisor advisor = advisorRepository.findByEmpId(advisorEmpId)
+                .orElseThrow(() -> new ResourceNotFoundException("Advisor not found with empId: " + advisorEmpId));
+        
+        AdvisorList advisorList = advisor.getAdvisorList();
+        if (advisorList == null) {
+            return List.of();
+        }
+        
+        List<Submission> submissions = submissionRepository.findByAdvisorListIdAndStatus(
+                advisorList.getAdvisorListId(), status);
+        return submissions.stream().map(this::convertToResponse).collect(Collectors.toList());
+    }
+
+    private List<SubmissionResponse> getSubmissionsForDepartmentSecretary(String deptSecretaryEmpId, SubmissionStatus status) {
+        DepartmentSecretary departmentSecretary = departmentSecretaryRepository.findByEmpId(deptSecretaryEmpId)
+                .orElseThrow(() -> new ResourceNotFoundException("Department Secretary not found with empId: " + deptSecretaryEmpId));
+        
+        // Simple approach: Find all advisors under this department secretary and get their submissions
+        List<Advisor> advisors = advisorRepository.findByDepartmentSecretaryEmpId(deptSecretaryEmpId);
+        List<Submission> allSubmissions = new ArrayList<>();
+        
+        log.debug("Department Secretary {} has {} advisors", deptSecretaryEmpId, advisors.size());
+        
+        for (Advisor advisor : advisors) {
+            if (advisor.getAdvisorList() != null) {
+                List<Submission> advisorSubmissions = submissionRepository.findByAdvisorListIdAndStatus(
+                        advisor.getAdvisorList().getAdvisorListId(), status);
+                log.debug("Advisor {} (AdvisorList {}) has {} submissions with status {}", 
+                         advisor.getEmpId(), advisor.getAdvisorList().getAdvisorListId(), 
+                         advisorSubmissions.size(), status);
+                allSubmissions.addAll(advisorSubmissions);
+            }
+        }
+        
+        log.debug("Total submissions found for Department Secretary {}: {}", deptSecretaryEmpId, allSubmissions.size());
+        return allSubmissions.stream().map(this::convertToResponse).collect(Collectors.toList());
+    }
+
+    private List<SubmissionResponse> getSubmissionsForDeanOfficer(String deanOfficerEmpId, SubmissionStatus status) {
+        DeanOfficer deanOfficer = deanOfficerRepository.findByEmpId(deanOfficerEmpId)
+                .orElseThrow(() -> new ResourceNotFoundException("Dean Officer not found with empId: " + deanOfficerEmpId));
+        
+        // Simple approach: Find all department secretaries under this dean officer, then their advisors
+        List<DepartmentSecretary> departmentSecretaries = departmentSecretaryRepository.findByDeanOfficerEmpId(deanOfficerEmpId);
+        List<Submission> allSubmissions = new ArrayList<>();
+        
+        log.debug("Dean Officer {} has {} department secretaries", deanOfficerEmpId, departmentSecretaries.size());
+        
+        for (DepartmentSecretary deptSecretary : departmentSecretaries) {
+            List<Advisor> advisors = advisorRepository.findByDepartmentSecretaryEmpId(deptSecretary.getEmpId());
+            for (Advisor advisor : advisors) {
+                if (advisor.getAdvisorList() != null) {
+                    List<Submission> advisorSubmissions = submissionRepository.findByAdvisorListIdAndStatus(
+                            advisor.getAdvisorList().getAdvisorListId(), status);
+                    allSubmissions.addAll(advisorSubmissions);
+                }
+            }
+        }
+        
+        log.debug("Total submissions found for Dean Officer {}: {}", deanOfficerEmpId, allSubmissions.size());
+        return allSubmissions.stream().map(this::convertToResponse).collect(Collectors.toList());
+    }
+
+    private List<SubmissionResponse> getSubmissionsForStudentAffairs(String studentAffairsEmpId, SubmissionStatus status) {
+        StudentAffairs studentAffairs = studentAffairsRepository.findByEmpId(studentAffairsEmpId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student Affairs not found with empId: " + studentAffairsEmpId));
+        
+        // Student Affairs sees all submissions that have been approved by dean officers
+        List<Submission> submissions = submissionRepository.findByStatus(status);
+        return submissions.stream().map(this::convertToResponse).collect(Collectors.toList());
+    }
+
     private SubmissionResponse convertToResponse(Submission submission) {
         Student student = submission.getStudent();
         String studentName = student.getFirstName() + " " + student.getLastName();
@@ -205,7 +460,22 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     private String generateSubmissionId() {
-        // Generate a submission ID like "SUB_" + timestamp
-        return "SUB_" + System.currentTimeMillis();
+        // Generate a submission ID using UUID for guaranteed uniqueness
+        return "SUB_" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase();
+    }
+
+    @Override
+    public List<SubmissionResponse> getSubmissionsByDepartmentSecretary(String deptSecretaryEmpId) {
+        return getSubmissionsForDepartmentSecretary(deptSecretaryEmpId, SubmissionStatus.APPROVED_BY_ADVISOR);
+    }
+
+    @Override
+    public List<SubmissionResponse> getSubmissionsByDeanOfficer(String deanOfficerEmpId) {
+        return getSubmissionsForDeanOfficer(deanOfficerEmpId, SubmissionStatus.APPROVED_BY_DEPT);
+    }
+
+    @Override
+    public List<SubmissionResponse> getSubmissionsByStudentAffairs(String studentAffairsEmpId) {
+        return getSubmissionsForStudentAffairs(studentAffairsEmpId, SubmissionStatus.APPROVED_BY_DEAN);
     }
 } 

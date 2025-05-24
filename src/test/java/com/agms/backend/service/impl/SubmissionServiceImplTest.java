@@ -229,11 +229,11 @@ class SubmissionServiceImplTest {
         when(submissionRepository.save(any(Submission.class))).thenReturn(testSubmission);
 
         // Act
-        SubmissionResponse response = submissionService.updateSubmissionStatus("SUB_123456789", SubmissionStatus.APPROVED);
+        SubmissionResponse response = submissionService.updateSubmissionStatus("SUB_123456789", SubmissionStatus.APPROVED_BY_ADVISOR);
 
         // Assert
         assertNotNull(response);
-        assertEquals(SubmissionStatus.APPROVED, testSubmission.getStatus());
+        assertEquals(SubmissionStatus.APPROVED_BY_ADVISOR, testSubmission.getStatus());
         verify(submissionRepository).save(testSubmission);
     }
 
@@ -244,7 +244,7 @@ class SubmissionServiceImplTest {
 
         // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> {
-            submissionService.updateSubmissionStatus("SUB_123456789", SubmissionStatus.APPROVED);
+            submissionService.updateSubmissionStatus("SUB_123456789", SubmissionStatus.APPROVED_BY_ADVISOR);
         });
 
         verify(submissionRepository, never()).save(any(Submission.class));

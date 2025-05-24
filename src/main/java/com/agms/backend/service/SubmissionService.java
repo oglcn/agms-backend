@@ -57,4 +57,20 @@ public interface SubmissionService {
      * Delete a submission (if needed for administrative purposes)
      */
     void deleteSubmission(String submissionId);
+    
+    // Workflow methods for each role
+
+    SubmissionResponse updateSubmissionStatusByAdvisor(String submissionId, SubmissionStatus status);
+    
+    List<SubmissionResponse> getSubmissionsByDepartmentSecretary(String deptSecretaryEmpId);
+    SubmissionResponse updateSubmissionStatusByDepartmentSecretary(String submissionId, SubmissionStatus status);
+    
+    List<SubmissionResponse> getSubmissionsByDeanOfficer(String deanOfficerEmpId);
+    SubmissionResponse updateSubmissionStatusByDeanOfficer(String submissionId, SubmissionStatus status);
+    
+    List<SubmissionResponse> getSubmissionsByStudentAffairs(String studentAffairsEmpId);
+    SubmissionResponse updateSubmissionStatusByStudentAffairs(String submissionId, SubmissionStatus status);
+    
+    // Helper method to get submissions pending for a specific role
+    List<SubmissionResponse> getSubmissionsPendingForRole(String empId, String role);
 } 
