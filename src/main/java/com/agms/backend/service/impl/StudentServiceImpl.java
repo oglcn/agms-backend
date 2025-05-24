@@ -275,6 +275,7 @@ public class StudentServiceImpl implements StudentService {
                 .semester(enhancedStudent.getSemester())
                 .courses(enhancedStudent.getCourses())
                 .advisor(advisorInfo)
+                .isCurriculumCompleted(enhancedStudent.isCurriculumCompleted())
                 .build();
     }
 }
