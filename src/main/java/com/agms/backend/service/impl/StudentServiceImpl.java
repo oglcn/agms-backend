@@ -2,6 +2,7 @@ package com.agms.backend.service.impl;
 
 import com.agms.backend.dto.CreateStudentRequest;
 import com.agms.backend.dto.StudentProfileResponse;
+import com.agms.backend.dto.StudentResponse;
 import com.agms.backend.model.users.Student;
 import com.agms.backend.model.users.User;
 import com.agms.backend.model.users.Role;
@@ -77,6 +78,46 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Optional<Student> getStudentByStudentNumber(String studentNumber) {
         return studentRepository.findByStudentNumber(studentNumber);
+    }
+
+    @Override
+    public Optional<StudentResponse> getStudentResponseByStudentNumber(String studentNumber) {
+        return studentRepository.findByStudentNumber(studentNumber)
+                .map(this::convertToStudentResponse);
+    }
+
+    private StudentResponse convertToStudentResponse(Student student) {
+        // Get enhanced student data with academic info if available
+        Student enhancedStudent;
+        try {
+            enhancedStudent = ubysService.getStudentWithTransientAttributes(student.getStudentNumber());
+        } catch (ResourceNotFoundException e) {
+            // If not found in ubys.json, use database student
+            enhancedStudent = student;
+        }
+        
+        // Convert advisor to safe DTO
+        StudentResponse.AdvisorInfo advisorInfo = null;
+        if (student.getAdvisor() != null) {
+            Advisor advisor = student.getAdvisor();
+            advisorInfo = StudentResponse.AdvisorInfo.builder()
+                    .empId(advisor.getEmpId())
+                    .firstName(advisor.getFirstName())
+                    .lastName(advisor.getLastName())
+                    .email(advisor.getEmail())
+                    .build();
+        }
+        
+        return StudentResponse.builder()
+                .studentNumber(student.getStudentNumber())
+                .firstName(student.getFirstName())
+                .lastName(student.getLastName())
+                .email(student.getEmail())
+                .gpa(enhancedStudent.getGpa())
+                .totalCredit(enhancedStudent.getTotalCredit())
+                .semester(enhancedStudent.getSemester())
+                .advisor(advisorInfo)
+                .build();
     }
 
     @Override

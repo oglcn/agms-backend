@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.agms.backend.dto.CreateStudentRequest;
 import com.agms.backend.dto.StudentProfileResponse;
+import com.agms.backend.dto.StudentResponse;
 import com.agms.backend.model.users.Student;
 import com.agms.backend.exception.EmailAlreadyExistsException;
 import com.agms.backend.exception.ResourceNotFoundException;
@@ -88,13 +89,13 @@ public class StudentController {
 
     @Operation(summary = "Get student by ID", description = "Retrieves a student by their student ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Student found successfully", content = @Content(schema = @Schema(implementation = Student.class))),
+            @ApiResponse(responseCode = "200", description = "Student found successfully", content = @Content(schema = @Schema(implementation = StudentResponse.class))),
             @ApiResponse(responseCode = "404", description = "Student not found")
     })
     @GetMapping("/{studentNumber}")
-    public ResponseEntity<Student> getStudent(
+    public ResponseEntity<StudentResponse> getStudent(
             @Parameter(description = "Student Number", required = true) @PathVariable String studentNumber) {
-        return studentService.getStudentByStudentNumber(studentNumber)
+        return studentService.getStudentResponseByStudentNumber(studentNumber)
                 .map(student -> new ResponseEntity<>(student, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
