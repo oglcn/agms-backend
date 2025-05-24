@@ -22,6 +22,7 @@ public class StudentProfileResponse {
     private Double gpa;
     private Integer totalCredits;
     private Integer semester;
+    private Boolean isCurriculumCompleted;
 
     @Data
     @Builder

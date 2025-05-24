@@ -47,7 +47,7 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @Operation(summary = "Get current student profile", description = "Retrieves profile information for the currently authenticated student including student number, email, department, and advisor details")
+    @Operation(summary = "Get current student profile", description = "Retrieves complete profile information for the currently authenticated student including student number, email, department, advisor details, academic metrics (GPA, total credits), and curriculum completion status")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Student profile retrieved successfully", content = @Content(schema = @Schema(implementation = StudentProfileResponse.class))),
             @ApiResponse(responseCode = "401", description = "Not authenticated"),

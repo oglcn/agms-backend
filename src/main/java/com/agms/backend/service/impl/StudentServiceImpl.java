@@ -218,6 +218,7 @@ public class StudentServiceImpl implements StudentService {
                 .gpa(enhancedStudent.getGpa() > 0 ? enhancedStudent.getGpa() : null)
                 .totalCredits(enhancedStudent.getTotalCredit() > 0 ? enhancedStudent.getTotalCredit() : null)
                 .semester(enhancedStudent.getSemester() > 0 ? enhancedStudent.getSemester() : null)
+                .isCurriculumCompleted(enhancedStudent.isCurriculumCompleted())
                 .build();
     }
 
