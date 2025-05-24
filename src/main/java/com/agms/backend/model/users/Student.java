@@ -25,6 +25,9 @@ public class Student extends User {
     @Column(name = "student_number", nullable = false, unique = true)
     private String studentNumber;
 
+    @Column(name = "department")
+    private String department;
+
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Submission> submissions;
 
@@ -55,7 +58,8 @@ public class Student extends User {
     }
 
     /**
-     * Calculates GPA and total credits from the student's courses and updates the attributes.
+     * Calculates GPA and total credits from the student's courses and updates the
+     * attributes.
      * Call this method after setting courses to update GPA and totalCredit.
      */
     public void calculateAcademicMetrics() {

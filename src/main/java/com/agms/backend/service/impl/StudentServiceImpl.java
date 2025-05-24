@@ -70,7 +70,7 @@ public class StudentServiceImpl implements StudentService {
                 .build();
 
         Student savedStudent = studentRepository.save(student);
-        
+
         return CreateStudentResponse.builder()
                 .studentNumber(savedStudent.getStudentNumber())
                 .firstName(savedStudent.getFirstName())
@@ -108,7 +108,7 @@ public class StudentServiceImpl implements StudentService {
         if (studentDetails.getEmail() != null) {
             student.setEmail(studentDetails.getEmail());
         }
-        
+
         Student updatedStudent = studentRepository.save(student);
         return convertToStudentResponse(updatedStudent);
     }
@@ -122,19 +122,22 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void updateGraduationRequestStatus(String studentNumber, String status) {
-        throw new UnsupportedOperationException("Graduation status is now handled through submissions. Use submission service instead.");
+        throw new UnsupportedOperationException(
+                "Graduation status is now handled through submissions. Use submission service instead.");
     }
 
     @Override
     @Transactional
     public void assignAdvisor(String studentNumber, String advisorId) {
-        throw new UnsupportedOperationException("Students no longer have direct access to advisor lists. Use submission service to create graduation requests.");
+        throw new UnsupportedOperationException(
+                "Students no longer have direct access to advisor lists. Use submission service to create graduation requests.");
     }
 
     @Override
     @Transactional
     public void removeAdvisor(String studentNumber) {
-        throw new UnsupportedOperationException("Students no longer have direct access to advisor lists. Use submission service to manage graduation requests.");
+        throw new UnsupportedOperationException(
+                "Students no longer have direct access to advisor lists. Use submission service to manage graduation requests.");
     }
 
     @Override
@@ -168,23 +171,27 @@ public class StudentServiceImpl implements StudentService {
             // Get department from advisor's department secretary
             if (advisor.getDepartmentSecretary() != null) {
                 DepartmentSecretary departmentSecretary = advisor.getDepartmentSecretary();
-                
+
                 // Get department and faculty info from ubys.json
                 try {
                     Map<String, Object> allData = ubysService.getAllData();
-                    Map<String, Object> departmentSecretariesSection = (Map<String, Object>) allData.get("departmentSecretaries");
-                    
+                    Map<String, Object> departmentSecretariesSection = (Map<String, Object>) allData
+                            .get("departmentSecretaries");
+
                     if (departmentSecretariesSection != null) {
-                        Map<String, Object> deptSecData = (Map<String, Object>) departmentSecretariesSection.get(departmentSecretary.getEmpId());
+                        Map<String, Object> deptSecData = (Map<String, Object>) departmentSecretariesSection
+                                .get(departmentSecretary.getEmpId());
                         if (deptSecData != null) {
                             department = (String) deptSecData.get("department");
-                            
+
                             // Get faculty from dean officer
                             String deanOfficerId = (String) deptSecData.get("deanOfficerId");
                             if (deanOfficerId != null) {
-                                Map<String, Object> deanOfficersSection = (Map<String, Object>) allData.get("deanOfficers");
+                                Map<String, Object> deanOfficersSection = (Map<String, Object>) allData
+                                        .get("deanOfficers");
                                 if (deanOfficersSection != null) {
-                                    Map<String, Object> deanOfficerData = (Map<String, Object>) deanOfficersSection.get(deanOfficerId);
+                                    Map<String, Object> deanOfficerData = (Map<String, Object>) deanOfficersSection
+                                            .get(deanOfficerId);
                                     if (deanOfficerData != null) {
                                         faculty = (String) deanOfficerData.get("faculty");
                                     }
@@ -205,7 +212,7 @@ public class StudentServiceImpl implements StudentService {
                 .firstName(student.getFirstName())
                 .lastName(student.getLastName())
                 .role(student.getRole())
-                .department(department)
+                .department(student.getDepartment())
                 .faculty(faculty)
                 .advisor(advisorInfo)
                 .gpa(enhancedStudent.getGpa() > 0 ? enhancedStudent.getGpa() : null)
@@ -215,7 +222,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     // ========== PRIVATE HELPER METHODS FOR INTERNAL USE ==========
-    
+
     /**
      * Private helper method for internal use when raw entity is needed
      */
@@ -223,7 +230,7 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with email: " + email));
     }
-    
+
     /**
      * Private helper method for internal use when raw entity is needed
      */
@@ -243,7 +250,7 @@ public class StudentServiceImpl implements StudentService {
             // If not found in ubys.json, use database student
             enhancedStudent = student;
         }
-        
+
         // Convert advisor to safe DTO
         StudentResponse.AdvisorInfo advisorInfo = null;
         if (student.getAdvisor() != null) {
@@ -255,15 +262,17 @@ public class StudentServiceImpl implements StudentService {
                     .email(advisor.getEmail())
                     .build();
         }
-        
+
         return StudentResponse.builder()
                 .studentNumber(student.getStudentNumber())
                 .firstName(student.getFirstName())
                 .lastName(student.getLastName())
                 .email(student.getEmail())
+                .department(student.getDepartment())
                 .gpa(enhancedStudent.getGpa())
                 .totalCredit(enhancedStudent.getTotalCredit())
                 .semester(enhancedStudent.getSemester())
+                .courses(enhancedStudent.getCourses())
                 .advisor(advisorInfo)
                 .build();
     }

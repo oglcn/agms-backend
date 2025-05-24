@@ -1,4 +1,5 @@
 package com.agms.backend.config;
+
 import com.agms.backend.model.*;
 import com.agms.backend.model.users.*;
 import com.agms.backend.repository.*;
@@ -63,28 +64,28 @@ public class DataInitializer {
 
     private void initializeAllEntitiesFromUbys() {
         log.debug("Initializing all entities from ubys.json...");
-        
+
         try {
             // Step 1: Create StudentAffairs (top of hierarchy)
             initializeStudentAffairsFromUbys();
-            
+
             // Step 2: Create DeanOfficers (depends on StudentAffairs)
             initializeDeanOfficersFromUbys();
-            
+
             // Step 3: Create DepartmentSecretaries (depends on DeanOfficers)
             initializeDepartmentSecretariesFromUbys();
-            
+
             // Step 4: Create Advisors (depends on DepartmentSecretaries)
             initializeAdvisorsFromUbys();
-            
+
             // Step 5: Create Students (depends on Advisors)
             initializeStudentsFromUbys();
-            
+
             // Step 6: Create complete organizational hierarchy for graduation system
             initializeGraduationHierarchy();
-            
+
             log.info("All entities initialized successfully from ubys.json");
-            
+
         } catch (Exception e) {
             log.error("Error initializing entities from ubys.json: {}", e.getMessage());
             throw new RuntimeException("Failed to initialize entities from ubys.json", e);
@@ -93,17 +94,17 @@ public class DataInitializer {
 
     private void initializeStudentAffairsFromUbys() {
         log.debug("Initializing student affairs from ubys.json...");
-        
+
         try {
             List<StudentAffairs> studentAffairsList = ubysService.getAllStudentAffairsForDbInitialization();
             log.info("Found {} student affairs officers in ubys.json to initialize", studentAffairsList.size());
-            
+
             for (StudentAffairs studentAffairs : studentAffairsList) {
                 studentAffairs.setPassword(passwordEncoder.encode("password123"));
                 studentAffairsRepository.save(studentAffairs);
                 log.debug("Initialized StudentAffairs: {}", studentAffairs.getEmpId());
             }
-            
+
         } catch (Exception e) {
             log.error("Error initializing student affairs from ubys.json: {}", e.getMessage());
             throw new RuntimeException("Failed to initialize student affairs from ubys.json", e);
@@ -112,21 +113,21 @@ public class DataInitializer {
 
     private void initializeDeanOfficersFromUbys() {
         log.debug("Initializing dean officers from ubys.json...");
-        
+
         try {
             List<DeanOfficer> deanOfficers = ubysService.getAllDeanOfficersForDbInitialization();
             log.info("Found {} dean officers in ubys.json to initialize", deanOfficers.size());
-            
+
             // Get the StudentAffairs (assuming there's only one)
             StudentAffairs studentAffairs = studentAffairsRepository.findAll().get(0);
-            
+
             for (DeanOfficer deanOfficer : deanOfficers) {
                 deanOfficer.setPassword(passwordEncoder.encode("password123"));
                 deanOfficer.setStudentAffairs(studentAffairs);
                 deanOfficerRepository.save(deanOfficer);
                 log.debug("Initialized DeanOfficer: {}", deanOfficer.getEmpId());
             }
-            
+
         } catch (Exception e) {
             log.error("Error initializing dean officers from ubys.json: {}", e.getMessage());
             throw new RuntimeException("Failed to initialize dean officers from ubys.json", e);
@@ -135,17 +136,18 @@ public class DataInitializer {
 
     private void initializeDepartmentSecretariesFromUbys() {
         log.debug("Initializing department secretaries from ubys.json...");
-        
+
         try {
-            List<DepartmentSecretary> departmentSecretaries = ubysService.getAllDepartmentSecretariesForDbInitialization();
+            List<DepartmentSecretary> departmentSecretaries = ubysService
+                    .getAllDepartmentSecretariesForDbInitialization();
             log.info("Found {} department secretaries in ubys.json to initialize", departmentSecretaries.size());
-            
+
             // Get the relationship data from JSON to establish dean officer relationships
             Map<String, String> deanOfficerRelationships = getDeanOfficerRelationships();
-            
+
             for (DepartmentSecretary departmentSecretary : departmentSecretaries) {
                 departmentSecretary.setPassword(passwordEncoder.encode("password123"));
-                
+
                 // Set dean officer relationship based on JSON data
                 String deanOfficerId = deanOfficerRelationships.get(departmentSecretary.getEmpId());
                 if (deanOfficerId != null) {
@@ -154,11 +156,11 @@ public class DataInitializer {
                         departmentSecretary.setDeanOfficer(deanOfficer);
                     }
                 }
-                
+
                 secretaryRepository.save(departmentSecretary);
                 log.debug("Initialized DepartmentSecretary: {}", departmentSecretary.getEmpId());
             }
-            
+
         } catch (Exception e) {
             log.error("Error initializing department secretaries from ubys.json: {}", e.getMessage());
             throw new RuntimeException("Failed to initialize department secretaries from ubys.json", e);
@@ -167,30 +169,32 @@ public class DataInitializer {
 
     private void initializeAdvisorsFromUbys() {
         log.debug("Initializing advisors from ubys.json...");
-        
+
         try {
             List<Advisor> advisors = ubysService.getAllAdvisorsForDbInitialization();
             log.info("Found {} advisors in ubys.json to initialize", advisors.size());
-            
-            // Get the relationship data from JSON to establish department secretary relationships
+
+            // Get the relationship data from JSON to establish department secretary
+            // relationships
             Map<String, String> departmentSecretaryRelationships = getDepartmentSecretaryRelationships();
-            
+
             for (Advisor advisor : advisors) {
                 advisor.setPassword(passwordEncoder.encode("password123"));
-                
+
                 // Set department secretary relationship based on JSON data
                 String departmentSecretaryId = departmentSecretaryRelationships.get(advisor.getEmpId());
                 if (departmentSecretaryId != null) {
-                    DepartmentSecretary departmentSecretary = secretaryRepository.findByEmpId(departmentSecretaryId).orElse(null);
+                    DepartmentSecretary departmentSecretary = secretaryRepository.findByEmpId(departmentSecretaryId)
+                            .orElse(null);
                     if (departmentSecretary != null) {
                         advisor.setDepartmentSecretary(departmentSecretary);
                     }
                 }
-                
+
                 advisorRepository.save(advisor);
                 log.debug("Initialized Advisor: {}", advisor.getEmpId());
             }
-            
+
         } catch (Exception e) {
             log.error("Error initializing advisors from ubys.json: {}", e.getMessage());
             throw new RuntimeException("Failed to initialize advisors from ubys.json", e);
@@ -199,21 +203,21 @@ public class DataInitializer {
 
     private void initializeStudentsFromUbys() {
         log.debug("Initializing students from ubys.json...");
-        
+
         try {
             List<Student> studentsFromUbys = ubysService.getAllStudentsForDbInitialization();
             log.info("Found {} students in ubys.json to initialize", studentsFromUbys.size());
-            
+
             // Get the relationship data from JSON to establish advisor relationships
             Map<String, String> advisorRelationships = getAdvisorRelationships();
-            
+
             int successCount = 0;
             int failCount = 0;
-            
+
             for (Student student : studentsFromUbys) {
                 try {
                     student.setPassword(passwordEncoder.encode("password123"));
-                    
+
                     // Set advisor relationship based on JSON data
                     String advisorId = advisorRelationships.get(student.getStudentNumber());
                     if (advisorId != null) {
@@ -222,22 +226,22 @@ public class DataInitializer {
                             student.setAdvisor(advisor);
                         }
                     }
-                    
+
                     studentRepository.save(student);
                     successCount++;
-                    
+
                     if (successCount % 10 == 0) {
                         log.debug("Initialized {} students so far...", successCount);
                     }
-                    
+
                 } catch (Exception e) {
                     failCount++;
                     log.warn("Failed to initialize student {}: {}", student.getStudentNumber(), e.getMessage());
                 }
             }
-            
+
             log.info("Student initialization completed. Success: {}, Failed: {}", successCount, failCount);
-            
+
         } catch (Exception e) {
             log.error("Error initializing students from ubys.json: {}", e.getMessage());
             throw new RuntimeException("Failed to initialize students from ubys.json", e);
@@ -392,10 +396,12 @@ public class DataInitializer {
         return relationships;
     }
 
-    // Additional helper methods for creating organizational structure can be added here
+    // Additional helper methods for creating organizational structure can be added
+    // here
     // For example: createGraduation, createGraduationList, etc. as needed
 
-    private Graduation createGraduation(String graduationId, LocalDate requestDate, String term, String studentAffairsId) {
+    private Graduation createGraduation(String graduationId, LocalDate requestDate, String term,
+            String studentAffairsId) {
         var studentAffairs = studentAffairsRepository.findByEmpId(studentAffairsId).orElseThrow();
         var graduation = Graduation.builder()
                 .graduationId(graduationId)
@@ -415,7 +421,8 @@ public class DataInitializer {
         return graduationListRepository.save(graduationList);
     }
 
-    private FacultyList createFacultyList(String facultyListId, String faculty, String deanOfficerId, GraduationList graduationList) {
+    private FacultyList createFacultyList(String facultyListId, String faculty, String deanOfficerId,
+            GraduationList graduationList) {
         var deanOfficer = deanOfficerRepository.findByEmpId(deanOfficerId).orElseThrow();
         var facultyList = FacultyList.builder()
                 .facultyListId(facultyListId)
@@ -427,7 +434,8 @@ public class DataInitializer {
         return facultyListRepository.save(facultyList);
     }
 
-    private DepartmentList createDepartmentList(String deptListId, String department, String secretaryId, FacultyList facultyList) {
+    private DepartmentList createDepartmentList(String deptListId, String department, String secretaryId,
+            FacultyList facultyList) {
         var secretary = secretaryRepository.findByEmpId(secretaryId).orElseThrow();
         var departmentList = DepartmentList.builder()
                 .deptListId(deptListId)
@@ -452,51 +460,54 @@ public class DataInitializer {
 
     private void initializeGraduationHierarchy() {
         log.debug("Initializing graduation hierarchy...");
-        
+
         try {
             // Create a default graduation for current term
             StudentAffairs studentAffairs = studentAffairsRepository.findAll().get(0);
-            Graduation graduation = createGraduation("GRAD_2025_SPRING", LocalDate.now(), "Spring 2025", studentAffairs.getEmpId());
-            
+            Graduation graduation = createGraduation("GRAD_2025_SPRING", LocalDate.now(), "Spring 2025",
+                    studentAffairs.getEmpId());
+
             // Create graduation list
             GraduationList graduationList = createGraduationList("GL_2025_SPRING", graduation);
-            
+
             // Create faculty lists for each dean officer
             List<DeanOfficer> deanOfficers = deanOfficerRepository.findAll();
             Map<String, FacultyList> facultyListMap = new HashMap<>();
-            
+
             for (DeanOfficer deanOfficer : deanOfficers) {
                 String facultyName = getFacultyName(deanOfficer.getEmpId());
                 String facultyListId = "FL_" + deanOfficer.getEmpId();
-                FacultyList facultyList = createFacultyList(facultyListId, facultyName, deanOfficer.getEmpId(), graduationList);
+                FacultyList facultyList = createFacultyList(facultyListId, facultyName, deanOfficer.getEmpId(),
+                        graduationList);
                 facultyListMap.put(deanOfficer.getEmpId(), facultyList);
                 log.debug("Created FacultyList: {} for dean officer: {}", facultyListId, deanOfficer.getEmpId());
             }
-            
+
             // Create department lists for each department secretary
             List<DepartmentSecretary> departmentSecretaries = secretaryRepository.findAll();
             Map<String, DepartmentList> departmentListMap = new HashMap<>();
-            
+
             for (DepartmentSecretary secretary : departmentSecretaries) {
                 String deanOfficerId = getDeanOfficerForSecretary(secretary.getEmpId());
                 FacultyList facultyList = facultyListMap.get(deanOfficerId);
-                
+
                 if (facultyList != null) {
                     String departmentName = getDepartmentName(secretary.getEmpId());
                     String deptListId = "DL_" + secretary.getEmpId();
-                    DepartmentList departmentList = createDepartmentList(deptListId, departmentName, secretary.getEmpId(), facultyList);
+                    DepartmentList departmentList = createDepartmentList(deptListId, departmentName,
+                            secretary.getEmpId(), facultyList);
                     departmentListMap.put(secretary.getEmpId(), departmentList);
                     log.debug("Created DepartmentList: {} for secretary: {}", deptListId, secretary.getEmpId());
                 }
             }
-            
+
             // Create advisor lists for each advisor
             List<Advisor> advisors = advisorRepository.findAll();
-            
+
             for (Advisor advisor : advisors) {
                 String departmentSecretaryId = getDepartmentSecretaryForAdvisor(advisor.getEmpId());
                 DepartmentList departmentList = departmentListMap.get(departmentSecretaryId);
-                
+
                 if (departmentList != null) {
                     String advisorListId = "AL_" + advisor.getEmpId();
                     AdvisorList advisorList = createAdvisorList(advisorListId, advisor.getEmpId(), departmentList);
@@ -505,55 +516,78 @@ public class DataInitializer {
                     log.warn("Could not find department list for advisor: {}", advisor.getEmpId());
                 }
             }
-            
+
             log.info("Graduation hierarchy initialized successfully");
-            
+
         } catch (Exception e) {
             log.error("Error initializing graduation hierarchy: {}", e.getMessage());
             throw new RuntimeException("Failed to initialize graduation hierarchy", e);
         }
     }
-    
+
     private String getFacultyName(String deanOfficerId) {
         switch (deanOfficerId) {
-            case "DO101": return "Faculty of Engineering";
-            case "DO102": return "Faculty of Science";
-            case "DO103": return "Faculty of Arts";
-            default: return "Faculty of " + deanOfficerId;
+            case "DO101":
+                return "Faculty of Engineering";
+            case "DO102":
+                return "Faculty of Science";
+            case "DO103":
+                return "Faculty of Arts";
+            default:
+                return "Faculty of " + deanOfficerId;
         }
     }
-    
+
     private String getDepartmentName(String secretaryId) {
         // Map secretary IDs to department names
         switch (secretaryId) {
-            case "DS101": return "Computer Engineering";
-            case "DS102": return "Software Engineering";
-            case "DS103": return "Electrical Engineering";
-            case "DS104": return "Mechanical Engineering";
-            case "DS105": return "Civil Engineering";
-            case "DS106": return "Industrial Engineering";
-            case "DS107": return "Environmental Engineering";
-            case "DS108": return "Biomedical Engineering";
-            case "DS109": return "Aerospace Engineering";
-            case "DS110": return "Chemical Engineering";
-            case "DS111": return "Mathematics";
-            case "DS112": return "Physics";
-            case "DS113": return "Chemistry";
-            case "DS114": return "Biology";
-            case "DS115": return "Statistics";
-            case "DS116": return "Philosophy";
-            case "DS117": return "History";
-            case "DS118": return "Literature";
-            default: return "Department of " + secretaryId;
+            case "DS101":
+                return "Computer Engineering";
+            case "DS102":
+                return "Software Engineering";
+            case "DS103":
+                return "Electrical Engineering";
+            case "DS104":
+                return "Mechanical Engineering";
+            case "DS105":
+                return "Civil Engineering";
+            case "DS106":
+                return "Industrial Engineering";
+            case "DS107":
+                return "Environmental Engineering";
+            case "DS108":
+                return "Biomedical Engineering";
+            case "DS109":
+                return "Aerospace Engineering";
+            case "DS110":
+                return "Chemical Engineering";
+            case "DS111":
+                return "Mathematics";
+            case "DS112":
+                return "Physics";
+            case "DS113":
+                return "Chemistry";
+            case "DS114":
+                return "Biology";
+            case "DS115":
+                return "Statistics";
+            case "DS116":
+                return "Philosophy";
+            case "DS117":
+                return "History";
+            case "DS118":
+                return "Literature";
+            default:
+                return "Department of " + secretaryId;
         }
     }
-    
+
     private String getDeanOfficerForSecretary(String secretaryId) {
         // Based on our existing relationship mapping
         Map<String, String> relationships = getDeanOfficerRelationships();
         return relationships.get(secretaryId);
     }
-    
+
     private String getDepartmentSecretaryForAdvisor(String advisorId) {
         // Based on our existing relationship mapping
         Map<String, String> relationships = getDepartmentSecretaryRelationships();
