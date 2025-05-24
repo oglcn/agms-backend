@@ -17,22 +17,18 @@ import java.util.List;
 @Table(name = "DepartmentList")
 public class DepartmentList {
     @Id
-    private String deptListId;
+    private String dept_list_id;
 
-    @Column(nullable = false)
-    private LocalDate creationDate;
+    @Column
+    private LocalDate finish_date;
 
-    @Column(nullable = false)
-    private String department;
+    @Column
+    private String status;
 
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "secretaryId", nullable = false)
+    @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @JoinColumn(name = "secretary_id", nullable = false)
     private DepartmentSecretary secretary;
 
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "facultyListId", nullable = false)
-    private FacultyList facultyList;
-
     @OneToMany(mappedBy = "departmentList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<AdvisorList> advisorLists;
-} 
+    private List<AdvisorList> advisor_lists;
+}

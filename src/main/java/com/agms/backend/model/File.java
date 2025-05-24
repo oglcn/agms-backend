@@ -16,25 +16,25 @@ import java.time.LocalDate;
 @Table(name = "File")
 public class File {
     @Id
-    private Integer fileId;
+    private Integer file_id;
 
     @Column(nullable = false)
-    private String fileName;
+    private String file_name;
 
     @Column(nullable = false)
-    private String fileType;
+    private String file_type;
 
     @Column(nullable = false)
-    private LocalDate uploadDate;
+    private LocalDate upload_date;
 
     @ManyToOne
-    @JoinColumn(name = "uploaderId")
+    @JoinColumn(name = "uploader_id")
     private User uploader;
 
     @Column(nullable = false)
-    private String filePath;
+    private String file_path;
 
     @ManyToOne
-    @JoinColumn(name = "submissionId")
+    @JoinColumn(name = "submission_id")
     private Submission submission;
-} 
+}

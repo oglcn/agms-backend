@@ -20,13 +20,13 @@ import java.util.List;
 public class StudentAffairs extends User {
 
     @Column(name = "emp_id", nullable = false, unique = true)
-    private String empId;
+    private String emp_id;
 
     @OneToMany(mappedBy = "studentAffairs")
     private List<Graduation> graduations;
 
     @OneToMany(mappedBy = "studentAffairs")
-    private List<DeanOfficer> deanOfficers;
+    private List<DeanOfficer> dean_officers;
 
     @Override
     public Role getRole() {

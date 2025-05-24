@@ -679,9 +679,9 @@
       "advisorId": "ADV101",
       "user": {
         "id": "U107",
-        "firstName": "Student",
-        "lastName": "S101",
-        "email": "s101@std.iyte.edu.tr",
+        "firstName": "Necla",
+        "lastName": "Akyol",
+        "email": "neclaakyol@std.iyte.edu.tr",
         "role": "STUDENT"
       },
       "semester": 6,
@@ -689,7 +689,7 @@
         {
           "code": "ENG101",
           "name": "English I",
-          "grade": "CC",
+          "grade": "BA",
           "credit": 6
         },
         {
@@ -717,9 +717,9 @@
       "advisorId": "ADV101",
       "user": {
         "id": "U108",
-        "firstName": "Student",
-        "lastName": "S102",
-        "email": "s102@std.iyte.edu.tr",
+        "firstName": "Omarkam",
+        "lastName": "Ibiş",
+        "email": "omeribis@std.iyte.edu.tr",
         "role": "STUDENT"
       },
       "semester": 8,
@@ -749,9 +749,9 @@
       "advisorId": "ADV101",
       "user": {
         "id": "U109",
-        "firstName": "Student",
-        "lastName": "S103",
-        "email": "s103@std.iyte.edu.tr",
+        "firstName": "Yiğit",
+        "lastName": "Sarıyar",
+        "email": "yigitsariyar@std.iyte.edu.tr",
         "role": "STUDENT"
       },
       "semester": 8,
@@ -778,7 +778,7 @@
           "code": "HIST201",
           "name": "History",
           "grade": "AA",
-          "credit": 6
+          "credit": 3
         }
       ]
     },
@@ -787,9 +787,9 @@
       "advisorId": "ADV101",
       "user": {
         "id": "U110",
-        "firstName": "Student",
-        "lastName": "S104",
-        "email": "s104@std.iyte.edu.tr",
+        "firstName": "Kaan",
+        "lastName": "Cesur",
+        "email": "kaancesur@std.iyte.edu.tr",
         "role": "STUDENT"
       },
       "semester": 8,
@@ -807,14 +807,14 @@
           "credit": 6
         },
         {
-          "code": "MATH101",
-          "name": "Calculus I",
+          "code": "PHYS101",
+          "name": "Physics I",
           "grade": "BB",
           "credit": 6
         },
         {
-          "code": "MATH102",
-          "name": "Calculus II",
+          "code": "PHYS102",
+          "name": "Physics II",
           "grade": "BA",
           "credit": 6
         }
@@ -825,9 +825,9 @@
       "advisorId": "ADV102",
       "user": {
         "id": "U111",
-        "firstName": "Student",
-        "lastName": "S105",
-        "email": "s105@std.iyte.edu.tr",
+        "firstName": "Nedret",
+        "lastName": "Çiftçi",
+        "email": "nedretcifci@std.iyte.edu.tr",
         "role": "STUDENT"
       },
       "semester": 8,
@@ -841,7 +841,7 @@
         {
           "code": "ENG102",
           "name": "English II",
-          "grade": "CC",
+          "grade": "BA",
           "credit": 6
         },
         {
@@ -860,12 +860,12 @@
     },
     "S106": {
       "studentNumber": "S106",
-      "advisorId": "ADV103",
+      "advisorId": "ADV102",
       "user": {
         "id": "U112",
-        "firstName": "Student",
-        "lastName": "S106",
-        "email": "s106@std.iyte.edu.tr",
+        "firstName": "Ahmet Kerem",
+        "lastName": "Şaylı",
+        "email": "ahmetsayli@std.iyte.edu.tr",
         "role": "STUDENT"
       },
       "semester": 8,
@@ -873,37 +873,37 @@
         {
           "code": "ENG101",
           "name": "English I",
-          "grade": "BB",
+          "grade": "CC",
           "credit": 6
         },
         {
           "code": "ENG102",
           "name": "English II",
-          "grade": "BB",
+          "grade": "CC",
           "credit": 6
         },
         {
           "code": "MATH101",
           "name": "Calculus I",
-          "grade": "CB",
+          "grade": "CC",
           "credit": 6
         },
         {
           "code": "MATH102",
           "name": "Calculus II",
-          "grade": "CC",
+          "grade": "DD",
           "credit": 6
         }
       ]
     },
     "S107": {
       "studentNumber": "S107",
-      "advisorId": "ADV104",
+      "advisorId": "ADV103",
       "user": {
         "id": "U115",
-        "firstName": "Student",
-        "lastName": "S107",
-        "email": "s107@std.iyte.edu.tr",
+        "firstName": "Oğul Can",
+        "lastName": "Küçükbıyıklar",
+        "email": "ogulkucukbiyiklar@std.iyte.edu.tr",
         "role": "STUDENT"
       },
       "semester": 8,
@@ -923,7 +923,7 @@
         {
           "code": "MATH101",
           "name": "Calculus I",
-          "grade": "CC",
+          "grade": "FD",
           "credit": 6
         },
         {
@@ -936,12 +936,12 @@
     },
     "S108": {
       "studentNumber": "S108",
-      "advisorId": "ADV104",
+      "advisorId": "ADV103",
       "user": {
         "id": "U116",
-        "firstName": "Student",
-        "lastName": "S108",
-        "email": "s108@std.iyte.edu.tr",
+        "firstName": "Meriç",
+        "lastName": "Kelemeden",
+        "email": "merickelemeden@std.iyte.edu.tr",
         "role": "STUDENT"
       },
       "semester": 8,
@@ -961,7 +961,7 @@
         {
           "code": "MATH101",
           "name": "Calculus I",
-          "grade": "AA",
+          "grade": "BB",
           "credit": 6
         },
         {
@@ -974,7 +974,7 @@
     },
     "S109": {
       "studentNumber": "S109",
-      "advisorId": "ADV105",
+      "advisorId": "ADV104",
       "user": {
         "id": "U118",
         "firstName": "Student",

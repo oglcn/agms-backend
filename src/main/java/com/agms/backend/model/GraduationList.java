@@ -16,15 +16,15 @@ import java.util.List;
 @Table(name = "GraduationList")
 public class GraduationList {
     @Id
-    private String listId;
+    private String list_id;
 
     @Column(nullable = false)
-    private LocalDate creationDate;
+    private LocalDate creation_date;
 
     @ManyToOne
-    @JoinColumn(name = "graduationId")
+    @JoinColumn(name = "graduation_id")
     private Graduation graduation;
 
     @OneToMany(mappedBy = "graduationList")
-    private List<FacultyList> facultyLists;
-} 
+    private List<FacultyList> faculty_lists;
+}

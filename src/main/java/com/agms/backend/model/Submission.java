@@ -17,10 +17,10 @@ import java.util.List;
 @Table(name = "Submission")
 public class Submission {
     @Id
-    private Integer submissionId;
+    private Integer submission_id;
 
     @Column(nullable = false)
-    private LocalDate submissionDate;
+    private LocalDate finished_date;
 
     @Column(columnDefinition = "TEXT")
     private String content;
