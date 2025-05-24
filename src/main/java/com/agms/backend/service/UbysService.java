@@ -156,13 +156,15 @@ public class UbysService {
      * Creates a Student object for database persistence (without transient attributes)
      */
     private Student createStudentForDatabase(String studentNumber, Map<String, Object> studentData) {
-        Student student = Student.builder()
-                .studentNumber(studentNumber) // This is now the primary key
-                .build();
-        
         // Set user information from nested user object
         Map<String, Object> userData = (Map<String, Object>) studentData.get("user");
+        
+        Student student = Student.builder()
+                .studentNumber(studentNumber)
+                .build();
+        
         if (userData != null) {
+            // ID will be auto-generated, so we don't need to set it manually
             student.setFirstName((String) userData.get("firstName"));
             student.setLastName((String) userData.get("lastName"));
             student.setEmail((String) userData.get("email"));

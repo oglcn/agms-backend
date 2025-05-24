@@ -51,12 +51,11 @@ public class StudentServiceImpl implements StudentService {
         }
 
         Student student = Student.builder()
-                .id(UUID.randomUUID().toString())
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .studentNumber(request.getStudentNumber())
+                .studentNumber(request.getStudentNumber()) // This is now the primary key
                 .build();
 
         return studentRepository.save(student);

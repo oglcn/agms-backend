@@ -24,6 +24,7 @@ import java.util.List;
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 public abstract class User implements UserDetails {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @Column(unique = true, nullable = false)
@@ -35,12 +36,12 @@ public abstract class User implements UserDetails {
     @NotBlank
     @Size(max = 20)
     @Column(name = "first_name")
-    private String first_name;
+    private String firstName;
 
     @NotBlank
     @Size(max = 20)
     @Column(name = "last_name")
-    private String last_name;
+    private String lastName;
 
     public abstract Role getRole();
 

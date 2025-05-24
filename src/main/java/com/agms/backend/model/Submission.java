@@ -17,10 +17,10 @@ import java.util.List;
 @Table(name = "Submission")
 public class Submission {
     @Id
-    private Integer submission_id;
+    private Integer submissionId;
 
     @Column(nullable = false)
-    private LocalDate finished_date;
+    private LocalDate submissionDate;
 
     @Column(columnDefinition = "TEXT")
     private String content;
@@ -30,7 +30,7 @@ public class Submission {
     private SubmissionStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "studentNumber")
     private Student student;
 
     @OneToMany(mappedBy = "submission")

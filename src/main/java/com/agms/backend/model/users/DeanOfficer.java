@@ -20,17 +20,17 @@ import java.util.List;
 public class DeanOfficer extends User {
 
     @Column(name = "emp_id", nullable = false, unique = true)
-    private String emp_id;
+    private String empId;
 
     @OneToMany(mappedBy = "deanOfficer")
-    private List<FacultyList> faculty_lists;
+    private List<FacultyList> facultyLists;
 
     @OneToMany(mappedBy = "deanOfficer")
-    private List<DepartmentSecretary> department_secretaries;
+    private List<DepartmentSecretary> departmentSecretaries;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "student_affairs_id")
-    private StudentAffairs student_affairs;
+    private StudentAffairs studentAffairs;
 
     @Override
     public Role getRole() {

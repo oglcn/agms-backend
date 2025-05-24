@@ -18,18 +18,19 @@ import java.util.List;
 @Table(name = "AdvisorList")
 public class AdvisorList {
     @Id
-    private String advisor_list_id;
+    private String advisorListId;
 
-    @Column
-    private LocalDate finish_date;
+    @Column(nullable = false)
+    private LocalDate creationDate;
 
-    @Column
-    private String status;
-
-    @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "advisor_id", nullable = false)
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @JoinColumn(name = "advisorId", nullable = false)
     private Advisor advisor;
 
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @JoinColumn(name = "deptListId", nullable = false)
+    private DepartmentList departmentList;
+
     @OneToMany(mappedBy = "advisorList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Submission> submissions;
-}
+    private List<Student> students;
+} 

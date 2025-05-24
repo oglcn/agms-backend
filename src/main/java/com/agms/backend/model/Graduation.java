@@ -17,18 +17,18 @@ import java.util.List;
 @Table(name = "Graduation")
 public class Graduation {
     @Id
-    private String graduation_id;
+    private String graduationId;
 
     @Column(nullable = false)
-    private LocalDate request_date;
+    private LocalDate requestDate;
 
     @Column(nullable = false)
     private String term;
 
     @ManyToOne
-    @JoinColumn(name = "student_affairs_id")
-    private StudentAffairs student_affairs;
+    @JoinColumn(name = "studentAffairsId")
+    private StudentAffairs studentAffairs;
 
     @OneToMany(mappedBy = "graduation")
-    private List<GraduationList> graduation_lists;
-}
+    private List<GraduationList> graduationLists;
+} 

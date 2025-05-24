@@ -30,4 +30,12 @@ public class Course {
             default: return 0.0;
         }
     }
+
+    /**
+     * Checks if the grade is a passing grade
+     * @return true if the grade is passing (CC or better), false otherwise
+     */
+    public boolean isPassing() {
+        return getGpaPoints() >= 2.0;
+    }
 } 

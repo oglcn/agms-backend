@@ -92,12 +92,11 @@ public class AuthenticationService {
                 }
 
                 Student student = Student.builder()
-                        .id(userId)
                         .firstName(request.getFirstName())
                         .lastName(request.getLastName())
                         .email(request.getEmail())
                         .password(encodedPassword)
-                        .studentNumber(request.getStudentNumber())
+                        .studentNumber(request.getStudentNumber()) // This is now the primary key
                         .build();
                 return studentRepository.save(student);
 

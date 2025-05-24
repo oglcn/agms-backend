@@ -23,14 +23,14 @@ import lombok.experimental.SuperBuilder;
 public class Student extends User {
 
     @Column(name = "student_number", nullable = false, unique = true)
-    private String student_number;
+    private String studentNumber;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Submission> submissions;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "advisor_list_id")
-    private AdvisorList advisor_list;
+    private AdvisorList advisorList;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "advisor_id")
