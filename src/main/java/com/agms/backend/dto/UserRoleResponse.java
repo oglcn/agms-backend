@@ -11,5 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRoleResponse {
+    private String firstName;
+    private String lastName;
     private Role role;
 } 

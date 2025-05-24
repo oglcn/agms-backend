@@ -1,7 +1,6 @@
 package com.agms.backend.service.impl;
 
 import com.agms.backend.dto.UserProfileResponse;
-import com.agms.backend.dto.UserRoleResponse;
 import com.agms.backend.model.users.Role;
 import com.agms.backend.model.users.Student;
 import com.agms.backend.model.users.User;
@@ -58,16 +57,13 @@ public class UserServiceImpl implements UserService {
                 .lastname(user.getLastName())
                 .role(user.getRole());
 
-                // Check if the user is a student and add student-specific details        if (user.getRole() == Role.STUDENT && user instanceof Student) {            Student student = (Student) user;            profileBuilder.studentNumber(student.getStudentNumber());            // Note: Graduation status is now handled through submissions, not directly on student        }
+        // Check if the user is a student and add student-specific details
+        if (user.getRole() == Role.STUDENT && user instanceof Student) {
+            Student student = (Student) user;
+            profileBuilder.studentNumber(student.getStudentNumber());
+            // Note: Graduation status is now handled through submissions, not directly on student
+        }
 
         return profileBuilder.build();
-    }
-
-    @Override
-    public UserRoleResponse getUserRole(String email) {
-        User user = findByEmail(email);
-        return UserRoleResponse.builder()
-                .role(user.getRole())
-                .build();
     }
 }

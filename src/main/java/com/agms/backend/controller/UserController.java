@@ -1,6 +1,5 @@
 package com.agms.backend.controller;
 
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -8,9 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import com.agms.backend.dto.UserProfileResponse;
-import com.agms.backend.dto.UserRoleResponse;
 import com.agms.backend.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,29 +28,12 @@ public class UserController {
 
     private final UserService userService;
 
-    @Operation(summary = "Get current user role", description = "Retrieves the role of the currently authenticated user for navigation purposes")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "User role retrieved successfully",
-            content = @Content(schema = @Schema(implementation = UserRoleResponse.class))),
-        @ApiResponse(responseCode = "401", description = "User not authenticated"),
-        @ApiResponse(responseCode = "404", description = "User not found")
-    })
-    @GetMapping("/role")
-    public ResponseEntity<UserRoleResponse> getCurrentUserRole() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()
-                || "anonymousUser".equals(authentication.getPrincipal())) {
-            return ResponseEntity.status(401).build();
-        }
-        String currentPrincipalName = authentication.getName();
-        return ResponseEntity.ok(userService.getUserRole(currentPrincipalName));
-    }
-
-    @Operation(summary = "Get current user profile", description = "Retrieves the profile of the currently authenticated user")
+    @Operation(summary = "Get current user profile", description = "Retrieves comprehensive profile information for the currently authenticated user including name, email, role, and user-specific details for navigation and display")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Profile retrieved successfully",
             content = @Content(schema = @Schema(implementation = UserProfileResponse.class))),
-        @ApiResponse(responseCode = "401", description = "User not authenticated")
+        @ApiResponse(responseCode = "401", description = "User not authenticated"),
+        @ApiResponse(responseCode = "404", description = "User not found")
     })
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponse> getCurrentUserProfile() {
@@ -65,8 +45,6 @@ public class UserController {
         String currentPrincipalName = authentication.getName();
         return ResponseEntity.ok(userService.getUserProfile(currentPrincipalName));
     }
-
-    
 
     // Other CRUD endpoints for User will be added here later
     // For example:
