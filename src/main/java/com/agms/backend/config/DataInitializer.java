@@ -1,11 +1,8 @@
 package com.agms.backend.config;
-
 import com.agms.backend.model.*;
 import com.agms.backend.model.users.*;
 import com.agms.backend.repository.*;
 import com.agms.backend.service.UbysService;
-import com.agms.backend.dto.RegisterRequest;
-import com.agms.backend.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -18,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @Slf4j
 @Configuration
@@ -35,7 +33,6 @@ public class DataInitializer {
     private final FacultyListRepository facultyListRepository;
     private final DepartmentListRepository departmentListRepository;
     private final AdvisorListRepository advisorListRepository;
-    private final AuthenticationService authenticationService;
     private final UbysService ubysService;
     private final PasswordEncoder passwordEncoder;
 
@@ -47,11 +44,8 @@ public class DataInitializer {
                 if (userRepository.count() == 0) {
                     log.info("Starting data initialization...");
 
-                    // Create administrative users first
-                    createAdministrativeUsers();
-                    
-                    // Initialize all students from ubys.json
-                    initializeStudentsFromUbys();
+                    // Initialize all entities from ubys.json in the correct order
+                    initializeAllEntitiesFromUbys();
 
                     log.info("Data initialization completed successfully!");
                 } else {
@@ -67,45 +61,165 @@ public class DataInitializer {
         };
     }
 
-    private void createAdministrativeUsers() {
-        log.debug("Creating administrative users...");
+    private void initializeAllEntitiesFromUbys() {
+        log.debug("Initializing all entities from ubys.json...");
+        
+        try {
+            // Step 1: Create StudentAffairs (top of hierarchy)
+            initializeStudentAffairsFromUbys();
+            
+            // Step 2: Create DeanOfficers (depends on StudentAffairs)
+            initializeDeanOfficersFromUbys();
+            
+            // Step 3: Create DepartmentSecretaries (depends on DeanOfficers)
+            initializeDepartmentSecretariesFromUbys();
+            
+            // Step 4: Create Advisors (depends on DepartmentSecretaries)
+            initializeAdvisorsFromUbys();
+            
+            // Step 5: Create Students (depends on Advisors)
+            initializeStudentsFromUbys();
+            
+            log.info("All entities initialized successfully from ubys.json");
+            
+        } catch (Exception e) {
+            log.error("Error initializing entities from ubys.json: {}", e.getMessage());
+            throw new RuntimeException("Failed to initialize entities from ubys.json", e);
+        }
+    }
 
-        // Create Student Affairs Officer
-        createUser("Student", "Affairs", "studentaffairs@iyte.edu.tr", "password", Role.STUDENT_AFFAIRS, null);
+    private void initializeStudentAffairsFromUbys() {
+        log.debug("Initializing student affairs from ubys.json...");
+        
+        try {
+            List<StudentAffairs> studentAffairsList = ubysService.getAllStudentAffairsForDbInitialization();
+            log.info("Found {} student affairs officers in ubys.json to initialize", studentAffairsList.size());
+            
+            for (StudentAffairs studentAffairs : studentAffairsList) {
+                studentAffairs.setPassword(passwordEncoder.encode("password123"));
+                studentAffairsRepository.save(studentAffairs);
+                log.debug("Initialized StudentAffairs: {}", studentAffairs.getEmpId());
+            }
+            
+        } catch (Exception e) {
+            log.error("Error initializing student affairs from ubys.json: {}", e.getMessage());
+            throw new RuntimeException("Failed to initialize student affairs from ubys.json", e);
+        }
+    }
 
-        // Create Dean Officers  
-        createUser("Dean", "Officer1", "dean1@iyte.edu.tr", "password", Role.DEAN_OFFICER, null);
-        createUser("Dean", "Officer2", "dean2@iyte.edu.tr", "password", Role.DEAN_OFFICER, null);
+    private void initializeDeanOfficersFromUbys() {
+        log.debug("Initializing dean officers from ubys.json...");
+        
+        try {
+            List<DeanOfficer> deanOfficers = ubysService.getAllDeanOfficersForDbInitialization();
+            log.info("Found {} dean officers in ubys.json to initialize", deanOfficers.size());
+            
+            // Get the StudentAffairs (assuming there's only one)
+            StudentAffairs studentAffairs = studentAffairsRepository.findAll().get(0);
+            
+            for (DeanOfficer deanOfficer : deanOfficers) {
+                deanOfficer.setPassword(passwordEncoder.encode("password123"));
+                deanOfficer.setStudentAffairs(studentAffairs);
+                deanOfficerRepository.save(deanOfficer);
+                log.debug("Initialized DeanOfficer: {}", deanOfficer.getEmpId());
+            }
+            
+        } catch (Exception e) {
+            log.error("Error initializing dean officers from ubys.json: {}", e.getMessage());
+            throw new RuntimeException("Failed to initialize dean officers from ubys.json", e);
+        }
+    }
 
-        // Create Department Secretaries
-        createUser("Department", "Secretary1", "secretary1@iyte.edu.tr", "password", Role.DEPARTMENT_SECRETARY, null);
-        createUser("Department", "Secretary2", "secretary2@iyte.edu.tr", "password", Role.DEPARTMENT_SECRETARY, null);
+    private void initializeDepartmentSecretariesFromUbys() {
+        log.debug("Initializing department secretaries from ubys.json...");
+        
+        try {
+            List<DepartmentSecretary> departmentSecretaries = ubysService.getAllDepartmentSecretariesForDbInitialization();
+            log.info("Found {} department secretaries in ubys.json to initialize", departmentSecretaries.size());
+            
+            // Get the relationship data from JSON to establish dean officer relationships
+            Map<String, String> deanOfficerRelationships = getDeanOfficerRelationships();
+            
+            for (DepartmentSecretary departmentSecretary : departmentSecretaries) {
+                departmentSecretary.setPassword(passwordEncoder.encode("password123"));
+                
+                // Set dean officer relationship based on JSON data
+                String deanOfficerId = deanOfficerRelationships.get(departmentSecretary.getEmpId());
+                if (deanOfficerId != null) {
+                    DeanOfficer deanOfficer = deanOfficerRepository.findByEmpId(deanOfficerId).orElse(null);
+                    if (deanOfficer != null) {
+                        departmentSecretary.setDeanOfficer(deanOfficer);
+                    }
+                }
+                
+                secretaryRepository.save(departmentSecretary);
+                log.debug("Initialized DepartmentSecretary: {}", departmentSecretary.getEmpId());
+            }
+            
+        } catch (Exception e) {
+            log.error("Error initializing department secretaries from ubys.json: {}", e.getMessage());
+            throw new RuntimeException("Failed to initialize department secretaries from ubys.json", e);
+        }
+    }
 
-        // Create Advisors
-        createUser("Professor", "Advisor1", "advisor1@iyte.edu.tr", "password", Role.ADVISOR, null);
-        createUser("Professor", "Advisor2", "advisor2@iyte.edu.tr", "password", Role.ADVISOR, null);
-
-        log.debug("Administrative users created successfully.");
+    private void initializeAdvisorsFromUbys() {
+        log.debug("Initializing advisors from ubys.json...");
+        
+        try {
+            List<Advisor> advisors = ubysService.getAllAdvisorsForDbInitialization();
+            log.info("Found {} advisors in ubys.json to initialize", advisors.size());
+            
+            // Get the relationship data from JSON to establish department secretary relationships
+            Map<String, String> departmentSecretaryRelationships = getDepartmentSecretaryRelationships();
+            
+            for (Advisor advisor : advisors) {
+                advisor.setPassword(passwordEncoder.encode("password123"));
+                
+                // Set department secretary relationship based on JSON data
+                String departmentSecretaryId = departmentSecretaryRelationships.get(advisor.getEmpId());
+                if (departmentSecretaryId != null) {
+                    DepartmentSecretary departmentSecretary = secretaryRepository.findByEmpId(departmentSecretaryId).orElse(null);
+                    if (departmentSecretary != null) {
+                        advisor.setDepartmentSecretary(departmentSecretary);
+                    }
+                }
+                
+                advisorRepository.save(advisor);
+                log.debug("Initialized Advisor: {}", advisor.getEmpId());
+            }
+            
+        } catch (Exception e) {
+            log.error("Error initializing advisors from ubys.json: {}", e.getMessage());
+            throw new RuntimeException("Failed to initialize advisors from ubys.json", e);
+        }
     }
 
     private void initializeStudentsFromUbys() {
         log.debug("Initializing students from ubys.json...");
         
         try {
-            // Get all students from ubys.json for database initialization
             List<Student> studentsFromUbys = ubysService.getAllStudentsForDbInitialization();
-            
             log.info("Found {} students in ubys.json to initialize", studentsFromUbys.size());
+            
+            // Get the relationship data from JSON to establish advisor relationships
+            Map<String, String> advisorRelationships = getAdvisorRelationships();
             
             int successCount = 0;
             int failCount = 0;
             
             for (Student student : studentsFromUbys) {
                 try {
-                    // Set a default password for all students from ubys.json
                     student.setPassword(passwordEncoder.encode("password123"));
                     
-                    // Save the student to database
+                    // Set advisor relationship based on JSON data
+                    String advisorId = advisorRelationships.get(student.getStudentNumber());
+                    if (advisorId != null) {
+                        Advisor advisor = advisorRepository.findByEmpId(advisorId).orElse(null);
+                        if (advisor != null) {
+                            student.setAdvisor(advisor);
+                        }
+                    }
+                    
                     studentRepository.save(student);
                     successCount++;
                     
@@ -127,27 +241,152 @@ public class DataInitializer {
         }
     }
 
-    private void createUser(String firstName, String lastName, String email, String password, Role role, String studentNumber) {
-        try {
-            var request = RegisterRequest.builder()
-                    .firstName(firstName)
-                    .lastName(lastName)
-                    .email(email)
-                    .password(password)
-                    .role(role)
-                    .build();
+    // Helper methods to get relationship data from JSON
+    private Map<String, String> getDeanOfficerRelationships() {
+        // Maps department secretary empId to dean officer empId
+        Map<String, String> relationships = new HashMap<>();
+        relationships.put("DS101", "DO101");
+        relationships.put("DS102", "DO101");
+        relationships.put("DS103", "DO101");
+        relationships.put("DS104", "DO101");
+        relationships.put("DS105", "DO101");
+        relationships.put("DS106", "DO101");
+        relationships.put("DS107", "DO101");
+        relationships.put("DS108", "DO101");
+        relationships.put("DS109", "DO101");
+        relationships.put("DS110", "DO101");
+        relationships.put("DS111", "DO102");
+        relationships.put("DS112", "DO102");
+        relationships.put("DS113", "DO102");
+        relationships.put("DS114", "DO102");
+        relationships.put("DS115", "DO102");
+        relationships.put("DS116", "DO103");
+        relationships.put("DS117", "DO103");
+        relationships.put("DS118", "DO103");
+        return relationships;
+    }
 
-            // For students, provide the student number
-            if (role == Role.STUDENT && studentNumber != null) {
-                request.setStudentNumber(studentNumber);
-            }
+    private Map<String, String> getDepartmentSecretaryRelationships() {
+        // Maps advisor empId to department secretary empId
+        Map<String, String> relationships = new HashMap<>();
+        relationships.put("ADV101", "DS101");
+        relationships.put("ADV102", "DS101");
+        relationships.put("ADV103", "DS101");
+        relationships.put("ADV104", "DS102");
+        relationships.put("ADV105", "DS102");
+        relationships.put("ADV106", "DS103");
+        relationships.put("ADV107", "DS103");
+        relationships.put("ADV108", "DS104");
+        relationships.put("ADV109", "DS104");
+        relationships.put("ADV110", "DS105");
+        relationships.put("ADV111", "DS105");
+        relationships.put("ADV112", "DS106");
+        relationships.put("ADV113", "DS106");
+        relationships.put("ADV114", "DS107");
+        relationships.put("ADV115", "DS107");
+        relationships.put("ADV116", "DS108");
+        relationships.put("ADV117", "DS108");
+        relationships.put("ADV118", "DS109");
+        relationships.put("ADV119", "DS109");
+        relationships.put("ADV120", "DS110");
+        relationships.put("ADV121", "DS110");
+        relationships.put("ADV122", "DS111");
+        relationships.put("ADV123", "DS111");
+        relationships.put("ADV124", "DS112");
+        relationships.put("ADV125", "DS112");
+        relationships.put("ADV126", "DS113");
+        relationships.put("ADV127", "DS113");
+        relationships.put("ADV128", "DS114");
+        relationships.put("ADV129", "DS114");
+        relationships.put("ADV130", "DS115");
+        relationships.put("ADV131", "DS115");
+        relationships.put("ADV132", "DS116");
+        relationships.put("ADV133", "DS116");
+        relationships.put("ADV134", "DS117");
+        relationships.put("ADV135", "DS117");
+        relationships.put("ADV136", "DS118");
+        relationships.put("ADV137", "DS118");
+        return relationships;
+    }
 
-            // Use AuthenticationService to create the user with proper inheritance
-            authenticationService.register(request);
-        } catch (Exception e) {
-            log.error("Failed to create user {}: {}", email, e.getMessage());
-            throw e;
-        }
+    private Map<String, String> getAdvisorRelationships() {
+        // Maps student number to advisor empId
+        Map<String, String> relationships = new HashMap<>();
+        relationships.put("S101", "ADV101");
+        relationships.put("S102", "ADV101");
+        relationships.put("S103", "ADV101");
+        relationships.put("S104", "ADV101");
+        relationships.put("S105", "ADV102");
+        relationships.put("S106", "ADV102");
+        relationships.put("S107", "ADV103");
+        relationships.put("S108", "ADV103");
+        relationships.put("S109", "ADV104");
+        relationships.put("S110", "ADV105");
+        relationships.put("S111", "ADV106");
+        relationships.put("S112", "ADV106");
+        relationships.put("S113", "ADV107");
+        relationships.put("S114", "ADV107");
+        relationships.put("S115", "ADV108");
+        relationships.put("S116", "ADV108");
+        relationships.put("S117", "ADV109");
+        relationships.put("S118", "ADV109");
+        relationships.put("S119", "ADV110");
+        relationships.put("S120", "ADV110");
+        relationships.put("S121", "ADV111");
+        relationships.put("S122", "ADV111");
+        relationships.put("S123", "ADV112");
+        relationships.put("S124", "ADV112");
+        relationships.put("S125", "ADV113");
+        relationships.put("S126", "ADV113");
+        relationships.put("S127", "ADV114");
+        relationships.put("S128", "ADV114");
+        relationships.put("S129", "ADV115");
+        relationships.put("S130", "ADV115");
+        relationships.put("S131", "ADV116");
+        relationships.put("S132", "ADV116");
+        relationships.put("S133", "ADV117");
+        relationships.put("S134", "ADV117");
+        relationships.put("S135", "ADV118");
+        relationships.put("S136", "ADV118");
+        relationships.put("S137", "ADV119");
+        relationships.put("S138", "ADV119");
+        relationships.put("S139", "ADV120");
+        relationships.put("S140", "ADV120");
+        relationships.put("S141", "ADV121");
+        relationships.put("S142", "ADV121");
+        relationships.put("S143", "ADV122");
+        relationships.put("S144", "ADV122");
+        relationships.put("S145", "ADV123");
+        relationships.put("S146", "ADV123");
+        relationships.put("S147", "ADV124");
+        relationships.put("S148", "ADV124");
+        relationships.put("S149", "ADV125");
+        relationships.put("S150", "ADV125");
+        relationships.put("S151", "ADV126");
+        relationships.put("S152", "ADV126");
+        relationships.put("S153", "ADV127");
+        relationships.put("S154", "ADV127");
+        relationships.put("S155", "ADV128");
+        relationships.put("S156", "ADV128");
+        relationships.put("S157", "ADV129");
+        relationships.put("S158", "ADV129");
+        relationships.put("S159", "ADV130");
+        relationships.put("S160", "ADV130");
+        relationships.put("S161", "ADV131");
+        relationships.put("S162", "ADV131");
+        relationships.put("S163", "ADV132");
+        relationships.put("S164", "ADV132");
+        relationships.put("S165", "ADV133");
+        relationships.put("S166", "ADV133");
+        relationships.put("S167", "ADV134");
+        relationships.put("S168", "ADV134");
+        relationships.put("S169", "ADV135");
+        relationships.put("S170", "ADV135");
+        relationships.put("S171", "ADV136");
+        relationships.put("S172", "ADV136");
+        relationships.put("S173", "ADV137");
+        relationships.put("S174", "ADV137");
+        return relationships;
     }
 
     // Additional helper methods for creating organizational structure can be added here
