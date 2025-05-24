@@ -22,8 +22,8 @@ public class Advisor extends User {
     @Column(name = "emp_id", nullable = false, unique = true)
     private String empId;
 
-    @OneToMany(mappedBy = "advisor")
-    private List<AdvisorList> advisorList;
+    @OneToOne(mappedBy = "advisor")
+    private AdvisorList advisorList;
 
     @OneToMany(mappedBy = "advisor")
     private List<Student> students;

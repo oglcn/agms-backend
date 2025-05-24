@@ -29,10 +29,6 @@ public class Student extends User {
     private List<Submission> submissions;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
-    @JoinColumn(name = "advisor_list_id")
-    private AdvisorList advisorList;
-
-    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "advisor_id")
     private Advisor advisor;
 

@@ -32,5 +32,5 @@ public class AdvisorList {
     private DepartmentList departmentList;
 
     @OneToMany(mappedBy = "advisorList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Student> students;
+    private List<Submission> submissions;
 } 
