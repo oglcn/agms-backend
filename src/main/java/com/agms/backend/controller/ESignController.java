@@ -12,6 +12,7 @@ import com.agms.backend.dto.ESignRequest;
 import com.agms.backend.dto.ESignResponse;
 import com.agms.backend.service.ESignService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 
 @RestController
@@ -26,8 +27,9 @@ public class ESignController {
     }
 
     @PostMapping("/sign")
+    @Operation(summary = "Sign a document electronically")
     public ResponseEntity<ESignResponse> signESign(@Valid @RequestBody ESignRequest request) {
         ESignResponse response = eSignService.signESign(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-} 
+}

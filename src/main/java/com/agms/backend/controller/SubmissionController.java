@@ -1,20 +1,31 @@
 package com.agms.backend.controller;
 
-import com.agms.backend.dto.CreateSubmissionRequest;
-import com.agms.backend.dto.SubmissionResponse;
-import com.agms.backend.model.SubmissionStatus;
-import com.agms.backend.service.SubmissionService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.agms.backend.dto.CreateSubmissionRequest;
+import com.agms.backend.dto.SubmissionResponse;
+import com.agms.backend.model.SubmissionStatus;
+import com.agms.backend.service.SubmissionService;
+
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import java.util.List;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
@@ -30,6 +41,7 @@ public class SubmissionController {
      */
     @PostMapping("/graduation")
     @PreAuthorize("hasRole('STUDENT')")
+    @Operation(summary = "Create a new graduation submission for a student")
     public ResponseEntity<SubmissionResponse> createGraduationSubmission(
             @Valid @RequestBody CreateSubmissionRequest request) {
         log.info("Creating graduation submission for student: {}", request.getStudentNumber());
@@ -51,6 +63,7 @@ public class SubmissionController {
      */
     @GetMapping("/student/{studentNumber}")
     @PreAuthorize("hasRole('STUDENT') or hasRole('ADVISOR') or hasRole('DEPARTMENT_SECRETARY')")
+    @Operation(summary = "Get all submissions for a specific student")
     public ResponseEntity<List<SubmissionResponse>> getSubmissionsByStudent(@PathVariable String studentNumber) {
         log.debug("Getting submissions for student: {}", studentNumber);
         
@@ -63,6 +76,7 @@ public class SubmissionController {
      */
     @GetMapping("/advisor/{advisorEmpId}")
     @PreAuthorize("hasRole('ADVISOR')")
+    @Operation(summary = "Get all submissions for a specific advisor")
     public ResponseEntity<List<SubmissionResponse>> getSubmissionsByAdvisor(@PathVariable String advisorEmpId) {
         log.debug("Getting submissions for advisor: {}", advisorEmpId);
         
@@ -75,6 +89,7 @@ public class SubmissionController {
      */
     @GetMapping("/{submissionId}")
     @PreAuthorize("hasRole('STUDENT') or hasRole('ADVISOR') or hasRole('DEPARTMENT_SECRETARY')")
+    @Operation(summary = "Get a specific submission by its ID")
     public ResponseEntity<SubmissionResponse> getSubmissionById(@PathVariable String submissionId) {
         log.debug("Getting submission by ID: {}", submissionId);
         
@@ -88,6 +103,7 @@ public class SubmissionController {
      */
     @PutMapping("/{submissionId}/status")
     @PreAuthorize("hasRole('ADVISOR')")
+    @Operation(summary = "Update the status of a specific submission for an advisor")
     public ResponseEntity<SubmissionResponse> updateSubmissionStatus(
             @PathVariable String submissionId,
             @RequestParam SubmissionStatus status) {
@@ -107,6 +123,7 @@ public class SubmissionController {
      */
     @GetMapping("/status/{status}")
     @PreAuthorize("hasRole('ADVISOR') or hasRole('DEPARTMENT_SECRETARY') or hasRole('DEAN_OFFICER')")
+    @Operation(summary = "Get all submissions filtered by a specific status")
     public ResponseEntity<List<SubmissionResponse>> getSubmissionsByStatus(@PathVariable SubmissionStatus status) {
         log.debug("Getting submissions with status: {}", status);
         
@@ -119,6 +136,7 @@ public class SubmissionController {
      */
     @GetMapping("/student/{studentNumber}/has-pending")
     @PreAuthorize("hasRole('STUDENT') or hasRole('ADVISOR')")
+    @Operation(summary = "Check if a student has any active pending submissions")
     public ResponseEntity<Boolean> hasActivePendingSubmission(@PathVariable String studentNumber) {
         log.debug("Checking if student {} has active pending submission", studentNumber);
         
@@ -131,6 +149,7 @@ public class SubmissionController {
      */
     @GetMapping("/student/{studentNumber}/latest")
     @PreAuthorize("hasRole('STUDENT') or hasRole('ADVISOR')")
+    @Operation(summary = "Get the latest submission for a specific student")
     public ResponseEntity<SubmissionResponse> getLatestSubmissionByStudent(@PathVariable String studentNumber) {
         log.debug("Getting latest submission for student: {}", studentNumber);
         
@@ -144,6 +163,7 @@ public class SubmissionController {
      */
     @DeleteMapping("/{submissionId}")
     @PreAuthorize("hasRole('DEPARTMENT_SECRETARY') or hasRole('DEAN_OFFICER')")
+    @Operation(summary = "Delete a specific submission (admin operation)")
     public ResponseEntity<Void> deleteSubmission(@PathVariable String submissionId) {
         log.info("Deleting submission: {}", submissionId);
         
@@ -155,4 +175,4 @@ public class SubmissionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-} 
+}

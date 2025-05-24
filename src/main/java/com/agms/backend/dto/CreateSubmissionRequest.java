@@ -1,12 +1,10 @@
 package com.agms.backend.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 @Data
 @Builder
@@ -18,7 +16,4 @@ public class CreateSubmissionRequest {
     private String studentNumber;
     
     private String content;
-    
-    // Optional: if we want to allow specifying submission type in the future
-    private String submissionType;
 } 
