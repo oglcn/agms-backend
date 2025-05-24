@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.agms.backend.dto.CreateStudentRequest;
+import com.agms.backend.dto.CreateStudentResponse;
 import com.agms.backend.dto.StudentProfileResponse;
 import com.agms.backend.dto.StudentResponse;
 import com.agms.backend.model.users.Student;
@@ -65,14 +66,14 @@ public class StudentController {
 
     @Operation(summary = "Create a new student", description = "Creates a new student with the provided information")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Student created successfully", content = @Content(schema = @Schema(implementation = Student.class))),
+            @ApiResponse(responseCode = "201", description = "Student created successfully", content = @Content(schema = @Schema(implementation = CreateStudentResponse.class))),
             @ApiResponse(responseCode = "409", description = "Email already exists"),
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     @PostMapping
     public ResponseEntity<?> createStudent(@Valid @RequestBody CreateStudentRequest request) {
         try {
-            Student createdStudent = studentService.createStudent(request);
+            CreateStudentResponse createdStudent = studentService.createStudent(request);
             return new ResponseEntity<>(createdStudent, HttpStatus.CREATED);
         } catch (EmailAlreadyExistsException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
@@ -80,10 +81,10 @@ public class StudentController {
     }
 
     @Operation(summary = "Get all students", description = "Retrieves a list of all students")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved all students", content = @Content(schema = @Schema(implementation = Student.class)))
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved all students", content = @Content(schema = @Schema(implementation = StudentResponse.class)))
     @GetMapping
-    public ResponseEntity<List<Student>> getAllStudents() {
-        List<Student> students = studentService.getAllStudents();
+    public ResponseEntity<List<StudentResponse>> getAllStudents() {
+        List<StudentResponse> students = studentService.getAllStudents();
         return new ResponseEntity<>(students, HttpStatus.OK);
     }
 
@@ -95,23 +96,23 @@ public class StudentController {
     @GetMapping("/{studentNumber}")
     public ResponseEntity<StudentResponse> getStudent(
             @Parameter(description = "Student Number", required = true) @PathVariable String studentNumber) {
-        return studentService.getStudentResponseByStudentNumber(studentNumber)
+        return studentService.getStudentByStudentNumber(studentNumber)
                 .map(student -> new ResponseEntity<>(student, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @Operation(summary = "Update student", description = "Updates an existing student's information")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Student updated successfully", content = @Content(schema = @Schema(implementation = Student.class))),
+            @ApiResponse(responseCode = "200", description = "Student updated successfully", content = @Content(schema = @Schema(implementation = StudentResponse.class))),
             @ApiResponse(responseCode = "404", description = "Student not found"),
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     @PutMapping("/{studentNumber}")
-    public ResponseEntity<Student> updateStudent(
+    public ResponseEntity<StudentResponse> updateStudent(
             @Parameter(description = "Student Number", required = true) @PathVariable String studentNumber,
             @Valid @RequestBody Student studentDetails) {
         try {
-            Student updatedStudent = studentService.updateStudent(studentNumber, studentDetails);
+            StudentResponse updatedStudent = studentService.updateStudent(studentNumber, studentDetails);
             return new ResponseEntity<>(updatedStudent, HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

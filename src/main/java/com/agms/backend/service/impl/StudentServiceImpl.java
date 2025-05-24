@@ -1,6 +1,7 @@
 package com.agms.backend.service.impl;
 
 import com.agms.backend.dto.CreateStudentRequest;
+import com.agms.backend.dto.CreateStudentResponse;
 import com.agms.backend.dto.StudentProfileResponse;
 import com.agms.backend.dto.StudentResponse;
 import com.agms.backend.model.users.Student;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -50,7 +52,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional
-    public Student createStudent(CreateStudentRequest request) {
+    public CreateStudentResponse createStudent(CreateStudentRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyExistsException("Email already exists");
         }
@@ -64,64 +66,35 @@ public class StudentServiceImpl implements StudentService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .studentNumber(request.getStudentNumber()) // This is now the primary key
+                .studentNumber(request.getStudentNumber())
                 .build();
 
-        return studentRepository.save(student);
+        Student savedStudent = studentRepository.save(student);
+        
+        return CreateStudentResponse.builder()
+                .studentNumber(savedStudent.getStudentNumber())
+                .firstName(savedStudent.getFirstName())
+                .lastName(savedStudent.getLastName())
+                .email(savedStudent.getEmail())
+                .message("Student created successfully")
+                .build();
     }
 
     @Override
-    public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+    public List<StudentResponse> getAllStudents() {
+        return studentRepository.findAll().stream()
+                .map(this::convertToStudentResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<Student> getStudentByStudentNumber(String studentNumber) {
-        return studentRepository.findByStudentNumber(studentNumber);
-    }
-
-    @Override
-    public Optional<StudentResponse> getStudentResponseByStudentNumber(String studentNumber) {
+    public Optional<StudentResponse> getStudentByStudentNumber(String studentNumber) {
         return studentRepository.findByStudentNumber(studentNumber)
                 .map(this::convertToStudentResponse);
     }
 
-    private StudentResponse convertToStudentResponse(Student student) {
-        // Get enhanced student data with academic info if available
-        Student enhancedStudent;
-        try {
-            enhancedStudent = ubysService.getStudentWithTransientAttributes(student.getStudentNumber());
-        } catch (ResourceNotFoundException e) {
-            // If not found in ubys.json, use database student
-            enhancedStudent = student;
-        }
-        
-        // Convert advisor to safe DTO
-        StudentResponse.AdvisorInfo advisorInfo = null;
-        if (student.getAdvisor() != null) {
-            Advisor advisor = student.getAdvisor();
-            advisorInfo = StudentResponse.AdvisorInfo.builder()
-                    .empId(advisor.getEmpId())
-                    .firstName(advisor.getFirstName())
-                    .lastName(advisor.getLastName())
-                    .email(advisor.getEmail())
-                    .build();
-        }
-        
-        return StudentResponse.builder()
-                .studentNumber(student.getStudentNumber())
-                .firstName(student.getFirstName())
-                .lastName(student.getLastName())
-                .email(student.getEmail())
-                .gpa(enhancedStudent.getGpa())
-                .totalCredit(enhancedStudent.getTotalCredit())
-                .semester(enhancedStudent.getSemester())
-                .advisor(advisorInfo)
-                .build();
-    }
-
     @Override
-    public Student updateStudent(String studentNumber, Student studentDetails) {
+    public StudentResponse updateStudent(String studentNumber, Student studentDetails) {
         Student student = studentRepository.findByStudentNumber(studentNumber)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with number: " + studentNumber));
 
@@ -135,9 +108,9 @@ public class StudentServiceImpl implements StudentService {
         if (studentDetails.getEmail() != null) {
             student.setEmail(studentDetails.getEmail());
         }
-        // Note: Graduation status is now handled through submissions, not directly on student
-
-        return studentRepository.save(student);
+        
+        Student updatedStudent = studentRepository.save(student);
+        return convertToStudentResponse(updatedStudent);
     }
 
     @Override
@@ -149,32 +122,25 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void updateGraduationRequestStatus(String studentNumber, String status) {
-        // Note: Graduation status is now handled through submissions, not directly on student
-        // This method should create or update a submission with the given status
         throw new UnsupportedOperationException("Graduation status is now handled through submissions. Use submission service instead.");
     }
 
     @Override
     @Transactional
-    public void assignAdvisor(String studentNumber, String advisorListId) {
-        // This method is no longer needed since students don't have direct access to advisor lists.
-        // Submissions will be the bridge between students and advisors.
+    public void assignAdvisor(String studentNumber, String advisorId) {
         throw new UnsupportedOperationException("Students no longer have direct access to advisor lists. Use submission service to create graduation requests.");
     }
 
     @Override
     @Transactional
     public void removeAdvisor(String studentNumber) {
-        // This method is no longer needed since students don't have direct access to advisor lists.
-        // Submissions will be the bridge between students and advisors.
         throw new UnsupportedOperationException("Students no longer have direct access to advisor lists. Use submission service to manage graduation requests.");
     }
 
     @Override
     public StudentProfileResponse getStudentProfileByEmail(String email) {
         // Get student from database
-        Student student = studentRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with email: " + email));
+        Student student = getStudentEntityByEmail(email);
 
         // Get enhanced student data from ubys.json (includes academic info)
         Student enhancedStudent;
@@ -245,6 +211,60 @@ public class StudentServiceImpl implements StudentService {
                 .gpa(enhancedStudent.getGpa() > 0 ? enhancedStudent.getGpa() : null)
                 .totalCredits(enhancedStudent.getTotalCredit() > 0 ? enhancedStudent.getTotalCredit() : null)
                 .semester(enhancedStudent.getSemester() > 0 ? enhancedStudent.getSemester() : null)
+                .build();
+    }
+
+    // ========== PRIVATE HELPER METHODS FOR INTERNAL USE ==========
+    
+    /**
+     * Private helper method for internal use when raw entity is needed
+     */
+    private Student getStudentEntityByEmail(String email) {
+        return studentRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with email: " + email));
+    }
+    
+    /**
+     * Private helper method for internal use when raw entity is needed
+     */
+    private Optional<Student> getStudentEntityByStudentNumber(String studentNumber) {
+        return studentRepository.findByStudentNumber(studentNumber);
+    }
+
+    /**
+     * Converts Student entity to safe StudentResponse DTO
+     */
+    private StudentResponse convertToStudentResponse(Student student) {
+        // Get enhanced student data with academic info if available
+        Student enhancedStudent;
+        try {
+            enhancedStudent = ubysService.getStudentWithTransientAttributes(student.getStudentNumber());
+        } catch (ResourceNotFoundException e) {
+            // If not found in ubys.json, use database student
+            enhancedStudent = student;
+        }
+        
+        // Convert advisor to safe DTO
+        StudentResponse.AdvisorInfo advisorInfo = null;
+        if (student.getAdvisor() != null) {
+            Advisor advisor = student.getAdvisor();
+            advisorInfo = StudentResponse.AdvisorInfo.builder()
+                    .empId(advisor.getEmpId())
+                    .firstName(advisor.getFirstName())
+                    .lastName(advisor.getLastName())
+                    .email(advisor.getEmail())
+                    .build();
+        }
+        
+        return StudentResponse.builder()
+                .studentNumber(student.getStudentNumber())
+                .firstName(student.getFirstName())
+                .lastName(student.getLastName())
+                .email(student.getEmail())
+                .gpa(enhancedStudent.getGpa())
+                .totalCredit(enhancedStudent.getTotalCredit())
+                .semester(enhancedStudent.getSemester())
+                .advisor(advisorInfo)
                 .build();
     }
 }
