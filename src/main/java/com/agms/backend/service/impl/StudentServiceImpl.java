@@ -116,24 +116,17 @@ public class StudentServiceImpl implements StudentService {
     @Override
     @Transactional
     public void assignAdvisor(String studentNumber, String advisorListId) {
-        Student student = studentRepository.findByStudentNumber(studentNumber)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with number: " + studentNumber));
-
-        AdvisorList advisorList = advisorListRepository.findById(advisorListId)
-                .orElseThrow(() -> new ResourceNotFoundException("Advisor list not found with ID: " + advisorListId));
-
-        student.setAdvisorList(advisorList);
-        studentRepository.save(student);
+        // This method is no longer needed since students don't have direct access to advisor lists.
+        // Submissions will be the bridge between students and advisors.
+        throw new UnsupportedOperationException("Students no longer have direct access to advisor lists. Use submission service to create graduation requests.");
     }
 
     @Override
     @Transactional
     public void removeAdvisor(String studentNumber) {
-        Student student = studentRepository.findByStudentNumber(studentNumber)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with number: " + studentNumber));
-
-        student.setAdvisorList(null);
-        studentRepository.save(student);
+        // This method is no longer needed since students don't have direct access to advisor lists.
+        // Submissions will be the bridge between students and advisors.
+        throw new UnsupportedOperationException("Students no longer have direct access to advisor lists. Use submission service to manage graduation requests.");
     }
 
     @Override

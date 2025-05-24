@@ -17,7 +17,7 @@ import java.util.List;
 @Table(name = "Submission")
 public class Submission {
     @Id
-    private Integer submissionId;
+    private String submissionId;
 
     @Column(nullable = false)
     private LocalDate submissionDate;
@@ -32,6 +32,10 @@ public class Submission {
     @ManyToOne
     @JoinColumn(name = "studentNumber")
     private Student student;
+
+    @ManyToOne(cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "advisor_list_id")
+    private AdvisorList advisorList;
 
     @OneToMany(mappedBy = "submission")
     private List<File> files;

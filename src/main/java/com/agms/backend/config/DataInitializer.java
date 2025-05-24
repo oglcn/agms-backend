@@ -446,10 +446,4 @@ public class DataInitializer {
                 .build();
         return advisorListRepository.save(advisorList);
     }
-
-    private void assignAdvisorToStudent(String studentNumber, AdvisorList advisorList) {
-        var student = studentRepository.findByStudentNumber(studentNumber).orElseThrow();
-        student.setAdvisorList(advisorList);
-        studentRepository.save(student);
-    }
 }
