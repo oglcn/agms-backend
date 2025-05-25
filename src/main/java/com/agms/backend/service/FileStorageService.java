@@ -11,6 +11,12 @@ import com.agms.backend.repository.FileRepository;
 import com.agms.backend.dto.FileResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.agms.backend.model.Submission;
+import com.agms.backend.repository.SubmissionRepository;
+import com.agms.backend.model.users.*;
+import com.agms.backend.exception.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
@@ -36,9 +42,11 @@ public class FileStorageService {
     private static final Pattern INVALID_FILENAME_CHARS = Pattern.compile("[^a-zA-Z0-9.-]");
 
     private final FileRepository fileRepository;
+    private final SubmissionRepository submissionRepository;
 
-    public FileStorageService(FileRepository fileRepository) {
+    public FileStorageService(FileRepository fileRepository, SubmissionRepository submissionRepository) {
         this.fileRepository = fileRepository;
+        this.submissionRepository = submissionRepository;
     }
 
     @PostConstruct
@@ -50,13 +58,22 @@ public class FileStorageService {
         }
     }
 
-    public String saveFile(MultipartFile file, User uploader) {
+    public String saveFile(MultipartFile file, User uploader, String submissionId) {
         validateFile(file);
         String originalFilename = file.getOriginalFilename();
         String sanitizedFilename = sanitizeFilename(originalFilename);
         String uniqueFilename = generateUniqueFilename(sanitizedFilename);
 
         try {
+            // Get the submission
+            Submission submission = submissionRepository.findById(submissionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Submission not found with id: " + submissionId));
+
+            // Check if user has access to this submission
+            if (!hasAccessToSubmission(submission, uploader)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have access to this submission");
+            }
+
             // Save the physical file
             Path targetPath = Paths.get(uploadDir).resolve(uniqueFilename);
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
@@ -68,6 +85,7 @@ public class FileStorageService {
                 .uploadDate(new Timestamp(System.currentTimeMillis()))
                 .uploader(uploader)
                 .filePath(uniqueFilename)
+                .submission(submission)
                 .build();
 
             fileRepository.save(fileEntity);
@@ -175,8 +193,16 @@ public class FileStorageService {
         }
     }
 
-    public List<FileResponse> getFilesByUser(User user) {
-        List<File> files = fileRepository.findByUploader(user);
+    public List<FileResponse> getFilesBySubmission(String submissionId, User user) {
+        Submission submission = submissionRepository.findById(submissionId)
+            .orElseThrow(() -> new ResourceNotFoundException("Submission not found with id: " + submissionId));
+
+        // Check if user has access to this submission
+        if (!hasAccessToSubmission(submission, user)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have access to this submission");
+        }
+
+        List<File> files = submission.getFiles();
         return files.stream()
             .map(file -> FileResponse.builder()
                 .fileId(file.getFileId().toString())
@@ -187,5 +213,56 @@ public class FileStorageService {
                 .downloadUrl("/api/files/download/" + file.getFilePath())
                 .build())
             .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteFileFromSubmission(String submissionId, String filename, User user) {
+        Submission submission = submissionRepository.findById(submissionId)
+            .orElseThrow(() -> new ResourceNotFoundException("Submission not found with id: " + submissionId));
+
+        // Check if user has access to this submission
+        if (!hasAccessToSubmission(submission, user)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have access to this submission");
+        }
+
+        // Find the file in the submission
+        File fileToDelete = submission.getFiles().stream()
+            .filter(file -> file.getFilePath().equals(filename))
+            .findFirst()
+            .orElseThrow(() -> new ResourceNotFoundException("File not found in submission: " + filename));
+
+        // Check if user has permission to delete this file
+        if (!canDeleteFile(fileToDelete, user)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to delete this file");
+        }
+
+        // Delete the file
+        deleteFile(filename);
+    }
+
+    private boolean hasAccessToSubmission(Submission submission, User user) {
+        if (user instanceof Student) {
+            // Students can access their own submissions
+            return submission.getStudent().getStudentNumber().equals(((Student) user).getStudentNumber());
+        } else if (user instanceof Advisor) {
+            // Advisors can access submissions they are advising
+            return submission.getAdvisorList() != null && 
+                   submission.getAdvisorList().getAdvisor().equals(user);
+        } else if (user instanceof DepartmentSecretary) {
+            // Department secretaries can access submissions from their department
+            return submission.getAdvisorList() != null && 
+                   submission.getAdvisorList().getDepartmentList() != null &&
+                   submission.getAdvisorList().getDepartmentList().getSecretary().equals(user);
+        } else if (user instanceof DeanOfficer || user instanceof StudentAffairs) {
+            // Dean officers and student affairs can access all submissions
+            return true;
+        }
+        return false;
+    }
+
+    private boolean canDeleteFile(File file, User user) {
+        // All users with access to the submission can delete files
+        // This is because files are now submission attachments rather than student files
+        return hasAccessToSubmission(file.getSubmission(), user);
     }
 }

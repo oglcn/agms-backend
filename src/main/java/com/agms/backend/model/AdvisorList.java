@@ -9,6 +9,8 @@ import com.agms.backend.model.users.Advisor;
 import com.agms.backend.model.users.Student;
 import java.sql.Timestamp;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Data
 @Builder
@@ -29,6 +31,7 @@ public class AdvisorList {
 
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "advisorId", nullable = false)
+    @JsonBackReference
     private Advisor advisor;
 
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
@@ -36,5 +39,6 @@ public class AdvisorList {
     private DepartmentList departmentList;
 
     @OneToMany(mappedBy = "advisorList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Submission> submissions;
 }

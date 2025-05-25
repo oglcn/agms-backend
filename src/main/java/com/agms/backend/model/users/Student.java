@@ -11,6 +11,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -29,10 +31,12 @@ public class Student extends User {
     private String department;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Submission> submissions;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "advisor_id")
+    @JsonBackReference
     private Advisor advisor;
 
     @Override

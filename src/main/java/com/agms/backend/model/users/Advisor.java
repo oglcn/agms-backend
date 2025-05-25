@@ -8,9 +8,10 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import com.agms.backend.model.AdvisorList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"advisorList", "students", "departmentSecretary"})
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,6 +27,7 @@ public class Advisor extends User {
     private String department;
 
     @OneToOne(mappedBy = "advisor")
+    @JsonManagedReference
     private AdvisorList advisorList;
 
     @OneToMany(mappedBy = "advisor")

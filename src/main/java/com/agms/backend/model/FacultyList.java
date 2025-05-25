@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import com.agms.backend.model.users.DeanOfficer;
 import java.sql.Timestamp;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Data
 @Builder
@@ -38,5 +39,6 @@ public class FacultyList {
     private GraduationList graduationList;
 
     @OneToMany(mappedBy = "facultyList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<DepartmentList> departmentLists;
 }

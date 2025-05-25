@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import com.agms.backend.model.users.Student;
 import java.sql.Timestamp;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Data
 @Builder
@@ -31,13 +33,16 @@ public class Submission {
 
     @ManyToOne
     @JoinColumn(name = "studentNumber")
+    @JsonBackReference
     private Student student;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "advisor_list_id")
+    @JsonBackReference
     private AdvisorList advisorList;
 
     @OneToMany(mappedBy = "submission")
+    @JsonManagedReference
     private List<File> files;
 
 }

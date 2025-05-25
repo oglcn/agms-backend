@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.agms.backend.model.users.User;
 import java.sql.Timestamp;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Data
 @Builder
@@ -40,5 +41,6 @@ public class File {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "submissionId")
+    @JsonBackReference
     private Submission submission;
 }
