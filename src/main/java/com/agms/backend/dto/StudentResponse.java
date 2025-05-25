@@ -23,6 +23,7 @@ public class StudentResponse {
     private int semester;
     private List<Course> courses;
     private boolean isCurriculumCompleted;
+    private boolean isEligibleForGraduation;
     // Advisor info (without sensitive data)
     private AdvisorInfo advisor;
 

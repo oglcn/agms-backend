@@ -23,6 +23,7 @@ public class StudentProfileResponse {
     private Integer totalCredits;
     private Integer semester;
     private Boolean isCurriculumCompleted;
+    private Boolean isEligibleForGraduation;
 
     @Data
     @Builder

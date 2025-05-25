@@ -23,6 +23,10 @@ public class AdvisorList {
     @Column(nullable = false)
     private Timestamp creationDate;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean isFinalized = false;
+
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "advisorId", nullable = false)
     private Advisor advisor;

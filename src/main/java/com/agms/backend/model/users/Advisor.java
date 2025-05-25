@@ -22,6 +22,9 @@ public class Advisor extends User {
     @Column(name = "emp_id", nullable = false, unique = true)
     private String empId;
 
+    @Column(name = "department")
+    private String department;
+
     @OneToOne(mappedBy = "advisor")
     private AdvisorList advisorList;
 

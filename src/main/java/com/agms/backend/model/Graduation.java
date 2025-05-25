@@ -26,7 +26,8 @@ public class Graduation {
     private String term;
 
     @Column(nullable = false)
-    private String type;
+    @Builder.Default
+    private String status = "IN_PROGRESS"; // IN_PROGRESS, COMPLETED
 
     @ManyToOne
     @JoinColumn(name = "studentAffairsId")

@@ -109,6 +109,7 @@ public class SubmissionFlowIntegrationTest {
                                 .graduationId("GRAD_TEST_001")
                                 .requestDate(new Timestamp(System.currentTimeMillis()))
                                 .term("Spring 2025")
+                                .status("IN_PROGRESS")
                                 .studentAffairs(studentAffairs)
                                 .build();
                 graduation = graduationRepository.save(graduation);

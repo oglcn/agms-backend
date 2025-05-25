@@ -50,7 +50,6 @@
     "DS101": {
       "empId": "DS101",
       "department": "Computer Engineering",
-      "deanOfficerId": "DO101",
       "user": {
         "id": "U103",
         "firstName": "Department",
@@ -62,7 +61,6 @@
     "DS102": {
       "empId": "DS102",
       "department": "Electronics and Communication Engineering",
-      "deanOfficerId": "DO101",
       "user": {
         "id": "U113",
         "firstName": "Department",
@@ -74,7 +72,6 @@
     "DS103": {
       "empId": "DS103",
       "department": "Civil Engineering",
-      "deanOfficerId": "DO101",
       "user": {
         "id": "U120",
         "firstName": "Department",
@@ -86,7 +83,6 @@
     "DS104": {
       "empId": "DS104",
       "department": "Mechanical Engineering",
-      "deanOfficerId": "DO101",
       "user": {
         "id": "U127",
         "firstName": "Department",
@@ -98,7 +94,6 @@
     "DS105": {
       "empId": "DS105",
       "department": "Bioengineering",
-      "deanOfficerId": "DO101",
       "user": {
         "id": "U134",
         "firstName": "Department",
@@ -110,7 +105,6 @@
     "DS106": {
       "empId": "DS106",
       "department": "Environmental Engineering",
-      "deanOfficerId": "DO101",
       "user": {
         "id": "U141",
         "firstName": "Department",
@@ -122,7 +116,6 @@
     "DS107": {
       "empId": "DS107",
       "department": "Energy Systems Engineering",
-      "deanOfficerId": "DO101",
       "user": {
         "id": "U148",
         "firstName": "Department",
@@ -134,7 +127,6 @@
     "DS108": {
       "empId": "DS108",
       "department": "Food Engineering",
-      "deanOfficerId": "DO101",
       "user": {
         "id": "U155",
         "firstName": "Department",
@@ -146,7 +138,6 @@
     "DS109": {
       "empId": "DS109",
       "department": "Chemical Engineering",
-      "deanOfficerId": "DO101",
       "user": {
         "id": "U162",
         "firstName": "Department",
@@ -158,7 +149,6 @@
     "DS110": {
       "empId": "DS110",
       "department": "Materials Science and Engineering",
-      "deanOfficerId": "DO101",
       "user": {
         "id": "U169",
         "firstName": "Department",
@@ -170,7 +160,6 @@
     "DS111": {
       "empId": "DS111",
       "department": "Physics",
-      "deanOfficerId": "DO102",
       "user": {
         "id": "U177",
         "firstName": "Department",
@@ -182,7 +171,6 @@
     "DS112": {
       "empId": "DS112",
       "department": "Photonics",
-      "deanOfficerId": "DO102",
       "user": {
         "id": "U184",
         "firstName": "Department",
@@ -194,7 +182,6 @@
     "DS113": {
       "empId": "DS113",
       "department": "Chemistry",
-      "deanOfficerId": "DO102",
       "user": {
         "id": "U191",
         "firstName": "Department",
@@ -206,7 +193,6 @@
     "DS114": {
       "empId": "DS114",
       "department": "Mathematics",
-      "deanOfficerId": "DO102",
       "user": {
         "id": "U198",
         "firstName": "Department",
@@ -218,7 +204,6 @@
     "DS115": {
       "empId": "DS115",
       "department": "Molecular Biology and Genetics",
-      "deanOfficerId": "DO102",
       "user": {
         "id": "U205",
         "firstName": "Department",
@@ -230,7 +215,6 @@
     "DS116": {
       "empId": "DS116",
       "department": "Industrial Design",
-      "deanOfficerId": "DO103",
       "user": {
         "id": "U213",
         "firstName": "Department",
@@ -242,7 +226,6 @@
     "DS117": {
       "empId": "DS117",
       "department": "Architecture",
-      "deanOfficerId": "DO103",
       "user": {
         "id": "U220",
         "firstName": "Department",
@@ -254,7 +237,6 @@
     "DS118": {
       "empId": "DS118",
       "department": "City and Regional Planning",
-      "deanOfficerId": "DO103",
       "user": {
         "id": "U227",
         "firstName": "Department",
@@ -267,410 +249,410 @@
   "advisors": {
     "ADV101": {
       "empId": "ADV101",
-      "departmentSecretaryId": "DS101",
       "user": {
         "id": "U104",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV101@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Computer Engineering"
     },
     "ADV102": {
       "empId": "ADV102",
-      "departmentSecretaryId": "DS101",
       "user": {
         "id": "U105",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV102@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Computer Engineering"
     },
     "ADV103": {
       "empId": "ADV103",
-      "departmentSecretaryId": "DS101",
       "user": {
         "id": "U106",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV103@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Computer Engineering"
     },
     "ADV104": {
       "empId": "ADV104",
-      "departmentSecretaryId": "DS102",
       "user": {
         "id": "U114",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV104@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Electronics and Communication Engineering"
     },
     "ADV105": {
       "empId": "ADV105",
-      "departmentSecretaryId": "DS102",
       "user": {
         "id": "U117",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV105@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Electronics and Communication Engineering"
     },
     "ADV106": {
       "empId": "ADV106",
-      "departmentSecretaryId": "DS103",
       "user": {
         "id": "U121",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV106@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Civil Engineering"
     },
     "ADV107": {
       "empId": "ADV107",
-      "departmentSecretaryId": "DS103",
       "user": {
         "id": "U124",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV107@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Civil Engineering"
     },
     "ADV108": {
       "empId": "ADV108",
-      "departmentSecretaryId": "DS104",
       "user": {
         "id": "U128",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV108@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Mechanical Engineering"
     },
     "ADV109": {
       "empId": "ADV109",
-      "departmentSecretaryId": "DS104",
       "user": {
         "id": "U131",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV109@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Mechanical Engineering"
     },
     "ADV110": {
       "empId": "ADV110",
-      "departmentSecretaryId": "DS105",
       "user": {
         "id": "U135",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV110@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Bioengineering"
     },
     "ADV111": {
       "empId": "ADV111",
-      "departmentSecretaryId": "DS105",
       "user": {
         "id": "U138",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV111@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Bioengineering"
     },
     "ADV112": {
       "empId": "ADV112",
-      "departmentSecretaryId": "DS106",
       "user": {
         "id": "U142",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV112@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Environmental Engineering"
     },
     "ADV113": {
       "empId": "ADV113",
-      "departmentSecretaryId": "DS106",
       "user": {
         "id": "U145",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV113@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Environmental Engineering"
     },
     "ADV114": {
       "empId": "ADV114",
-      "departmentSecretaryId": "DS107",
       "user": {
         "id": "U149",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV114@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Energy Systems Engineering"
     },
     "ADV115": {
       "empId": "ADV115",
-      "departmentSecretaryId": "DS107",
       "user": {
         "id": "U152",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV115@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Energy Systems Engineering"
     },
     "ADV116": {
       "empId": "ADV116",
-      "departmentSecretaryId": "DS108",
       "user": {
         "id": "U156",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV116@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Food Engineering"
     },
     "ADV117": {
       "empId": "ADV117",
-      "departmentSecretaryId": "DS108",
       "user": {
         "id": "U159",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV117@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Food Engineering"
     },
     "ADV118": {
       "empId": "ADV118",
-      "departmentSecretaryId": "DS109",
       "user": {
         "id": "U163",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV118@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Chemical Engineering"
     },
     "ADV119": {
       "empId": "ADV119",
-      "departmentSecretaryId": "DS109",
       "user": {
         "id": "U166",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV119@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Chemical Engineering"
     },
     "ADV120": {
       "empId": "ADV120",
-      "departmentSecretaryId": "DS110",
       "user": {
         "id": "U170",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV120@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Materials Science and Engineering"
     },
     "ADV121": {
       "empId": "ADV121",
-      "departmentSecretaryId": "DS110",
       "user": {
         "id": "U173",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV121@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Materials Science and Engineering"
     },
     "ADV122": {
       "empId": "ADV122",
-      "departmentSecretaryId": "DS111",
       "user": {
         "id": "U178",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV122@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Physics"
     },
     "ADV123": {
       "empId": "ADV123",
-      "departmentSecretaryId": "DS111",
       "user": {
         "id": "U181",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV123@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Physics"
     },
     "ADV124": {
       "empId": "ADV124",
-      "departmentSecretaryId": "DS112",
       "user": {
         "id": "U185",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV124@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Photonics"
     },
     "ADV125": {
       "empId": "ADV125",
-      "departmentSecretaryId": "DS112",
       "user": {
         "id": "U188",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV125@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Photonics"
     },
     "ADV126": {
       "empId": "ADV126",
-      "departmentSecretaryId": "DS113",
       "user": {
         "id": "U192",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV126@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Chemistry"
     },
     "ADV127": {
       "empId": "ADV127",
-      "departmentSecretaryId": "DS113",
       "user": {
         "id": "U195",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV127@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Chemistry"
     },
     "ADV128": {
       "empId": "ADV128",
-      "departmentSecretaryId": "DS114",
       "user": {
         "id": "U199",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV128@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Mathematics"
     },
     "ADV129": {
       "empId": "ADV129",
-      "departmentSecretaryId": "DS114",
       "user": {
         "id": "U202",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV129@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Mathematics"
     },
     "ADV130": {
       "empId": "ADV130",
-      "departmentSecretaryId": "DS115",
       "user": {
         "id": "U206",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV130@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Molecular Biology and Genetics"
     },
     "ADV131": {
       "empId": "ADV131",
-      "departmentSecretaryId": "DS115",
       "user": {
         "id": "U209",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV131@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Molecular Biology and Genetics"
     },
     "ADV132": {
       "empId": "ADV132",
-      "departmentSecretaryId": "DS116",
       "user": {
         "id": "U214",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV132@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Industrial Design"
     },
     "ADV133": {
       "empId": "ADV133",
-      "departmentSecretaryId": "DS116",
       "user": {
         "id": "U217",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV133@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Industrial Design"
     },
     "ADV134": {
       "empId": "ADV134",
-      "departmentSecretaryId": "DS117",
       "user": {
         "id": "U221",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV134@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Architecture"
     },
     "ADV135": {
       "empId": "ADV135",
-      "departmentSecretaryId": "DS117",
       "user": {
         "id": "U224",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV135@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Architecture"
     },
     "ADV136": {
       "empId": "ADV136",
-      "departmentSecretaryId": "DS118",
       "user": {
         "id": "U228",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV136@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "City and Regional Planning"
     },
     "ADV137": {
       "empId": "ADV137",
-      "departmentSecretaryId": "DS118",
       "user": {
         "id": "U231",
         "firstName": "Professor",
         "lastName": "Advisor",
         "email": "advisorADV137@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "City and Regional Planning"
     }
   },
   "students": {
@@ -718,7 +700,7 @@
       "user": {
         "id": "U108",
         "firstName": "Omarkam",
-        "lastName": "Ibiş",
+        "lastName": "Ibi\u00c5\u0178",
         "email": "omeribis@std.iyte.edu.tr",
         "role": "STUDENT"
       },
@@ -749,8 +731,8 @@
       "advisorId": "ADV101",
       "user": {
         "id": "U109",
-        "firstName": "Yiğit",
-        "lastName": "Sarıyar",
+        "firstName": "Yi\u00c4\u0178it",
+        "lastName": "Sar\u00c4\u00b1yar",
         "email": "yigitsariyar@std.iyte.edu.tr",
         "role": "STUDENT"
       },
@@ -826,7 +808,7 @@
       "user": {
         "id": "U111",
         "firstName": "Nedret",
-        "lastName": "Çiftçi",
+        "lastName": "\u00c3\u2021ift\u00c3\u00a7i",
         "email": "nedretciftci@std.iyte.edu.tr",
         "role": "STUDENT"
       },
@@ -864,7 +846,7 @@
       "user": {
         "id": "U112",
         "firstName": "Ahmet Kerem",
-        "lastName": "Şaylı",
+        "lastName": "\u00c5\u017eayl\u00c4\u00b1",
         "email": "ahmetsayli@std.iyte.edu.tr",
         "role": "STUDENT"
       },
@@ -901,8 +883,8 @@
       "advisorId": "ADV103",
       "user": {
         "id": "U115",
-        "firstName": "Oğul Can",
-        "lastName": "Küçükbıyıklar",
+        "firstName": "O\u00c4\u0178ul Can",
+        "lastName": "K\u00c3\u00bc\u00c3\u00a7\u00c3\u00bckb\u00c4\u00b1y\u00c4\u00b1klar",
         "email": "ogulkucukbiyiklar@std.iyte.edu.tr",
         "role": "STUDENT"
       },
@@ -939,7 +921,7 @@
       "advisorId": "ADV103",
       "user": {
         "id": "U116",
-        "firstName": "Meriç",
+        "firstName": "Meri\u00c3\u00a7",
         "lastName": "Kelemeden",
         "email": "merickelemeden@std.iyte.edu.tr",
         "role": "STUDENT"

@@ -25,6 +25,10 @@ public class DepartmentList {
     @Column(nullable = false)
     private String department;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean isFinalized = false;
+
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "secretaryId", nullable = false)
     private DepartmentSecretary secretary;

@@ -100,41 +100,7 @@ class SubmissionServiceImplTest {
                 .build();
     }
 
-    @Test
-    void testSaveSubmission() {
-        Student studentForTest = Student.builder()
-                .studentNumber("S123")
-                .firstName("Test")
-                .lastName("Student")
-                .email("s123@example.com")
-                .build();
-        Submission submission = Submission.builder()
-                .submissionId("1")
-                .student(studentForTest)
-                .status(SubmissionStatus.PENDING)
-                .submissionDate(new Timestamp(System.currentTimeMillis()))
-                .content("Test submission content")
-                .build();
-        when(submissionRepository.save(any(Submission.class))).thenReturn(submission);
-    }
 
-    @Test
-    void testGetSubmissionById() {
-        Student studentForTest = Student.builder()
-                .studentNumber("S123")
-                .firstName("Test")
-                .lastName("Student")
-                .email("s123@example.com")
-                .build();
-        Submission submission = Submission.builder()
-                .submissionId("1")
-                .student(studentForTest)
-                .status(SubmissionStatus.PENDING)
-                .submissionDate(new Timestamp(System.currentTimeMillis()))
-                .content("Test submission content")
-                .build();
-        when(submissionRepository.findById("1")).thenReturn(Optional.of(submission));
-    }
 
     @Test
     void createGraduationSubmission_Success() {
@@ -361,5 +327,32 @@ class SubmissionServiceImplTest {
         });
 
         verify(submissionRepository, never()).deleteById(anyString());
+    }
+
+    @Test
+    void getSubmissionById_Success() {
+        // Arrange
+        when(submissionRepository.findById("SUB_123456789")).thenReturn(Optional.of(testSubmission));
+
+        // Act
+        Optional<SubmissionResponse> response = submissionService.getSubmissionById("SUB_123456789");
+
+        // Assert
+        assertTrue(response.isPresent());
+        assertEquals("SUB_123456789", response.get().getSubmissionId());
+        assertEquals("S101", response.get().getStudentNumber());
+        assertEquals("John Doe", response.get().getStudentName());
+    }
+
+    @Test
+    void getSubmissionById_NotFound() {
+        // Arrange
+        when(submissionRepository.findById("NONEXISTENT")).thenReturn(Optional.empty());
+
+        // Act
+        Optional<SubmissionResponse> response = submissionService.getSubmissionById("NONEXISTENT");
+
+        // Assert
+        assertFalse(response.isPresent());
     }
 }

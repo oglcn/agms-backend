@@ -213,6 +213,7 @@ public class StudentServiceImpl implements StudentService {
                 .totalCredits(enhancedStudent.getTotalCredit() > 0 ? enhancedStudent.getTotalCredit() : null)
                 .semester(enhancedStudent.getSemester() > 0 ? enhancedStudent.getSemester() : null)
                 .isCurriculumCompleted(enhancedStudent.isCurriculumCompleted())
+                .isEligibleForGraduation(enhancedStudent.isEligibleForGraduation())
                 .build();
     }
 
@@ -269,6 +270,7 @@ public class StudentServiceImpl implements StudentService {
                 .semester(enhancedStudent.getSemester())
                 .courses(enhancedStudent.getCourses())
                 .isCurriculumCompleted(enhancedStudent.isCurriculumCompleted())
+                .isEligibleForGraduation(enhancedStudent.isEligibleForGraduation())
                 .advisor(advisorInfo)
                 .build();
     }
