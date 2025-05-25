@@ -1,76 +1,820 @@
 {
   "studentAffairs": {
-    "SA001": {
-      "empId": "SA001",
+    "SA101": {
+      "empId": "SA101",
       "user": {
-        "id": "U001",
+        "id": "U101",
         "firstName": "Student",
         "lastName": "Affairs",
-        "email": "studentaffairs@test.com",
+        "email": "studentaffairs@iyte.edu.tr",
         "role": "STUDENT_AFFAIRS"
       }
     }
   },
   "deanOfficers": {
-    "DEAN001": {
-      "empId": "DEAN001",
-      "faculty": "Engineering",
+    "DO101": {
+      "empId": "DO101",
+      "faculty": "Faculty of Engineering",
       "user": {
-        "id": "U002",
+        "id": "U102",
         "firstName": "Dean",
         "lastName": "Officer",
-        "email": "dean@test.com",
+        "email": "deanDO101@iyte.edu.tr",
+        "role": "DEAN_OFFICER"
+      }
+    },
+    "DO102": {
+      "empId": "DO102",
+      "faculty": "Faculty of Science",
+      "user": {
+        "id": "U176",
+        "firstName": "Dean",
+        "lastName": "Officer",
+        "email": "deanDO102@iyte.edu.tr",
+        "role": "DEAN_OFFICER"
+      }
+    },
+    "DO103": {
+      "empId": "DO103",
+      "faculty": "Faculty of Architecture and Design",
+      "user": {
+        "id": "U212",
+        "firstName": "Dean",
+        "lastName": "Officer",
+        "email": "deanDO103@iyte.edu.tr",
         "role": "DEAN_OFFICER"
       }
     }
   },
   "departmentSecretaries": {
-    "DS001": {
-      "empId": "DS001",
+    "DS101": {
+      "empId": "DS101",
       "department": "Computer Engineering",
       "user": {
-        "id": "U003",
+        "id": "U103",
         "firstName": "Department",
         "lastName": "Secretary",
-        "email": "deptsec@test.com",
+        "email": "secretaryDS101@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS102": {
+      "empId": "DS102",
+      "department": "Electronics and Communication Engineering",
+      "user": {
+        "id": "U113",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS102@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS103": {
+      "empId": "DS103",
+      "department": "Civil Engineering",
+      "user": {
+        "id": "U120",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS103@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS104": {
+      "empId": "DS104",
+      "department": "Mechanical Engineering",
+      "user": {
+        "id": "U127",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS104@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS105": {
+      "empId": "DS105",
+      "department": "Bioengineering",
+      "user": {
+        "id": "U134",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS105@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS106": {
+      "empId": "DS106",
+      "department": "Environmental Engineering",
+      "user": {
+        "id": "U141",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS106@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS107": {
+      "empId": "DS107",
+      "department": "Energy Systems Engineering",
+      "user": {
+        "id": "U148",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS107@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS108": {
+      "empId": "DS108",
+      "department": "Food Engineering",
+      "user": {
+        "id": "U155",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS108@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS109": {
+      "empId": "DS109",
+      "department": "Chemical Engineering",
+      "user": {
+        "id": "U162",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS109@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS110": {
+      "empId": "DS110",
+      "department": "Materials Science and Engineering",
+      "user": {
+        "id": "U169",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS110@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS111": {
+      "empId": "DS111",
+      "department": "Physics",
+      "user": {
+        "id": "U177",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS111@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS112": {
+      "empId": "DS112",
+      "department": "Photonics",
+      "user": {
+        "id": "U184",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS112@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS113": {
+      "empId": "DS113",
+      "department": "Chemistry",
+      "user": {
+        "id": "U191",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS113@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS114": {
+      "empId": "DS114",
+      "department": "Mathematics",
+      "user": {
+        "id": "U198",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS114@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS115": {
+      "empId": "DS115",
+      "department": "Molecular Biology and Genetics",
+      "user": {
+        "id": "U205",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS115@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS116": {
+      "empId": "DS116",
+      "department": "Industrial Design",
+      "user": {
+        "id": "U213",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS116@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS117": {
+      "empId": "DS117",
+      "department": "Architecture",
+      "user": {
+        "id": "U220",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS117@iyte.edu.tr",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    },
+    "DS118": {
+      "empId": "DS118",
+      "department": "City and Regional Planning",
+      "user": {
+        "id": "U227",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "secretaryDS118@iyte.edu.tr",
         "role": "DEPARTMENT_SECRETARY"
       }
     }
   },
   "advisors": {
-    "ADV001": {
-      "empId": "ADV001",
-      "department": "Computer Engineering",
+    "ADV101": {
+      "empId": "ADV101",
       "user": {
-        "id": "U004",
-        "firstName": "Test",
+        "id": "U104",
+        "firstName": "Professor",
         "lastName": "Advisor",
-        "email": "advisor@test.com",
+        "email": "advisorADV101@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Computer Engineering"
     },
-    "ADV002": {
-      "empId": "ADV002",
-      "department": "Computer Engineering",
+    "ADV102": {
+      "empId": "ADV102",
       "user": {
-        "id": "U007",
-        "firstName": "Second",
+        "id": "U105",
+        "firstName": "Professor",
         "lastName": "Advisor",
-        "email": "advisor2@test.com",
+        "email": "advisorADV102@iyte.edu.tr",
         "role": "ADVISOR"
-      }
+      },
+      "department": "Computer Engineering"
+    },
+    "ADV103": {
+      "empId": "ADV103",
+      "user": {
+        "id": "U106",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV103@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Computer Engineering"
+    },
+    "ADV104": {
+      "empId": "ADV104",
+      "user": {
+        "id": "U114",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV104@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Electronics and Communication Engineering"
+    },
+    "ADV105": {
+      "empId": "ADV105",
+      "user": {
+        "id": "U117",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV105@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Electronics and Communication Engineering"
+    },
+    "ADV106": {
+      "empId": "ADV106",
+      "user": {
+        "id": "U121",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV106@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Civil Engineering"
+    },
+    "ADV107": {
+      "empId": "ADV107",
+      "user": {
+        "id": "U124",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV107@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Civil Engineering"
+    },
+    "ADV108": {
+      "empId": "ADV108",
+      "user": {
+        "id": "U128",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV108@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Mechanical Engineering"
+    },
+    "ADV109": {
+      "empId": "ADV109",
+      "user": {
+        "id": "U131",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV109@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Mechanical Engineering"
+    },
+    "ADV110": {
+      "empId": "ADV110",
+      "user": {
+        "id": "U135",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV110@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Bioengineering"
+    },
+    "ADV111": {
+      "empId": "ADV111",
+      "user": {
+        "id": "U138",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV111@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Bioengineering"
+    },
+    "ADV112": {
+      "empId": "ADV112",
+      "user": {
+        "id": "U142",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV112@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Environmental Engineering"
+    },
+    "ADV113": {
+      "empId": "ADV113",
+      "user": {
+        "id": "U145",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV113@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Environmental Engineering"
+    },
+    "ADV114": {
+      "empId": "ADV114",
+      "user": {
+        "id": "U149",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV114@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Energy Systems Engineering"
+    },
+    "ADV115": {
+      "empId": "ADV115",
+      "user": {
+        "id": "U152",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV115@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Energy Systems Engineering"
+    },
+    "ADV116": {
+      "empId": "ADV116",
+      "user": {
+        "id": "U156",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV116@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Food Engineering"
+    },
+    "ADV117": {
+      "empId": "ADV117",
+      "user": {
+        "id": "U159",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV117@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Food Engineering"
+    },
+    "ADV118": {
+      "empId": "ADV118",
+      "user": {
+        "id": "U163",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV118@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Chemical Engineering"
+    },
+    "ADV119": {
+      "empId": "ADV119",
+      "user": {
+        "id": "U166",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV119@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Chemical Engineering"
+    },
+    "ADV120": {
+      "empId": "ADV120",
+      "user": {
+        "id": "U170",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV120@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Materials Science and Engineering"
+    },
+    "ADV121": {
+      "empId": "ADV121",
+      "user": {
+        "id": "U173",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV121@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Materials Science and Engineering"
+    },
+    "ADV122": {
+      "empId": "ADV122",
+      "user": {
+        "id": "U178",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV122@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Physics"
+    },
+    "ADV123": {
+      "empId": "ADV123",
+      "user": {
+        "id": "U181",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV123@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Physics"
+    },
+    "ADV124": {
+      "empId": "ADV124",
+      "user": {
+        "id": "U185",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV124@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Photonics"
+    },
+    "ADV125": {
+      "empId": "ADV125",
+      "user": {
+        "id": "U188",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV125@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Photonics"
+    },
+    "ADV126": {
+      "empId": "ADV126",
+      "user": {
+        "id": "U192",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV126@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Chemistry"
+    },
+    "ADV127": {
+      "empId": "ADV127",
+      "user": {
+        "id": "U195",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV127@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Chemistry"
+    },
+    "ADV128": {
+      "empId": "ADV128",
+      "user": {
+        "id": "U199",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV128@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Mathematics"
+    },
+    "ADV129": {
+      "empId": "ADV129",
+      "user": {
+        "id": "U202",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV129@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Mathematics"
+    },
+    "ADV130": {
+      "empId": "ADV130",
+      "user": {
+        "id": "U206",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV130@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Molecular Biology and Genetics"
+    },
+    "ADV131": {
+      "empId": "ADV131",
+      "user": {
+        "id": "U209",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV131@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Molecular Biology and Genetics"
+    },
+    "ADV132": {
+      "empId": "ADV132",
+      "user": {
+        "id": "U214",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV132@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Industrial Design"
+    },
+    "ADV133": {
+      "empId": "ADV133",
+      "user": {
+        "id": "U217",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV133@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Industrial Design"
+    },
+    "ADV134": {
+      "empId": "ADV134",
+      "user": {
+        "id": "U221",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV134@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Architecture"
+    },
+    "ADV135": {
+      "empId": "ADV135",
+      "user": {
+        "id": "U224",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV135@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "Architecture"
+    },
+    "ADV136": {
+      "empId": "ADV136",
+      "user": {
+        "id": "U228",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV136@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "City and Regional Planning"
+    },
+    "ADV137": {
+      "empId": "ADV137",
+      "user": {
+        "id": "U231",
+        "firstName": "Professor",
+        "lastName": "Advisor",
+        "email": "advisorADV137@iyte.edu.tr",
+        "role": "ADVISOR"
+      },
+      "department": "City and Regional Planning"
     }
   },
   "students": {
-    "123456789": {
-      "studentNumber": "123456789",
+    "S101": {
+      "studentNumber": "S101",
+      "advisorId": "ADV101",
       "department": "Computer Engineering",
-      "advisorId": "ADV001",
       "user": {
-        "id": "U005",
-        "firstName": "Test",
-        "lastName": "Student",
-        "email": "student@test.com",
+        "id": "U107",
+        "firstName": "Necla",
+        "lastName": "Akyol",
+        "email": "neclaakyol@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 6,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CB",
+          "credit": 6
+        }
+      ]
+    },
+    "S102": {
+      "studentNumber": "S102",
+      "advisorId": "ADV101",
+      "department": "Computer Engineering",
+      "user": {
+        "id": "U108",
+        "firstName": "Omarkam",
+        "lastName": "İbiş",
+        "email": "omeribis@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        }
+      ]
+    },
+    "S103": {
+      "studentNumber": "S103",
+      "advisorId": "ADV101",
+      "department": "Computer Engineering",
+      "user": {
+        "id": "U109",
+        "firstName": "Yiğit",
+        "lastName": "Sarıyar",
+        "email": "yigitsariyar@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "HIST201",
+          "name": "History",
+          "grade": "AA",
+          "credit": 3
+        }
+      ]
+    },
+    "S104": {
+      "studentNumber": "S104",
+      "advisorId": "ADV101",
+      "department": "Computer Engineering",
+      "user": {
+        "id": "U110",
+        "firstName": "Kaan",
+        "lastName": "Cesur",
+        "email": "kaancesur@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "PHYS101",
+          "name": "Physics I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "PHYS102",
+          "name": "Physics II",
+          "grade": "BA",
+          "credit": 6
+        }
+      ]
+    },
+    "S105": {
+      "studentNumber": "S105",
+      "advisorId": "ADV102",
+      "department": "Computer Engineering",
+      "user": {
+        "id": "U111",
+        "firstName": "Nedret",
+        "lastName": "Çiftçi",
+        "email": "nedretciftci@std.iyte.edu.tr",
         "role": "STUDENT"
       },
       "semester": 8,
@@ -94,52 +838,337 @@
           "credit": 6
         },
         {
-          "code": "CS101",
-          "name": "Computer Science I",
+          "code": "MATH102",
+          "name": "Calculus II",
           "grade": "AA",
-          "credit": 5
+          "credit": 6
         }
       ]
     },
-    "987654321": {
-      "studentNumber": "987654321",
+    "S106": {
+      "studentNumber": "S106",
+      "advisorId": "ADV102",
       "department": "Computer Engineering",
-      "advisorId": "ADV002",
       "user": {
-        "id": "U006",
-        "firstName": "Ineligible",
-        "lastName": "Student",
-        "email": "ineligible@test.com",
+        "id": "U112",
+        "firstName": "Ahmet Kerem",
+        "lastName": "Şaylı",
+        "email": "ahmetsayli@std.iyte.edu.tr",
         "role": "STUDENT"
       },
-      "semester": 4,
+      "semester": 8,
       "courses": [
         {
           "code": "ENG101",
           "name": "English I",
-          "grade": "FF",
+          "grade": "CC",
           "credit": 6
         },
         {
           "code": "ENG102",
           "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
           "grade": "DD",
           "credit": 6
         }
       ]
     },
-    "111222333": {
-      "studentNumber": "111222333",
+    "S107": {
+      "studentNumber": "S107",
+      "advisorId": "ADV103",
       "department": "Computer Engineering",
-      "advisorId": "ADV001",
       "user": {
-        "id": "U008",
-        "firstName": "Third",
-        "lastName": "Student",
-        "email": "student3@test.com",
+        "id": "U115",
+        "firstName": "Oğul Can",
+        "lastName": "Küçükbıyıklar",
+        "email": "ogulkucukbiyiklar@std.iyte.edu.tr",
         "role": "STUDENT"
       },
-      "semester": 6,
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "FD",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CC",
+          "credit": 6
+        }
+      ]
+    },
+    "S108": {
+      "studentNumber": "S108",
+      "advisorId": "ADV103",
+      "department": "Computer Engineering",
+      "user": {
+        "id": "U116",
+        "firstName": "Meriç",
+        "lastName": "Kelemeden",
+        "email": "merickelemeden@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BA",
+          "credit": 6
+        }
+      ]
+    },
+    "S109": {
+      "studentNumber": "S109",
+      "advisorId": "ADV104",
+      "department": "Electronics and Communication Engineering",
+      "user": {
+        "id": "U118",
+        "firstName": "Student",
+        "lastName": "S109",
+        "email": "s109@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CB",
+          "credit": 6
+        }
+      ]
+    },
+    "S110": {
+      "studentNumber": "S110",
+      "advisorId": "ADV105",
+      "department": "Electronics and Communication Engineering",
+      "user": {
+        "id": "U119",
+        "firstName": "Student",
+        "lastName": "S110",
+        "email": "s110@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CC",
+          "credit": 6
+        }
+      ]
+    },
+    "S111": {
+      "studentNumber": "S111",
+      "advisorId": "ADV106",
+      "department": "Civil Engineering",
+      "user": {
+        "id": "U122",
+        "firstName": "Student",
+        "lastName": "S111",
+        "email": "s111@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BB",
+          "credit": 6
+        }
+      ]
+    },
+    "S112": {
+      "studentNumber": "S112",
+      "advisorId": "ADV106",
+      "department": "Civil Engineering",
+      "user": {
+        "id": "U123",
+        "firstName": "Student",
+        "lastName": "S112",
+        "email": "s112@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BA",
+          "credit": 6
+        }
+      ]
+    },
+    "S113": {
+      "studentNumber": "S113",
+      "advisorId": "ADV107",
+      "department": "Civil Engineering",
+      "user": {
+        "id": "U125",
+        "firstName": "Student",
+        "lastName": "S113",
+        "email": "s113@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BA",
+          "credit": 6
+        }
+      ]
+    },
+    "S114": {
+      "studentNumber": "S114",
+      "advisorId": "ADV107",
+      "department": "Civil Engineering",
+      "user": {
+        "id": "U126",
+        "firstName": "Student",
+        "lastName": "S114",
+        "email": "s114@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
       "courses": [
         {
           "code": "ENG101",
@@ -148,12 +1177,2364 @@
           "credit": 6
         },
         {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
           "code": "MATH101",
           "name": "Calculus I",
           "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S115": {
+      "studentNumber": "S115",
+      "advisorId": "ADV108",
+      "department": "Mechanical Engineering",
+      "user": {
+        "id": "U129",
+        "firstName": "Student",
+        "lastName": "S115",
+        "email": "s115@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CC",
+          "credit": 6
+        }
+      ]
+    },
+    "S116": {
+      "studentNumber": "S116",
+      "advisorId": "ADV108",
+      "department": "Mechanical Engineering",
+      "user": {
+        "id": "U130",
+        "firstName": "Student",
+        "lastName": "S116",
+        "email": "s116@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CB",
+          "credit": 6
+        }
+      ]
+    },
+    "S117": {
+      "studentNumber": "S117",
+      "advisorId": "ADV109",
+      "department": "Mechanical Engineering",
+      "user": {
+        "id": "U132",
+        "firstName": "Student",
+        "lastName": "S117",
+        "email": "s117@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BA",
+          "credit": 6
+        }
+      ]
+    },
+    "S118": {
+      "studentNumber": "S118",
+      "advisorId": "ADV109",
+      "department": "Mechanical Engineering",
+      "user": {
+        "id": "U133",
+        "firstName": "Student",
+        "lastName": "S118",
+        "email": "s118@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BA",
+          "credit": 6
+        }
+      ]
+    },
+    "S119": {
+      "studentNumber": "S119",
+      "advisorId": "ADV110",
+      "department": "Bioengineering",
+      "user": {
+        "id": "U136",
+        "firstName": "Student",
+        "lastName": "S119",
+        "email": "s119@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CC",
+          "credit": 6
+        }
+      ]
+    },
+    "S120": {
+      "studentNumber": "S120",
+      "advisorId": "ADV110",
+      "department": "Bioengineering",
+      "user": {
+        "id": "U137",
+        "firstName": "Student",
+        "lastName": "S120",
+        "email": "s120@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CC",
+          "credit": 6
+        }
+      ]
+    },
+    "S121": {
+      "studentNumber": "S121",
+      "advisorId": "ADV111",
+      "department": "Bioengineering",
+      "user": {
+        "id": "U139",
+        "firstName": "Student",
+        "lastName": "S121",
+        "email": "s121@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CB",
+          "credit": 6
+        }
+      ]
+    },
+    "S122": {
+      "studentNumber": "S122",
+      "advisorId": "ADV111",
+      "department": "Bioengineering",
+      "user": {
+        "id": "U140",
+        "firstName": "Student",
+        "lastName": "S122",
+        "email": "s122@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CB",
+          "credit": 6
+        }
+      ]
+    },
+    "S123": {
+      "studentNumber": "S123",
+      "advisorId": "ADV112",
+      "department": "Environmental Engineering",
+      "user": {
+        "id": "U143",
+        "firstName": "Student",
+        "lastName": "S123",
+        "email": "s123@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BA",
+          "credit": 6
+        }
+      ]
+    },
+    "S124": {
+      "studentNumber": "S124",
+      "advisorId": "ADV112",
+      "department": "Environmental Engineering",
+      "user": {
+        "id": "U144",
+        "firstName": "Student",
+        "lastName": "S124",
+        "email": "s124@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CB",
+          "credit": 6
+        }
+      ]
+    },
+    "S125": {
+      "studentNumber": "S125",
+      "advisorId": "ADV113",
+      "department": "Environmental Engineering",
+      "user": {
+        "id": "U146",
+        "firstName": "Student",
+        "lastName": "S125",
+        "email": "s125@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CB",
+          "credit": 6
+        }
+      ]
+    },
+    "S126": {
+      "studentNumber": "S126",
+      "advisorId": "ADV113",
+      "department": "Environmental Engineering",
+      "user": {
+        "id": "U147",
+        "firstName": "Student",
+        "lastName": "S126",
+        "email": "s126@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CB",
+          "credit": 6
+        }
+      ]
+    },
+    "S127": {
+      "studentNumber": "S127",
+      "advisorId": "ADV114",
+      "department": "Energy Systems Engineering",
+      "user": {
+        "id": "U150",
+        "firstName": "Student",
+        "lastName": "S127",
+        "email": "s127@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CC",
+          "credit": 6
+        }
+      ]
+    },
+    "S128": {
+      "studentNumber": "S128",
+      "advisorId": "ADV114",
+      "department": "Energy Systems Engineering",
+      "user": {
+        "id": "U151",
+        "firstName": "Student",
+        "lastName": "S128",
+        "email": "s128@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BB",
+          "credit": 6
+        }
+      ]
+    },
+    "S129": {
+      "studentNumber": "S129",
+      "advisorId": "ADV115",
+      "department": "Energy Systems Engineering",
+      "user": {
+        "id": "U153",
+        "firstName": "Student",
+        "lastName": "S129",
+        "email": "s129@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CB",
+          "credit": 6
+        }
+      ]
+    },
+    "S130": {
+      "studentNumber": "S130",
+      "advisorId": "ADV115",
+      "department": "Energy Systems Engineering",
+      "user": {
+        "id": "U154",
+        "firstName": "Student",
+        "lastName": "S130",
+        "email": "s130@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BA",
+          "credit": 6
+        }
+      ]
+    },
+    "S131": {
+      "studentNumber": "S131",
+      "advisorId": "ADV116",
+      "department": "Food Engineering",
+      "user": {
+        "id": "U157",
+        "firstName": "Student",
+        "lastName": "S131",
+        "email": "s131@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CB",
+          "credit": 6
+        }
+      ]
+    },
+    "S132": {
+      "studentNumber": "S132",
+      "advisorId": "ADV116",
+      "department": "Food Engineering",
+      "user": {
+        "id": "U158",
+        "firstName": "Student",
+        "lastName": "S132",
+        "email": "s132@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S133": {
+      "studentNumber": "S133",
+      "advisorId": "ADV117",
+      "department": "Food Engineering",
+      "user": {
+        "id": "U160",
+        "firstName": "Student",
+        "lastName": "S133",
+        "email": "s133@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S134": {
+      "studentNumber": "S134",
+      "advisorId": "ADV117",
+      "department": "Food Engineering",
+      "user": {
+        "id": "U161",
+        "firstName": "Student",
+        "lastName": "S134",
+        "email": "s134@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BA",
+          "credit": 6
+        }
+      ]
+    },
+    "S135": {
+      "studentNumber": "S135",
+      "advisorId": "ADV118",
+      "department": "Chemical Engineering",
+      "user": {
+        "id": "U164",
+        "firstName": "Student",
+        "lastName": "S135",
+        "email": "s135@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BB",
+          "credit": 6
+        }
+      ]
+    },
+    "S136": {
+      "studentNumber": "S136",
+      "advisorId": "ADV118",
+      "department": "Chemical Engineering",
+      "user": {
+        "id": "U165",
+        "firstName": "Student",
+        "lastName": "S136",
+        "email": "s136@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S137": {
+      "studentNumber": "S137",
+      "advisorId": "ADV119",
+      "department": "Chemical Engineering",
+      "user": {
+        "id": "U167",
+        "firstName": "Student",
+        "lastName": "S137",
+        "email": "s137@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CB",
+          "credit": 6
+        }
+      ]
+    },
+    "S138": {
+      "studentNumber": "S138",
+      "advisorId": "ADV119",
+      "department": "Chemical Engineering",
+      "user": {
+        "id": "U168",
+        "firstName": "Student",
+        "lastName": "S138",
+        "email": "s138@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CC",
+          "credit": 6
+        }
+      ]
+    },
+    "S139": {
+      "studentNumber": "S139",
+      "advisorId": "ADV120",
+      "department": "Materials Science and Engineering",
+      "user": {
+        "id": "U171",
+        "firstName": "Student",
+        "lastName": "S139",
+        "email": "s139@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S140": {
+      "studentNumber": "S140",
+      "advisorId": "ADV120",
+      "department": "Materials Science and Engineering",
+      "user": {
+        "id": "U172",
+        "firstName": "Student",
+        "lastName": "S140",
+        "email": "s140@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S141": {
+      "studentNumber": "S141",
+      "advisorId": "ADV121",
+      "department": "Materials Science and Engineering",
+      "user": {
+        "id": "U174",
+        "firstName": "Student",
+        "lastName": "S141",
+        "email": "s141@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BB",
+          "credit": 6
+        }
+      ]
+    },
+    "S142": {
+      "studentNumber": "S142",
+      "advisorId": "ADV121",
+      "department": "Materials Science and Engineering",
+      "user": {
+        "id": "U175",
+        "firstName": "Student",
+        "lastName": "S142",
+        "email": "s142@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BA",
+          "credit": 6
+        }
+      ]
+    },
+    "S143": {
+      "studentNumber": "S143",
+      "advisorId": "ADV122",
+      "department": "Physics",
+      "user": {
+        "id": "U179",
+        "firstName": "Student",
+        "lastName": "S143",
+        "email": "s143@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BA",
+          "credit": 6
+        }
+      ]
+    },
+    "S144": {
+      "studentNumber": "S144",
+      "advisorId": "ADV122",
+      "department": "Physics",
+      "user": {
+        "id": "U180",
+        "firstName": "Student",
+        "lastName": "S144",
+        "email": "s144@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S145": {
+      "studentNumber": "S145",
+      "advisorId": "ADV123",
+      "department": "Physics",
+      "user": {
+        "id": "U182",
+        "firstName": "Student",
+        "lastName": "S145",
+        "email": "s145@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S146": {
+      "studentNumber": "S146",
+      "advisorId": "ADV123",
+      "department": "Physics",
+      "user": {
+        "id": "U183",
+        "firstName": "Student",
+        "lastName": "S146",
+        "email": "s146@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S147": {
+      "studentNumber": "S147",
+      "advisorId": "ADV124",
+      "department": "Photonics",
+      "user": {
+        "id": "U186",
+        "firstName": "Student",
+        "lastName": "S147",
+        "email": "s147@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CB",
+          "credit": 6
+        }
+      ]
+    },
+    "S148": {
+      "studentNumber": "S148",
+      "advisorId": "ADV124",
+      "department": "Photonics",
+      "user": {
+        "id": "U187",
+        "firstName": "Student",
+        "lastName": "S148",
+        "email": "s148@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BB",
+          "credit": 6
+        }
+      ]
+    },
+    "S149": {
+      "studentNumber": "S149",
+      "advisorId": "ADV125",
+      "department": "Photonics",
+      "user": {
+        "id": "U189",
+        "firstName": "Student",
+        "lastName": "S149",
+        "email": "s149@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BB",
+          "credit": 6
+        }
+      ]
+    },
+    "S150": {
+      "studentNumber": "S150",
+      "advisorId": "ADV125",
+      "department": "Photonics",
+      "user": {
+        "id": "U190",
+        "firstName": "Student",
+        "lastName": "S150",
+        "email": "s150@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S151": {
+      "studentNumber": "S151",
+      "advisorId": "ADV126",
+      "department": "Chemistry",
+      "user": {
+        "id": "U193",
+        "firstName": "Student",
+        "lastName": "S151",
+        "email": "s151@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CC",
+          "credit": 6
+        }
+      ]
+    },
+    "S152": {
+      "studentNumber": "S152",
+      "advisorId": "ADV126",
+      "department": "Chemistry",
+      "user": {
+        "id": "U194",
+        "firstName": "Student",
+        "lastName": "S152",
+        "email": "s152@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CC",
+          "credit": 6
+        }
+      ]
+    },
+    "S153": {
+      "studentNumber": "S153",
+      "advisorId": "ADV127",
+      "department": "Chemistry",
+      "user": {
+        "id": "U196",
+        "firstName": "Student",
+        "lastName": "S153",
+        "email": "s153@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CC",
+          "credit": 6
+        }
+      ]
+    },
+    "S154": {
+      "studentNumber": "S154",
+      "advisorId": "ADV127",
+      "department": "Chemistry",
+      "user": {
+        "id": "U197",
+        "firstName": "Student",
+        "lastName": "S154",
+        "email": "s154@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BA",
+          "credit": 6
+        }
+      ]
+    },
+    "S155": {
+      "studentNumber": "S155",
+      "advisorId": "ADV128",
+      "department": "Mathematics",
+      "user": {
+        "id": "U200",
+        "firstName": "Student",
+        "lastName": "S155",
+        "email": "s155@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CC",
+          "credit": 6
+        }
+      ]
+    },
+    "S156": {
+      "studentNumber": "S156",
+      "advisorId": "ADV128",
+      "department": "Mathematics",
+      "user": {
+        "id": "U201",
+        "firstName": "Student",
+        "lastName": "S156",
+        "email": "s156@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BB",
+          "credit": 6
+        }
+      ]
+    },
+    "S157": {
+      "studentNumber": "S157",
+      "advisorId": "ADV129",
+      "department": "Mathematics",
+      "user": {
+        "id": "U203",
+        "firstName": "Student",
+        "lastName": "S157",
+        "email": "s157@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S158": {
+      "studentNumber": "S158",
+      "advisorId": "ADV129",
+      "department": "Mathematics",
+      "user": {
+        "id": "U204",
+        "firstName": "Student",
+        "lastName": "S158",
+        "email": "s158@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S159": {
+      "studentNumber": "S159",
+      "advisorId": "ADV130",
+      "department": "Molecular Biology and Genetics",
+      "user": {
+        "id": "U207",
+        "firstName": "Student",
+        "lastName": "S159",
+        "email": "s159@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S160": {
+      "studentNumber": "S160",
+      "advisorId": "ADV130",
+      "department": "Molecular Biology and Genetics",
+      "user": {
+        "id": "U208",
+        "firstName": "Student",
+        "lastName": "S160",
+        "email": "s160@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BB",
+          "credit": 6
+        }
+      ]
+    },
+    "S161": {
+      "studentNumber": "S161",
+      "advisorId": "ADV131",
+      "department": "Molecular Biology and Genetics",
+      "user": {
+        "id": "U210",
+        "firstName": "Student",
+        "lastName": "S161",
+        "email": "s161@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BB",
+          "credit": 6
+        }
+      ]
+    },
+    "S162": {
+      "studentNumber": "S162",
+      "advisorId": "ADV131",
+      "department": "Molecular Biology and Genetics",
+      "user": {
+        "id": "U211",
+        "firstName": "Student",
+        "lastName": "S162",
+        "email": "s162@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CB",
+          "credit": 6
+        }
+      ]
+    },
+    "S163": {
+      "studentNumber": "S163",
+      "advisorId": "ADV132",
+      "department": "Industrial Design",
+      "user": {
+        "id": "U215",
+        "firstName": "Student",
+        "lastName": "S163",
+        "email": "s163@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S164": {
+      "studentNumber": "S164",
+      "advisorId": "ADV132",
+      "department": "Industrial Design",
+      "user": {
+        "id": "U216",
+        "firstName": "Student",
+        "lastName": "S164",
+        "email": "s164@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BB",
+          "credit": 6
+        }
+      ]
+    },
+    "S165": {
+      "studentNumber": "S165",
+      "advisorId": "ADV133",
+      "department": "Industrial Design",
+      "user": {
+        "id": "U218",
+        "firstName": "Student",
+        "lastName": "S165",
+        "email": "s165@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BB",
+          "credit": 6
+        }
+      ]
+    },
+    "S166": {
+      "studentNumber": "S166",
+      "advisorId": "ADV133",
+      "department": "Industrial Design",
+      "user": {
+        "id": "U219",
+        "firstName": "Student",
+        "lastName": "S166",
+        "email": "s166@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S167": {
+      "studentNumber": "S167",
+      "advisorId": "ADV134",
+      "department": "Architecture",
+      "user": {
+        "id": "U222",
+        "firstName": "Student",
+        "lastName": "S167",
+        "email": "s167@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BB",
+          "credit": 6
+        }
+      ]
+    },
+    "S168": {
+      "studentNumber": "S168",
+      "advisorId": "ADV134",
+      "department": "Architecture",
+      "user": {
+        "id": "U223",
+        "firstName": "Student",
+        "lastName": "S168",
+        "email": "s168@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S169": {
+      "studentNumber": "S169",
+      "advisorId": "ADV135",
+      "department": "Architecture",
+      "user": {
+        "id": "U225",
+        "firstName": "Student",
+        "lastName": "S169",
+        "email": "s169@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S170": {
+      "studentNumber": "S170",
+      "advisorId": "ADV135",
+      "department": "Architecture",
+      "user": {
+        "id": "U226",
+        "firstName": "Student",
+        "lastName": "S170",
+        "email": "s170@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CB",
+          "credit": 6
+        }
+      ]
+    },
+    "S171": {
+      "studentNumber": "S171",
+      "advisorId": "ADV136",
+      "department": "City and Regional Planning",
+      "user": {
+        "id": "U229",
+        "firstName": "Student",
+        "lastName": "S171",
+        "email": "s171@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CB",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    },
+    "S172": {
+      "studentNumber": "S172",
+      "advisorId": "ADV136",
+      "department": "City and Regional Planning",
+      "user": {
+        "id": "U230",
+        "firstName": "Student",
+        "lastName": "S172",
+        "email": "s172@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BA",
+          "credit": 6
+        }
+      ]
+    },
+    "S173": {
+      "studentNumber": "S173",
+      "advisorId": "ADV137",
+      "department": "City and Regional Planning",
+      "user": {
+        "id": "U232",
+        "firstName": "Student",
+        "lastName": "S173",
+        "email": "s173@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "CC",
+          "credit": 6
+        }
+      ]
+    },
+    "S174": {
+      "studentNumber": "S174",
+      "advisorId": "ADV137",
+      "department": "City and Regional Planning",
+      "user": {
+        "id": "U233",
+        "firstName": "Student",
+        "lastName": "S174",
+        "email": "s174@std.iyte.edu.tr",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "CC",
+          "credit": 6
+        },
+        {
+          "code": "MATH102",
+          "name": "Calculus II",
+          "grade": "BA",
           "credit": 6
         }
       ]
     }
   }
-} 
+}

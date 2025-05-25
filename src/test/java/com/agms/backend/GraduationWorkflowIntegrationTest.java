@@ -78,18 +78,18 @@ public class GraduationWorkflowIntegrationTest {
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
-    // Test data IDs - these will be loaded from UBYS data
-    private static final String STUDENT_EMAIL = "student@test.com";
-    private static final String STUDENT_NUMBER = "123456789";
-    private static final String ADVISOR_EMP_ID = "ADV001";
-    private static final String ADVISOR_EMAIL = "advisor@test.com";
-    private static final String DEPT_SEC_EMP_ID = "DS001";
-    private static final String DEPT_SEC_EMAIL = "deptsec@test.com";
-    private static final String DEAN_EMP_ID = "DEAN001";
-    private static final String DEAN_EMAIL = "dean@test.com";
-    private static final String SA_EMP_ID = "SA001";
-    private static final String SA_EMAIL = "studentaffairs@test.com";
-    private static final String TEST_TERM = "2023-FALL";
+    // Test data IDs - these will be loaded from main UBYS data
+    private static final String STUDENT_EMAIL = "neclaakyol@std.iyte.edu.tr";
+    private static final String STUDENT_NUMBER = "S101";
+    private static final String ADVISOR_EMP_ID = "ADV101";
+    private static final String ADVISOR_EMAIL = "advisorADV101@iyte.edu.tr";
+    private static final String DEPT_SEC_EMP_ID = "DS101";
+    private static final String DEPT_SEC_EMAIL = "secretaryDS101@iyte.edu.tr";
+    private static final String DEAN_EMP_ID = "DO101";
+    private static final String DEAN_EMAIL = "deanDO101@iyte.edu.tr";
+    private static final String SA_EMP_ID = "SA101";
+    private static final String SA_EMAIL = "studentaffairs@iyte.edu.tr";
+    private static final String TEST_TERM = "2024-SPRING";
 
     @BeforeEach
     void setUp() {

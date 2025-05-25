@@ -6,6 +6,7 @@ import com.agms.backend.repository.*;
 import com.agms.backend.service.UbysService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +20,6 @@ import java.util.Map;
 @Configuration
 @RequiredArgsConstructor
 @Component
-@org.springframework.context.annotation.Profile("!test")
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -36,8 +36,16 @@ public class DataInitializer implements CommandLineRunner {
     private final UbysService ubysService;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.data.initialization.enabled:true}")
+    private boolean dataInitializationEnabled;
+
     @Override
     public void run(String... args) {
+        if (!dataInitializationEnabled) {
+            log.info("Data initialization is disabled. Skipping UBYS data initialization.");
+            return;
+        }
+
         log.info("Starting data initialization from UBYS...");
 
         try {

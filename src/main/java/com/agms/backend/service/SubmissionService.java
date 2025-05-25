@@ -2,6 +2,7 @@ package com.agms.backend.service;
 
 import com.agms.backend.dto.CreateSubmissionRequest;
 import com.agms.backend.dto.SubmissionResponse;
+import com.agms.backend.dto.SubordinateStatusResponse;
 import com.agms.backend.model.Submission;
 import com.agms.backend.model.SubmissionStatus;
 
@@ -132,4 +133,12 @@ public interface SubmissionService {
      * Check if all prerequisite lists are finalized for current user's role
      */
     boolean arePrerequisiteListsFinalized();
+    
+    /**
+     * Get finalization status of subordinates for current authenticated user
+     * - DEPARTMENT_SECRETARY: returns finalization status of advisors under their department
+     * - DEAN_OFFICER: returns finalization status of department secretaries under their faculty
+     * - STUDENT_AFFAIRS: returns finalization status of dean officers
+     */
+    List<SubordinateStatusResponse> getSubordinateFinalizationStatus();
 } 

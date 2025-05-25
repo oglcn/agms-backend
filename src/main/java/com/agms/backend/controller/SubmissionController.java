@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.agms.backend.dto.CreateSubmissionRequest;
 import com.agms.backend.dto.StartRegularGraduationRequest;
 import com.agms.backend.dto.SubmissionResponse;
+import com.agms.backend.dto.SubordinateStatusResponse;
 import com.agms.backend.model.SubmissionStatus;
 import com.agms.backend.service.SubmissionService;
 
@@ -369,6 +370,27 @@ public class SubmissionController {
         } catch (Exception e) {
             log.error("Error checking prerequisite lists finalization: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+    }
+
+    /**
+     * Get finalization status of subordinates for current authenticated user
+     */
+    @GetMapping("/subordinate-status")
+    @PreAuthorize("hasRole('DEPARTMENT_SECRETARY') or hasRole('DEAN_OFFICER') or hasRole('STUDENT_AFFAIRS')")
+    @Operation(summary = "Get finalization status of subordinates - Department Secretary sees advisors, Dean Officer sees department secretaries, Student Affairs sees dean officers")
+    public ResponseEntity<List<SubordinateStatusResponse>> getSubordinateFinalizationStatus() {
+        log.debug("Getting subordinate finalization status for current authenticated user");
+
+        try {
+            List<SubordinateStatusResponse> subordinateStatus = submissionService.getSubordinateFinalizationStatus();
+            return ResponseEntity.ok(subordinateStatus);
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid role for subordinate status check: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (Exception e) {
+            log.error("Error getting subordinate finalization status: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

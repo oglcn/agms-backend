@@ -2,6 +2,7 @@ package com.agms.backend.service.impl;
 
 import com.agms.backend.dto.CreateSubmissionRequest;
 import com.agms.backend.dto.SubmissionResponse;
+import com.agms.backend.dto.SubordinateStatusResponse;
 import com.agms.backend.exception.ResourceNotFoundException;
 import com.agms.backend.model.AdvisorList;
 import com.agms.backend.model.DepartmentList;
@@ -1174,5 +1175,116 @@ public class SubmissionServiceImpl implements SubmissionService {
         
         log.info("📧 Summary report sent to Student Affairs for graduation: {}", graduation.getGraduationId());
         log.info("🎓 Graduation process fully completed for term: {}", graduation.getTerm());
+    }
+
+    @Override
+    public List<SubordinateStatusResponse> getSubordinateFinalizationStatus() {
+        String userRole = getCurrentUserRole();
+        String userEmpId = getCurrentUserEmpId();
+
+        log.debug("Getting subordinate finalization status for user with role {} and empId {}", userRole, userEmpId);
+
+        switch (userRole) {
+            case "DEPARTMENT_SECRETARY":
+                return getAdvisorFinalizationStatusForDepartmentSecretary(userEmpId);
+            case "DEAN_OFFICER":
+                return getDepartmentSecretaryFinalizationStatusForDeanOfficer(userEmpId);
+            case "STUDENT_AFFAIRS":
+                return getDeanOfficerFinalizationStatusForStudentAffairs();
+            default:
+                throw new IllegalArgumentException("Role " + userRole + " does not have subordinates to check");
+        }
+    }
+
+    private List<SubordinateStatusResponse> getAdvisorFinalizationStatusForDepartmentSecretary(String secretaryEmpId) {
+        log.debug("Getting advisor finalization status for department secretary: {}", secretaryEmpId);
+
+        // Find the department list for this secretary
+        DepartmentList departmentList = departmentListRepository.findBySecretaryEmpId(secretaryEmpId)
+            .orElseThrow(() -> new ResourceNotFoundException("Department list not found for secretary: " + secretaryEmpId));
+
+        // Get all advisor lists under this department
+        List<AdvisorList> advisorLists = advisorListRepository.findByDepartmentListDeptListId(
+            departmentList.getDeptListId());
+
+        List<SubordinateStatusResponse> responses = new ArrayList<>();
+        for (AdvisorList advisorList : advisorLists) {
+            Advisor advisor = advisorList.getAdvisor();
+            
+            SubordinateStatusResponse response = SubordinateStatusResponse.builder()
+                .empId(advisor.getEmpId())
+                .name(advisor.getFirstName() + " " + advisor.getLastName())
+                .email(advisor.getEmail())
+                .department(advisor.getDepartment())
+                .isFinalized(advisorList.getIsFinalized())
+                .listId(advisorList.getAdvisorListId())
+                .role("ADVISOR")
+                .build();
+            
+            responses.add(response);
+        }
+
+        log.debug("Found {} advisors under department secretary {}", responses.size(), secretaryEmpId);
+        return responses;
+    }
+
+    private List<SubordinateStatusResponse> getDepartmentSecretaryFinalizationStatusForDeanOfficer(String deanOfficerEmpId) {
+        log.debug("Getting department secretary finalization status for dean officer: {}", deanOfficerEmpId);
+
+        // Find the faculty list for this dean officer
+        FacultyList facultyList = facultyListRepository.findByDeanOfficerEmpId(deanOfficerEmpId)
+            .orElseThrow(() -> new ResourceNotFoundException("Faculty list not found for dean officer: " + deanOfficerEmpId));
+
+        // Get all department lists under this faculty
+        List<DepartmentList> departmentLists = departmentListRepository.findByFacultyListFacultyListId(
+            facultyList.getFacultyListId());
+
+        List<SubordinateStatusResponse> responses = new ArrayList<>();
+        for (DepartmentList departmentList : departmentLists) {
+            DepartmentSecretary secretary = departmentList.getSecretary();
+            
+            SubordinateStatusResponse response = SubordinateStatusResponse.builder()
+                .empId(secretary.getEmpId())
+                .name(secretary.getFirstName() + " " + secretary.getLastName())
+                .email(secretary.getEmail())
+                .department(secretary.getDepartment())
+                .faculty(facultyList.getFaculty())
+                .isFinalized(departmentList.getIsFinalized())
+                .listId(departmentList.getDeptListId())
+                .role("DEPARTMENT_SECRETARY")
+                .build();
+            
+            responses.add(response);
+        }
+
+        log.debug("Found {} department secretaries under dean officer {}", responses.size(), deanOfficerEmpId);
+        return responses;
+    }
+
+    private List<SubordinateStatusResponse> getDeanOfficerFinalizationStatusForStudentAffairs() {
+        log.debug("Getting dean officer finalization status for student affairs");
+
+        // Get all faculty lists (each represents a dean officer)
+        List<FacultyList> facultyLists = facultyListRepository.findAll();
+
+        List<SubordinateStatusResponse> responses = new ArrayList<>();
+        for (FacultyList facultyList : facultyLists) {
+            DeanOfficer deanOfficer = facultyList.getDeanOfficer();
+            
+            SubordinateStatusResponse response = SubordinateStatusResponse.builder()
+                .empId(deanOfficer.getEmpId())
+                .name(deanOfficer.getFirstName() + " " + deanOfficer.getLastName())
+                .email(deanOfficer.getEmail())
+                .faculty(deanOfficer.getFaculty())
+                .isFinalized(facultyList.getIsFinalized())
+                .listId(facultyList.getFacultyListId())
+                .role("DEAN_OFFICER")
+                .build();
+            
+            responses.add(response);
+        }
+
+        log.debug("Found {} dean officers for student affairs", responses.size());
+        return responses;
     }
 }
