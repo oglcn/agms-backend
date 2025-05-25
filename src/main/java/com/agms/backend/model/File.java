@@ -16,6 +16,7 @@ import java.time.LocalDate;
 @Table(name = "File")
 public class File {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer fileId;
 
     @Column(nullable = false)
