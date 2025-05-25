@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.agms.backend.dto.CreateSubmissionRequest;
+import com.agms.backend.dto.RegularGraduationTrackResponse;
 import com.agms.backend.dto.StartRegularGraduationRequest;
 import com.agms.backend.dto.SubmissionResponse;
 import com.agms.backend.dto.SubordinateStatusResponse;
+import com.agms.backend.dto.TopStudentsResponse;
 import com.agms.backend.model.SubmissionStatus;
 import com.agms.backend.service.SubmissionService;
 
@@ -306,9 +308,27 @@ public class SubmissionController {
             return ResponseEntity.status(HttpStatus.CREATED).body(createdSubmissions);
         } catch (IllegalStateException e) {
             log.warn("Cannot start regular graduation: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (Exception e) {
             log.error("Error starting regular graduation: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Track regular graduation process status for a specific term
+     */
+    @GetMapping("/regular-graduation/track")
+    @PreAuthorize("hasRole('STUDENT_AFFAIRS') or hasRole('DEAN_OFFICER') or hasRole('DEPARTMENT_SECRETARY') or hasRole('ADVISOR')")
+    @Operation(summary = "Track regular graduation process status - check if regular graduation has been started for a specific term")
+    public ResponseEntity<RegularGraduationTrackResponse> trackRegularGraduation(@RequestParam String term) {
+        log.debug("Tracking regular graduation process for term: {}", term);
+
+        try {
+            RegularGraduationTrackResponse response = submissionService.trackRegularGraduation(term);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error tracking regular graduation: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -390,6 +410,27 @@ public class SubmissionController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
             log.error("Error getting subordinate finalization status: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Get top 3 students from finalized lists based on user role
+     */
+    @GetMapping("/top-students")
+    @PreAuthorize("hasRole('DEPARTMENT_SECRETARY') or hasRole('DEAN_OFFICER') or hasRole('STUDENT_AFFAIRS')")
+    @Operation(summary = "Get top 3 students from finalized lists - Department Secretary sees top 3 from department, Dean Officer sees top 3 from departments and among departments, Student Affairs sees all levels")
+    public ResponseEntity<TopStudentsResponse> getTopStudentsFromFinalizedLists() {
+        log.debug("Getting top students from finalized lists for current authenticated user");
+
+        try {
+            TopStudentsResponse topStudents = submissionService.getTopStudentsFromFinalizedLists();
+            return ResponseEntity.ok(topStudents);
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid role for top students access: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (Exception e) {
+            log.error("Error getting top students from finalized lists: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
