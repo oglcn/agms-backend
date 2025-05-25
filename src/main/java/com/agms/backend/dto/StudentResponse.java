@@ -22,7 +22,6 @@ public class StudentResponse {
     private int totalCredit;
     private int semester;
     private List<Course> courses;
-    private boolean isCurriculumCompleted;
 
     // Advisor info (without sensitive data)
     private AdvisorInfo advisor;
