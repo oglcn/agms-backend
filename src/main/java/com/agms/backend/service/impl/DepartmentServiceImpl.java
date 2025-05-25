@@ -38,9 +38,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         @Override
         @Transactional
         public DepartmentList createDepartmentList(String department, String secretaryId, String facultyListId) {
-                DepartmentSecretary secretary = secretaryRepository.findById(secretaryId)
+                DepartmentSecretary secretary = secretaryRepository.findByEmpId(secretaryId)
                                 .orElseThrow(() -> new ResourceNotFoundException(
-                                                "Secretary not found with ID: " + secretaryId));
+                                                "Secretary not found with empId: " + secretaryId));
 
                 FacultyList facultyList = facultyListRepository.findById(facultyListId)
                                 .orElseThrow(() -> new ResourceNotFoundException(

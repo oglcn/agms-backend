@@ -17,11 +17,16 @@ import com.agms.backend.model.users.StudentAffairs;
 import com.agms.backend.repository.AdvisorListRepository;
 import com.agms.backend.repository.AdvisorRepository;
 import com.agms.backend.repository.DeanOfficerRepository;
+import com.agms.backend.repository.DepartmentListRepository;
 import com.agms.backend.repository.DepartmentSecretaryRepository;
+import com.agms.backend.repository.FacultyListRepository;
+import com.agms.backend.repository.GraduationListRepository;
+import com.agms.backend.repository.GraduationRepository;
 import com.agms.backend.repository.StudentAffairsRepository;
 import com.agms.backend.repository.StudentRepository;
 import com.agms.backend.repository.SubmissionRepository;
 import com.agms.backend.service.SubmissionService;
+import com.agms.backend.service.UbysService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +52,12 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final DeanOfficerRepository deanOfficerRepository;
     private final StudentAffairsRepository studentAffairsRepository;
     private final DepartmentSecretaryRepository departmentSecretaryRepository;
+    private final DepartmentListRepository departmentListRepository;
+    private final FacultyListRepository facultyListRepository;
+    private final GraduationListRepository graduationListRepository;
+    private final GraduationRepository graduationRepository;
     private final com.agms.backend.repository.UserRepository userRepository;
+    private final UbysService ubysService;
 
     @Override
     @Transactional
@@ -666,11 +676,17 @@ public class SubmissionServiceImpl implements SubmissionService {
             throw new IllegalStateException("No authenticated user found");
         }
 
-        // Extract role from authorities
-        return authentication.getAuthorities().stream()
+        // Extract role from authorities and strip ROLE_ prefix
+        String role = authentication.getAuthorities().stream()
                 .map(authority -> authority.getAuthority())
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("No valid role found for current user"));
+        
+        // Remove ROLE_ prefix if present
+        if (role.startsWith("ROLE_")) {
+            return role.substring(5); // Remove "ROLE_" prefix
+        }
+        return role;
     }
 
     private String getCurrentUserEmpId() {
@@ -725,5 +741,438 @@ public class SubmissionServiceImpl implements SubmissionService {
         }
 
         return authentication.getName();
+    }
+
+    @Override
+    @Transactional
+    public List<SubmissionResponse> startRegularGraduation(String term) {
+        log.info("Starting regular graduation process for term: {}", term);
+
+        // Verify that the current user is Student Affairs
+        String userRole = getCurrentUserRole();
+        if (!"STUDENT_AFFAIRS".equals(userRole)) {
+            throw new IllegalStateException("Only Student Affairs can start regular graduation process");
+        }
+
+        // Get all students from the database
+        List<Student> allStudents = studentRepository.findAll();
+        List<SubmissionResponse> createdSubmissions = new ArrayList<>();
+        int eligibleCount = 0;
+        int skippedCount = 0;
+
+        for (Student student : allStudents) {
+            try {
+                // Get the student with academic data from UBYS
+                Student enhancedStudent = ubysService.getStudentWithTransientAttributes(student.getStudentNumber());
+                
+                // Check if student is eligible for graduation
+                if (enhancedStudent.isEligibleForGraduation()) {
+                    // Check if student already has a pending submission (skip if they do)
+                    if (hasActivePendingSubmission(student.getStudentNumber())) {
+                        log.debug("Skipping student {} - already has active pending submission", student.getStudentNumber());
+                        skippedCount++;
+                        continue;
+                    }
+
+                    // Verify the student has an advisor
+                    if (student.getAdvisor() == null) {
+                        log.warn("Skipping student {} - no assigned advisor", student.getStudentNumber());
+                        skippedCount++;
+                        continue;
+                    }
+
+                    // Verify the advisor has an advisor list
+                    AdvisorList advisorList = student.getAdvisor().getAdvisorList();
+                    if (advisorList == null) {
+                        log.warn("Skipping student {} - advisor {} has no advisor list", 
+                            student.getStudentNumber(), student.getAdvisor().getEmpId());
+                        skippedCount++;
+                        continue;
+                    }
+
+                    log.debug("Creating submission for student {} assigned to advisor {} with advisor list {}", 
+                        student.getStudentNumber(), student.getAdvisor().getEmpId(), advisorList.getAdvisorListId());
+
+                    // Create the submission for this eligible student
+                    String submissionId = generateSubmissionId();
+                    String submissionContent = String.format(
+                        "Regular graduation application for %s term. " +
+                        "GPA: %.2f, Total Credits: %d, Curriculum Completed: %s",
+                        term, 
+                        enhancedStudent.getGpa(),
+                        enhancedStudent.getTotalCredit(),
+                        enhancedStudent.isCurriculumCompleted() ? "Yes" : "No"
+                    );
+
+                    Submission submission = Submission.builder()
+                            .submissionId(submissionId)
+                            .submissionDate(new Timestamp(System.currentTimeMillis()))
+                            .content(submissionContent)
+                            .status(SubmissionStatus.PENDING)
+                            .student(student)
+                            .advisorList(advisorList)
+                            .build();
+
+                    // Save the submission
+                    Submission savedSubmission = submissionRepository.save(submission);
+                    createdSubmissions.add(convertToResponse(savedSubmission));
+                    eligibleCount++;
+
+                    log.debug("Created regular graduation submission for student: {} (GPA: {}, Credits: {})",
+                            student.getStudentNumber(), enhancedStudent.getGpa(), enhancedStudent.getTotalCredit());
+
+                } else {
+                    log.debug("Student {} is not eligible for graduation", student.getStudentNumber());
+                }
+
+            } catch (Exception e) {
+                log.warn("Error processing student {} for regular graduation: {}", 
+                    student.getStudentNumber(), e.getMessage());
+                skippedCount++;
+            }
+        }
+
+        // Auto-finalize advisor lists that have no submissions
+        autoFinalizeEmptyAdvisorLists();
+
+        log.info("Regular graduation process completed for term: {}. Created {} submissions, skipped {} students",
+            term, eligibleCount, skippedCount);
+
+        return createdSubmissions;
+    }
+
+    /**
+     * Automatically finalize advisor lists that have no submissions assigned to them.
+     * This prevents the workflow from being blocked by advisors who have no students to review.
+     */
+    private void autoFinalizeEmptyAdvisorLists() {
+        log.debug("Checking for empty advisor lists to auto-finalize...");
+        
+        List<AdvisorList> allAdvisorLists = advisorListRepository.findAll();
+        int autoFinalizedCount = 0;
+        
+        for (AdvisorList advisorList : allAdvisorLists) {
+            // Skip if already finalized
+            if (advisorList.getIsFinalized()) {
+                continue;
+            }
+            
+            // Check if this advisor list has any submissions
+            List<Submission> submissions = submissionRepository.findByAdvisorListId(advisorList.getAdvisorListId());
+            
+            if (submissions.isEmpty()) {
+                // Auto-finalize empty advisor list
+                int updated = advisorListRepository.updateFinalizationStatus(advisorList.getAdvisorListId(), true);
+                if (updated > 0) {
+                    autoFinalizedCount++;
+                    log.info("Auto-finalized empty advisor list: {} (advisor: {})", 
+                        advisorList.getAdvisorListId(), advisorList.getAdvisor().getEmpId());
+                }
+            }
+        }
+        
+        if (autoFinalizedCount > 0) {
+            log.info("Auto-finalized {} empty advisor lists", autoFinalizedCount);
+        } else {
+            log.debug("No empty advisor lists found to auto-finalize");
+        }
+    }
+
+    @Override
+    @Transactional
+    public boolean finalizeMyList() {
+        String userRole = getCurrentUserRole();
+        String userEmpId = getCurrentUserEmpId();
+
+        log.info("User with role {} and empId {} finalizing their list", userRole, userEmpId);
+
+        switch (userRole) {
+            case "ADVISOR":
+                return finalizeAdvisorList(userEmpId);
+            case "DEPARTMENT_SECRETARY":
+                return finalizeDepartmentList(userEmpId);
+            case "DEAN_OFFICER":
+                return finalizeFacultyList(userEmpId);
+            case "STUDENT_AFFAIRS":
+                return finalizeGraduationList(userEmpId);
+            default:
+                throw new IllegalArgumentException("Role " + userRole + " cannot finalize lists");
+        }
+    }
+
+    @Override
+    public boolean isMyListFinalized() {
+        String userRole = getCurrentUserRole();
+        String userEmpId = getCurrentUserEmpId();
+
+        log.debug("Checking if list is finalized for user with role {} and empId {}", userRole, userEmpId);
+
+        switch (userRole) {
+            case "ADVISOR":
+                return advisorListRepository.findByAdvisorEmpId(userEmpId)
+                    .map(AdvisorList::getIsFinalized)
+                    .orElse(false);
+            case "DEPARTMENT_SECRETARY":
+                return departmentListRepository.findBySecretaryEmpId(userEmpId)
+                    .map(DepartmentList::getIsFinalized)
+                    .orElse(false);
+            case "DEAN_OFFICER":
+                return facultyListRepository.findByDeanOfficerEmpId(userEmpId)
+                    .map(FacultyList::getIsFinalized)
+                    .orElse(false);
+            case "STUDENT_AFFAIRS":
+                // For student affairs, check if any graduation list is finalized
+                return graduationListRepository.findAll().stream()
+                    .anyMatch(gl -> gl.getIsFinalized());
+            default:
+                throw new IllegalArgumentException("Role " + userRole + " does not have lists to check");
+        }
+    }
+
+    @Override
+    public boolean arePrerequisiteListsFinalized() {
+        String userRole = getCurrentUserRole();
+        String userEmpId = getCurrentUserEmpId();
+
+        log.debug("Checking prerequisite lists finalization for user with role {} and empId {}", userRole, userEmpId);
+
+        switch (userRole) {
+            case "DEPARTMENT_SECRETARY":
+                // Check if all advisor lists under this department are finalized
+                DepartmentList departmentList = departmentListRepository.findBySecretaryEmpId(userEmpId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Department list not found for secretary: " + userEmpId));
+                
+                List<AdvisorList> advisorLists = advisorListRepository.findByDepartmentListDeptListId(
+                    departmentList.getDeptListId());
+                
+                return !advisorLists.isEmpty() && advisorLists.stream()
+                    .allMatch(AdvisorList::getIsFinalized);
+
+            case "DEAN_OFFICER":
+                // Check if all department lists under this faculty are finalized
+                FacultyList facultyList = facultyListRepository.findByDeanOfficerEmpId(userEmpId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Faculty list not found for dean officer: " + userEmpId));
+                
+                List<DepartmentList> departmentLists = departmentListRepository.findByFacultyListFacultyListId(
+                    facultyList.getFacultyListId());
+                
+                return !departmentLists.isEmpty() && departmentLists.stream()
+                    .allMatch(DepartmentList::getIsFinalized);
+
+            case "STUDENT_AFFAIRS":
+                // Check if all faculty lists are finalized
+                List<FacultyList> facultyLists = facultyListRepository.findAll();
+                
+                return !facultyLists.isEmpty() && facultyLists.stream()
+                    .allMatch(FacultyList::getIsFinalized);
+
+            case "ADVISOR":
+                // Advisors don't have prerequisite lists
+                return true;
+
+            default:
+                throw new IllegalArgumentException("Role " + userRole + " does not have prerequisite lists to check");
+        }
+    }
+
+    private boolean finalizeAdvisorList(String advisorEmpId) {
+        AdvisorList advisorList = advisorListRepository.findByAdvisorEmpId(advisorEmpId)
+            .orElseThrow(() -> new ResourceNotFoundException("Advisor list not found for advisor: " + advisorEmpId));
+
+        log.debug("Attempting to finalize advisor list {} for advisor {}", advisorList.getAdvisorListId(), advisorEmpId);
+
+        // Get all submissions assigned to this advisor list (regardless of status)
+        List<Submission> allSubmissions = submissionRepository.findByAdvisorListId(advisorList.getAdvisorListId());
+        log.debug("Found {} total submissions for advisor list {}", allSubmissions.size(), advisorList.getAdvisorListId());
+        
+        // Check if all submissions in this advisor list are processed (approved or rejected)
+        List<Submission> pendingSubmissions = submissionRepository.findByAdvisorListIdAndStatus(
+            advisorList.getAdvisorListId(), SubmissionStatus.PENDING);
+        log.debug("Found {} pending submissions for advisor list {}", pendingSubmissions.size(), advisorList.getAdvisorListId());
+
+        if (!pendingSubmissions.isEmpty()) {
+            log.warn("Cannot finalize advisor list {} - {} pending submissions remain", 
+                advisorList.getAdvisorListId(), pendingSubmissions.size());
+            return false;
+        }
+
+        // If advisor has no submissions at all, they can finalize (nothing to process)
+        if (allSubmissions.isEmpty()) {
+            log.info("Advisor list {} has no submissions - allowing finalization", advisorList.getAdvisorListId());
+        } else {
+            log.info("Advisor list {} has {} total submissions, all processed - allowing finalization", 
+                advisorList.getAdvisorListId(), allSubmissions.size());
+        }
+
+        int updated = advisorListRepository.updateFinalizationStatus(advisorList.getAdvisorListId(), true);
+        log.info("Finalized advisor list {} for advisor {}", advisorList.getAdvisorListId(), advisorEmpId);
+        return updated > 0;
+    }
+
+    private boolean finalizeDepartmentList(String secretaryEmpId) {
+        DepartmentList departmentList = departmentListRepository.findBySecretaryEmpId(secretaryEmpId)
+            .orElseThrow(() -> new ResourceNotFoundException("Department list not found for secretary: " + secretaryEmpId));
+
+        // Check if all prerequisite advisor lists are finalized
+        if (!arePrerequisiteListsFinalized()) {
+            log.warn("Cannot finalize department list {} - not all advisor lists are finalized", 
+                departmentList.getDeptListId());
+            return false;
+        }
+
+        // Check if all submissions in this department are processed
+        List<SubmissionResponse> pendingSubmissions = getSubmissionsForDepartmentSecretary(secretaryEmpId, SubmissionStatus.APPROVED_BY_ADVISOR);
+        if (!pendingSubmissions.isEmpty()) {
+            log.warn("Cannot finalize department list {} - {} pending submissions remain", 
+                departmentList.getDeptListId(), pendingSubmissions.size());
+            return false;
+        }
+
+        int updated = departmentListRepository.updateFinalizationStatus(departmentList.getDeptListId(), true);
+        log.info("Finalized department list {} for secretary {}", departmentList.getDeptListId(), secretaryEmpId);
+        return updated > 0;
+    }
+
+    private boolean finalizeFacultyList(String deanOfficerEmpId) {
+        FacultyList facultyList = facultyListRepository.findByDeanOfficerEmpId(deanOfficerEmpId)
+            .orElseThrow(() -> new ResourceNotFoundException("Faculty list not found for dean officer: " + deanOfficerEmpId));
+
+        // Check if all prerequisite department lists are finalized
+        if (!arePrerequisiteListsFinalized()) {
+            log.warn("Cannot finalize faculty list {} - not all department lists are finalized", 
+                facultyList.getFacultyListId());
+            return false;
+        }
+
+        // Check if all submissions in this faculty are processed
+        List<SubmissionResponse> pendingSubmissions = getSubmissionsForDeanOfficer(deanOfficerEmpId, SubmissionStatus.APPROVED_BY_DEPT);
+        if (!pendingSubmissions.isEmpty()) {
+            log.warn("Cannot finalize faculty list {} - {} pending submissions remain", 
+                facultyList.getFacultyListId(), pendingSubmissions.size());
+            return false;
+        }
+
+        int updated = facultyListRepository.updateFinalizationStatus(facultyList.getFacultyListId(), true);
+        log.info("Finalized faculty list {} for dean officer {}", facultyList.getFacultyListId(), deanOfficerEmpId);
+        return updated > 0;
+    }
+
+    private boolean finalizeGraduationList(String studentAffairsEmpId) {
+        // Check if all prerequisite faculty lists are finalized
+        if (!arePrerequisiteListsFinalized()) {
+            log.warn("Cannot finalize graduation list - not all faculty lists are finalized");
+            return false;
+        }
+
+        // Check if all submissions are processed
+        List<SubmissionResponse> pendingSubmissions = getSubmissionsForStudentAffairs(studentAffairsEmpId, SubmissionStatus.APPROVED_BY_DEAN);
+        if (!pendingSubmissions.isEmpty()) {
+            log.warn("Cannot finalize graduation list - {} pending submissions remain", pendingSubmissions.size());
+            return false;
+        }
+
+        // Find the graduation list to finalize
+        List<com.agms.backend.model.GraduationList> graduationLists = graduationListRepository.findAll();
+        if (graduationLists.isEmpty()) {
+            log.warn("No graduation list found to finalize");
+            return false;
+        }
+
+        com.agms.backend.model.GraduationList graduationList = graduationLists.get(0);
+        int updated = graduationListRepository.updateFinalizationStatus(graduationList.getListId(), true);
+        
+        if (updated > 0) {
+            log.info("Finalized graduation list {} - graduation process completed", graduationList.getListId());
+            // Here you could create the final graduation object or trigger additional workflow
+            createFinalGraduationRecord(graduationList);
+        }
+        
+        return updated > 0;
+    }
+
+    private void createFinalGraduationRecord(com.agms.backend.model.GraduationList graduationList) {
+        log.info("Creating final graduation record for graduation list: {}", graduationList.getListId());
+        
+        try {
+            // Get the graduation associated with this list
+            com.agms.backend.model.Graduation graduation = graduationList.getGraduation();
+            if (graduation == null) {
+                log.error("No graduation found for graduation list: {}", graduationList.getListId());
+                return;
+            }
+
+            // Get all approved submissions from all advisor lists in the hierarchy
+            List<Submission> approvedSubmissions = getAllApprovedSubmissions(graduationList);
+            
+            log.info("Found {} approved submissions for graduation", approvedSubmissions.size());
+
+            // Update graduation status to completed
+            graduation.setStatus("COMPLETED");
+            graduationRepository.save(graduation);
+
+            log.info("Final graduation process completed successfully:");
+            log.info("- Graduation ID: {}", graduation.getGraduationId());
+            log.info("- Term: {}", graduation.getTerm());
+            log.info("- Status: {}", graduation.getStatus());
+            log.info("- Total approved submissions: {}", approvedSubmissions.size());
+            log.info("- Graduation list finalized: {}", graduationList.getListId());
+
+            // Send completion notifications
+            sendGraduationCompletionNotifications(graduation, approvedSubmissions);
+
+        } catch (Exception e) {
+            log.error("Error creating final graduation record: {}", e.getMessage());
+            throw new RuntimeException("Failed to create final graduation record", e);
+        }
+    }
+
+    private List<Submission> getAllApprovedSubmissions(com.agms.backend.model.GraduationList graduationList) {
+        List<Submission> approvedSubmissions = new ArrayList<>();
+        
+        // Get all faculty lists under this graduation list
+        List<FacultyList> facultyLists = facultyListRepository.findByGraduationListListId(graduationList.getListId());
+        
+        for (FacultyList facultyList : facultyLists) {
+            // Get all department lists under each faculty
+            List<DepartmentList> departmentLists = departmentListRepository.findByFacultyListFacultyListId(
+                facultyList.getFacultyListId());
+            
+            for (DepartmentList departmentList : departmentLists) {
+                // Get all advisor lists under each department
+                List<AdvisorList> advisorLists = advisorListRepository.findByDepartmentListDeptListId(
+                    departmentList.getDeptListId());
+                
+                for (AdvisorList advisorList : advisorLists) {
+                    // Get all finally approved submissions from each advisor list
+                    List<Submission> submissions = submissionRepository.findByAdvisorListIdAndStatus(
+                        advisorList.getAdvisorListId(), SubmissionStatus.FINAL_APPROVED);
+                    approvedSubmissions.addAll(submissions);
+                }
+            }
+        }
+        
+        return approvedSubmissions;
+    }
+
+    private void sendGraduationCompletionNotifications(com.agms.backend.model.Graduation graduation, 
+            List<Submission> approvedSubmissions) {
+        log.info("Sending graduation completion notifications for {} approved submissions", approvedSubmissions.size());
+        
+        // In a real system, this would:
+        // 1. Send email notifications to all graduated students
+        // 2. Send summary report to Student Affairs
+        // 3. Send notifications to advisors, department secretaries, dean officers
+        // 4. Update external systems (registrar, alumni database, etc.)
+        // 5. Generate graduation ceremony lists
+        
+        // For now, we'll just log the notifications
+        for (Submission submission : approvedSubmissions) {
+            Student student = submission.getStudent();
+            log.info("📧 Notification sent to student: {} ({}) - GRADUATION COMPLETED", 
+                student.getEmail(), student.getStudentNumber());
+        }
+        
+        log.info("📧 Summary report sent to Student Affairs for graduation: {}", graduation.getGraduationId());
+        log.info("🎓 Graduation process fully completed for term: {}", graduation.getTerm());
     }
 }

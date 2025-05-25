@@ -105,4 +105,31 @@ public interface SubmissionService {
      * - STUDENT_AFFAIRS: returns submissions with status APPROVED_BY_DEAN
      */
     List<SubmissionResponse> getMyPendingSubmissions();
+
+    /**
+     * Start regular graduation process - creates submissions for all eligible students
+     * This method is called by Student Affairs to initiate the regular graduation workflow
+     */
+    List<SubmissionResponse> startRegularGraduation(String term);
+
+    // List finalization methods
+    
+    /**
+     * Finalize list for current authenticated user
+     * - ADVISOR: finalizes their advisor list
+     * - DEPARTMENT_SECRETARY: finalizes their department list 
+     * - DEAN_OFFICER: finalizes their faculty list
+     * - STUDENT_AFFAIRS: finalizes graduation list and creates graduation object
+     */
+    boolean finalizeMyList();
+    
+    /**
+     * Check if current user's list is finalized
+     */
+    boolean isMyListFinalized();
+    
+    /**
+     * Check if all prerequisite lists are finalized for current user's role
+     */
+    boolean arePrerequisiteListsFinalized();
 } 

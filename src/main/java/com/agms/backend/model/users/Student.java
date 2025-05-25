@@ -55,6 +55,9 @@ public class Student extends User {
     @Transient
     private boolean isCurriculumCompleted;
 
+    @Transient
+    private boolean isEligibleForGraduation;
+
     public void setCourses(List<Course> courses) {
         this.courses = courses;
         calculateAcademicMetrics();
@@ -71,6 +74,7 @@ public class Student extends User {
             this.gpa = 0.0;
             this.totalCredit = 0;
             this.isCurriculumCompleted = false;
+            this.isEligibleForGraduation = false;
             return;
         }
 
@@ -93,6 +97,9 @@ public class Student extends User {
         // 2. Must have the 3 required courses: ENG101, ENG102, MATH101
         // 3. All courses must have passing grades (DD or better)
         this.isCurriculumCompleted = checkCurriculumCompletion();
+        
+        // Calculate graduation eligibility
+        this.isEligibleForGraduation = checkGraduationEligibility();
     }
 
     /**
@@ -161,5 +168,15 @@ public class Student extends User {
             default:
                 return false;
         }
+    }
+
+    /**
+     * Checks if the student is eligible for graduation based on GPA, total credits,
+     * and curriculum completion status.
+     * 
+     * @return true if the student is eligible for graduation, false otherwise
+     */
+    private boolean checkGraduationEligibility() {
+        return gpa >= 2.0 && isCurriculumCompleted && totalCredit >= 23;
     }
 }

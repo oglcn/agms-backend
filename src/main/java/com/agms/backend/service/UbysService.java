@@ -180,45 +180,11 @@ public class UbysService {
         // Set user information from nested user object
         Map<String, Object> userData = (Map<String, Object>) studentData.get("user");
 
-        String department = "Unknown"; // Default department
-        String advisorId = (String) studentData.get("advisorId");
-
-        if (advisorId != null) {
-            Map<String, Object> advisorsSection = (Map<String, Object>) allData.get("advisors");
-            if (advisorsSection != null) {
-                Map<String, Object> advisorData = (Map<String, Object>) advisorsSection.get(advisorId);
-                if (advisorData != null) {
-                    String departmentSecretaryId = (String) advisorData.get("departmentSecretaryId");
-                    if (departmentSecretaryId != null) {
-                        Map<String, Object> departmentSecretariesSection = (Map<String, Object>) allData
-                                .get("departmentSecretaries");
-                        if (departmentSecretariesSection != null) {
-                            Map<String, Object> departmentSecretaryData = (Map<String, Object>) departmentSecretariesSection
-                                    .get(departmentSecretaryId);
-                            if (departmentSecretaryData != null) {
-                                department = (String) departmentSecretaryData.get("department");
-                            } else {
-                                System.err.println("Warning: Department Secretary with ID " + departmentSecretaryId
-                                        + " not found for student " + studentNumber);
-                            }
-                        } else {
-                            System.err.println(
-                                    "Warning: 'departmentSecretaries' section not found in ubys.json for student "
-                                            + studentNumber);
-                        }
-                    } else {
-                        System.err.println("Warning: departmentSecretaryId not found for advisor " + advisorId
-                                + " for student " + studentNumber);
-                    }
-                } else {
-                    System.err.println(
-                            "Warning: Advisor with ID " + advisorId + " not found for student " + studentNumber);
-                }
-            } else {
-                System.err.println("Warning: 'advisors' section not found in ubys.json for student " + studentNumber);
-            }
-        } else {
-            System.err.println("Warning: advisorId not found for student " + studentNumber);
+        // Get department directly from student data (object-oriented approach)
+        String department = (String) studentData.get("department");
+        if (department == null) {
+            department = "Unknown"; // Default department
+            System.err.println("Warning: department not found for student " + studentNumber);
         }
 
         Student student = Student.builder()
@@ -233,9 +199,8 @@ public class UbysService {
             student.setEmail((String) userData.get("email"));
         }
 
-        // Note: advisor relationship would be set separately during database
-        // initialization
-        // student.setAdvisorId((String) studentData.get("advisorId"));
+        // Note: The advisor relationship will be set during database initialization
+        // by looking up the advisorId from the original JSON data
 
         return student;
     }
@@ -363,6 +328,7 @@ public class UbysService {
 
         DeanOfficer deanOfficer = DeanOfficer.builder()
                 .empId(empId)
+                .faculty((String) deanOfficerData.get("faculty"))
                 .build();
 
         if (userData != null) {
@@ -415,6 +381,7 @@ public class UbysService {
 
         DepartmentSecretary departmentSecretary = DepartmentSecretary.builder()
                 .empId(empId)
+                .department((String) departmentSecretaryData.get("department"))
                 .build();
 
         if (userData != null) {
@@ -462,6 +429,7 @@ public class UbysService {
 
         Advisor advisor = Advisor.builder()
                 .empId(empId)
+                .department((String) advisorData.get("department"))
                 .build();
 
         if (userData != null) {

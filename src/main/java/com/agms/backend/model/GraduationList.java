@@ -21,6 +21,10 @@ public class GraduationList {
     @Column(nullable = false)
     private Timestamp creationDate;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean isFinalized = false;
+
     @ManyToOne
     @JoinColumn(name = "graduationId")
     private Graduation graduation;

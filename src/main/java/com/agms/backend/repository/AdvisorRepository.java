@@ -14,4 +14,6 @@ public interface AdvisorRepository extends JpaRepository<Advisor, String> {
     boolean existsByEmpId(String empId);
 
     List<Advisor> findByDepartmentSecretaryEmpId(String deptSecretaryEmpId);
+    
+    List<Advisor> findByDepartmentSecretaryDepartment(String department);
 }

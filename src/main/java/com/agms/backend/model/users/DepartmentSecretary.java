@@ -22,6 +22,9 @@ public class DepartmentSecretary extends User {
     @Column(name = "emp_id", nullable = false, unique = true)
     private String empId;
 
+    @Column(name = "department")
+    private String department;
+
     @OneToMany(mappedBy = "secretary")
     private List<DepartmentList> departmentLists;
 

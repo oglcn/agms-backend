@@ -22,6 +22,9 @@ public class DeanOfficer extends User {
     @Column(name = "emp_id", nullable = false, unique = true)
     private String empId;
 
+    @Column(name = "faculty")
+    private String faculty;
+
     @OneToMany(mappedBy = "deanOfficer")
     private List<FacultyList> facultyLists;
 

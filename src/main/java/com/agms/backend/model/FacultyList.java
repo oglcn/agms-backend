@@ -25,6 +25,10 @@ public class FacultyList {
     @Column(nullable = false)
     private String faculty;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean isFinalized = false;
+
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "deanOfficerId", nullable = false)
     private DeanOfficer deanOfficer;

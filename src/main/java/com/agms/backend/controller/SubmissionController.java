@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.agms.backend.dto.CreateSubmissionRequest;
+import com.agms.backend.dto.StartRegularGraduationRequest;
 import com.agms.backend.dto.SubmissionResponse;
 import com.agms.backend.model.SubmissionStatus;
 import com.agms.backend.service.SubmissionService;
@@ -286,5 +287,88 @@ public class SubmissionController {
         log.debug("Getting pending submissions for advisor: {}", advisorEmpId);
         List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(advisorEmpId, "ADVISOR");
         return ResponseEntity.ok(submissions);
+    }
+
+    /**
+     * Start regular graduation process - creates submissions for all eligible students
+     */
+    @PostMapping("/regular-graduation/start")
+    @PreAuthorize("hasRole('STUDENT_AFFAIRS')")
+    @Operation(summary = "Start regular graduation process - automatically creates submissions for all eligible students")
+    public ResponseEntity<List<SubmissionResponse>> startRegularGraduation(
+            @Valid @RequestBody StartRegularGraduationRequest request) {
+        log.info("Starting regular graduation process for term: {}", request.getTerm());
+
+        try {
+            List<SubmissionResponse> createdSubmissions = submissionService.startRegularGraduation(request.getTerm());
+            log.info("Regular graduation process completed. Created {} submissions", createdSubmissions.size());
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdSubmissions);
+        } catch (IllegalStateException e) {
+            log.warn("Cannot start regular graduation: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (Exception e) {
+            log.error("Error starting regular graduation: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Finalize list for current authenticated user
+     */
+    @PostMapping("/finalize-my-list")
+    @PreAuthorize("hasRole('ADVISOR') or hasRole('DEPARTMENT_SECRETARY') or hasRole('DEAN_OFFICER') or hasRole('STUDENT_AFFAIRS')")
+    @Operation(summary = "Finalize list for current user - marks completion of review process for their level")
+    public ResponseEntity<Boolean> finalizeMyList() {
+        log.info("Finalizing list for current authenticated user");
+
+        try {
+            boolean finalized = submissionService.finalizeMyList();
+            if (finalized) {
+                log.info("List successfully finalized for current user");
+                return ResponseEntity.ok(true);
+            } else {
+                log.warn("Cannot finalize list - prerequisites not met");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(false);
+            }
+        } catch (Exception e) {
+            log.error("Error finalizing list: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+    }
+
+    /**
+     * Check if current user's list is finalized
+     */
+    @GetMapping("/my-list/finalized")
+    @PreAuthorize("hasRole('ADVISOR') or hasRole('DEPARTMENT_SECRETARY') or hasRole('DEAN_OFFICER') or hasRole('STUDENT_AFFAIRS')")
+    @Operation(summary = "Check if current user's list is finalized")
+    public ResponseEntity<Boolean> isMyListFinalized() {
+        log.debug("Checking if current user's list is finalized");
+
+        try {
+            boolean finalized = submissionService.isMyListFinalized();
+            return ResponseEntity.ok(finalized);
+        } catch (Exception e) {
+            log.error("Error checking list finalization status: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+    }
+
+    /**
+     * Check if all prerequisite lists are finalized for current user's role
+     */
+    @GetMapping("/prerequisite-lists/finalized")
+    @PreAuthorize("hasRole('DEPARTMENT_SECRETARY') or hasRole('DEAN_OFFICER') or hasRole('STUDENT_AFFAIRS')")
+    @Operation(summary = "Check if all prerequisite lists are finalized for current user's role")
+    public ResponseEntity<Boolean> arePrerequisiteListsFinalized() {
+        log.debug("Checking if prerequisite lists are finalized for current user");
+
+        try {
+            boolean finalized = submissionService.arePrerequisiteListsFinalized();
+            return ResponseEntity.ok(finalized);
+        } catch (Exception e) {
+            log.error("Error checking prerequisite lists finalization: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
     }
 }

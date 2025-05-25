@@ -1,0 +1,159 @@
+{
+  "studentAffairs": {
+    "SA001": {
+      "empId": "SA001",
+      "user": {
+        "id": "U001",
+        "firstName": "Student",
+        "lastName": "Affairs",
+        "email": "studentaffairs@test.com",
+        "role": "STUDENT_AFFAIRS"
+      }
+    }
+  },
+  "deanOfficers": {
+    "DEAN001": {
+      "empId": "DEAN001",
+      "faculty": "Engineering",
+      "user": {
+        "id": "U002",
+        "firstName": "Dean",
+        "lastName": "Officer",
+        "email": "dean@test.com",
+        "role": "DEAN_OFFICER"
+      }
+    }
+  },
+  "departmentSecretaries": {
+    "DS001": {
+      "empId": "DS001",
+      "department": "Computer Engineering",
+      "user": {
+        "id": "U003",
+        "firstName": "Department",
+        "lastName": "Secretary",
+        "email": "deptsec@test.com",
+        "role": "DEPARTMENT_SECRETARY"
+      }
+    }
+  },
+  "advisors": {
+    "ADV001": {
+      "empId": "ADV001",
+      "department": "Computer Engineering",
+      "user": {
+        "id": "U004",
+        "firstName": "Test",
+        "lastName": "Advisor",
+        "email": "advisor@test.com",
+        "role": "ADVISOR"
+      }
+    },
+    "ADV002": {
+      "empId": "ADV002",
+      "department": "Computer Engineering",
+      "user": {
+        "id": "U007",
+        "firstName": "Second",
+        "lastName": "Advisor",
+        "email": "advisor2@test.com",
+        "role": "ADVISOR"
+      }
+    }
+  },
+  "students": {
+    "123456789": {
+      "studentNumber": "123456789",
+      "department": "Computer Engineering",
+      "advisorId": "ADV001",
+      "user": {
+        "id": "U005",
+        "firstName": "Test",
+        "lastName": "Student",
+        "email": "student@test.com",
+        "role": "STUDENT"
+      },
+      "semester": 8,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "AA",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "BB",
+          "credit": 6
+        },
+        {
+          "code": "CS101",
+          "name": "Computer Science I",
+          "grade": "AA",
+          "credit": 5
+        }
+      ]
+    },
+    "987654321": {
+      "studentNumber": "987654321",
+      "department": "Computer Engineering",
+      "advisorId": "ADV002",
+      "user": {
+        "id": "U006",
+        "firstName": "Ineligible",
+        "lastName": "Student",
+        "email": "ineligible@test.com",
+        "role": "STUDENT"
+      },
+      "semester": 4,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "FF",
+          "credit": 6
+        },
+        {
+          "code": "ENG102",
+          "name": "English II",
+          "grade": "DD",
+          "credit": 6
+        }
+      ]
+    },
+    "111222333": {
+      "studentNumber": "111222333",
+      "department": "Computer Engineering",
+      "advisorId": "ADV001",
+      "user": {
+        "id": "U008",
+        "firstName": "Third",
+        "lastName": "Student",
+        "email": "student3@test.com",
+        "role": "STUDENT"
+      },
+      "semester": 6,
+      "courses": [
+        {
+          "code": "ENG101",
+          "name": "English I",
+          "grade": "BA",
+          "credit": 6
+        },
+        {
+          "code": "MATH101",
+          "name": "Calculus I",
+          "grade": "AA",
+          "credit": 6
+        }
+      ]
+    }
+  }
+} 
