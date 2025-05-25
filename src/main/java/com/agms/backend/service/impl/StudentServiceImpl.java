@@ -268,6 +268,7 @@ public class StudentServiceImpl implements StudentService {
                 .totalCredit(enhancedStudent.getTotalCredit())
                 .semester(enhancedStudent.getSemester())
                 .courses(enhancedStudent.getCourses())
+                .isCurriculumCompleted(enhancedStudent.isCurriculumCompleted())
                 .advisor(advisorInfo)
                 .build();
     }

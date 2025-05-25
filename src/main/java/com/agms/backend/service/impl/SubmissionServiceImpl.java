@@ -52,28 +52,29 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Transactional
     public SubmissionResponse createGraduationSubmission(CreateSubmissionRequest request) {
         log.info("Creating graduation submission for student: {}", request.getStudentNumber());
-        
+
         // Find the student
         Student student = studentRepository.findByStudentNumber(request.getStudentNumber())
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with number: " + request.getStudentNumber()));
-        
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Student not found with number: " + request.getStudentNumber()));
+
         // Check if student already has a pending submission
         if (hasActivePendingSubmission(request.getStudentNumber())) {
             throw new IllegalStateException("Student already has an active pending graduation submission");
         }
-        
+
         // Find the student's advisor
         Advisor advisor = student.getAdvisor();
         if (advisor == null) {
             throw new IllegalStateException("Student does not have an assigned advisor");
         }
-        
+
         // Find the advisor's advisor list
         AdvisorList advisorList = advisor.getAdvisorList();
         if (advisorList == null) {
             throw new IllegalStateException("Advisor does not have an advisor list configured");
         }
-        
+
         // Create the submission (ID will be generated)
         String submissionId = generateSubmissionId();
         Submission submission = Submission.builder()
@@ -84,19 +85,20 @@ public class SubmissionServiceImpl implements SubmissionService {
                 .student(student)
                 .advisorList(advisorList)
                 .build();
-        
+
         // Save the submission
         Submission savedSubmission = submissionRepository.save(submission);
-        
-        log.info("Created graduation submission with ID: {} for student: {}", savedSubmission.getSubmissionId(), request.getStudentNumber());
-        
+
+        log.info("Created graduation submission with ID: {} for student: {}", savedSubmission.getSubmissionId(),
+                request.getStudentNumber());
+
         return convertToResponse(savedSubmission);
     }
 
     @Override
     public List<SubmissionResponse> getSubmissionsByStudent(String studentNumber) {
         log.debug("Getting submissions for student: {}", studentNumber);
-        
+
         List<Submission> submissions = submissionRepository.findByStudentNumber(studentNumber);
         return submissions.stream()
                 .map(this::convertToResponse)
@@ -106,18 +108,18 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public List<SubmissionResponse> getSubmissionsByAdvisor(String advisorEmpId) {
         log.debug("Getting submissions for advisor: {}", advisorEmpId);
-        
+
         // Find the advisor
         Advisor advisor = advisorRepository.findByEmpId(advisorEmpId)
                 .orElseThrow(() -> new ResourceNotFoundException("Advisor not found with empId: " + advisorEmpId));
-        
+
         // Find the advisor's advisor list
         AdvisorList advisorList = advisor.getAdvisorList();
         if (advisorList == null) {
             log.warn("Advisor {} does not have an advisor list", advisorEmpId);
             return List.of();
         }
-        
+
         List<Submission> submissions = submissionRepository.findByAdvisorListId(advisorList.getAdvisorListId());
         return submissions.stream()
                 .map(this::convertToResponse)
@@ -127,7 +129,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public Optional<SubmissionResponse> getSubmissionById(String submissionId) {
         log.debug("Getting submission by ID: {}", submissionId);
-        
+
         return submissionRepository.findById(submissionId)
                 .map(this::convertToResponse);
     }
@@ -136,22 +138,22 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Transactional
     public SubmissionResponse updateSubmissionStatus(String submissionId, SubmissionStatus status) {
         log.info("Updating submission {} status to: {}", submissionId, status);
-        
+
         Submission submission = submissionRepository.findById(submissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Submission not found with ID: " + submissionId));
-        
+
         submission.setStatus(status);
         Submission updatedSubmission = submissionRepository.save(submission);
-        
+
         log.info("Updated submission {} status to: {}", submissionId, status);
-        
+
         return convertToResponse(updatedSubmission);
     }
 
     @Override
     public List<SubmissionResponse> getSubmissionsByStatus(SubmissionStatus status) {
         log.debug("Getting submissions with status: {}", status);
-        
+
         List<Submission> submissions = submissionRepository.findByStatus(status);
         return submissions.stream()
                 .map(this::convertToResponse)
@@ -166,12 +168,12 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public Optional<SubmissionResponse> getLatestSubmissionByStudent(String studentNumber) {
         log.debug("Getting latest submission for student: {}", studentNumber);
-        
+
         List<Submission> submissions = submissionRepository.findByStudentNumberOrderBySubmissionDateDesc(studentNumber);
         if (submissions.isEmpty()) {
             return Optional.empty();
         }
-        
+
         return Optional.of(convertToResponse(submissions.get(0)));
     }
 
@@ -179,13 +181,13 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Transactional
     public void deleteSubmission(String submissionId) {
         log.info("Deleting submission: {}", submissionId);
-        
+
         if (!submissionRepository.existsById(submissionId)) {
             throw new ResourceNotFoundException("Submission not found with ID: " + submissionId);
         }
-        
+
         submissionRepository.deleteById(submissionId);
-        
+
         log.info("Deleted submission: {}", submissionId);
     }
 
@@ -207,9 +209,10 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public SubmissionResponse updateSubmissionStatusByAdvisor(String submissionId, SubmissionStatus status, String rejectionReason) {
+    public SubmissionResponse updateSubmissionStatusByAdvisor(String submissionId, SubmissionStatus status,
+            String rejectionReason) {
         validateAdvisorStatusTransition(status);
-        
+
         // If rejecting and rejection reason is provided, update the content field
         if (isRejectionStatus(status) && rejectionReason != null && !rejectionReason.trim().isEmpty()) {
             return updateSubmissionWithWorkflowAndReason(submissionId, status, "ADVISOR", rejectionReason);
@@ -220,9 +223,10 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public SubmissionResponse updateSubmissionStatusByDepartmentSecretary(String submissionId, SubmissionStatus status, String rejectionReason) {
+    public SubmissionResponse updateSubmissionStatusByDepartmentSecretary(String submissionId, SubmissionStatus status,
+            String rejectionReason) {
         validateDepartmentSecretaryStatusTransition(status);
-        
+
         // If rejecting and rejection reason is provided, update the content field
         if (isRejectionStatus(status) && rejectionReason != null && !rejectionReason.trim().isEmpty()) {
             return updateSubmissionWithWorkflowAndReason(submissionId, status, "DEPARTMENT_SECRETARY", rejectionReason);
@@ -233,9 +237,10 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public SubmissionResponse updateSubmissionStatusByDeanOfficer(String submissionId, SubmissionStatus status, String rejectionReason) {
+    public SubmissionResponse updateSubmissionStatusByDeanOfficer(String submissionId, SubmissionStatus status,
+            String rejectionReason) {
         validateDeanOfficerStatusTransition(status);
-        
+
         // If rejecting and rejection reason is provided, update the content field
         if (isRejectionStatus(status) && rejectionReason != null && !rejectionReason.trim().isEmpty()) {
             return updateSubmissionWithWorkflowAndReason(submissionId, status, "DEAN_OFFICER", rejectionReason);
@@ -246,9 +251,10 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public SubmissionResponse updateSubmissionStatusByStudentAffairs(String submissionId, SubmissionStatus status, String rejectionReason) {
+    public SubmissionResponse updateSubmissionStatusByStudentAffairs(String submissionId, SubmissionStatus status,
+            String rejectionReason) {
         validateStudentAffairsStatusTransition(status);
-        
+
         // If rejecting and rejection reason is provided, update the content field
         if (isRejectionStatus(status) && rejectionReason != null && !rejectionReason.trim().isEmpty()) {
             return updateSubmissionWithWorkflowAndReason(submissionId, status, "STUDENT_AFFAIRS", rejectionReason);
@@ -257,7 +263,8 @@ public class SubmissionServiceImpl implements SubmissionService {
         }
     }
 
-    private SubmissionResponse updateSubmissionWithWorkflow(String submissionId, SubmissionStatus newStatus, String reviewerRole) {
+    private SubmissionResponse updateSubmissionWithWorkflow(String submissionId, SubmissionStatus newStatus,
+            String reviewerRole) {
         Submission submission = submissionRepository.findById(submissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Submission not found with ID: " + submissionId));
 
@@ -271,7 +278,8 @@ public class SubmissionServiceImpl implements SubmissionService {
         return convertToResponse(updatedSubmission);
     }
 
-    private SubmissionResponse updateSubmissionWithWorkflowAndReason(String submissionId, SubmissionStatus newStatus, String reviewerRole, String rejectionReason) {
+    private SubmissionResponse updateSubmissionWithWorkflowAndReason(String submissionId, SubmissionStatus newStatus,
+            String reviewerRole, String rejectionReason) {
         Submission submission = submissionRepository.findById(submissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Submission not found with ID: " + submissionId));
 
@@ -282,11 +290,13 @@ public class SubmissionServiceImpl implements SubmissionService {
 
         handleWorkflowProgression(updatedSubmission, oldStatus, newStatus, reviewerRole);
 
-        log.info("Updated submission {} status from {} to {} by {} with reason: {}", submissionId, oldStatus, newStatus, reviewerRole, rejectionReason);
+        log.info("Updated submission {} status from {} to {} by {} with reason: {}", submissionId, oldStatus, newStatus,
+                reviewerRole, rejectionReason);
         return convertToResponse(updatedSubmission);
     }
 
-    private void handleWorkflowProgression(Submission submission, SubmissionStatus oldStatus, SubmissionStatus newStatus, String reviewerRole) {
+    private void handleWorkflowProgression(Submission submission, SubmissionStatus oldStatus,
+            SubmissionStatus newStatus, String reviewerRole) {
         if (isApprovalStatus(newStatus)) {
             forwardToNextLevel(submission, newStatus);
         } else if (isRejectionStatus(newStatus)) {
@@ -296,22 +306,22 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     private boolean isApprovalStatus(SubmissionStatus status) {
         return status == SubmissionStatus.APPROVED_BY_ADVISOR ||
-               status == SubmissionStatus.APPROVED_BY_DEPT ||
-               status == SubmissionStatus.APPROVED_BY_DEAN ||
-               status == SubmissionStatus.FINAL_APPROVED;
+                status == SubmissionStatus.APPROVED_BY_DEPT ||
+                status == SubmissionStatus.APPROVED_BY_DEAN ||
+                status == SubmissionStatus.FINAL_APPROVED;
     }
 
     private boolean isRejectionStatus(SubmissionStatus status) {
         return status == SubmissionStatus.REJECTED_BY_ADVISOR ||
-               status == SubmissionStatus.REJECTED_BY_DEPT ||
-               status == SubmissionStatus.REJECTED_BY_DEAN ||
-               status == SubmissionStatus.FINAL_REJECTED;
+                status == SubmissionStatus.REJECTED_BY_DEPT ||
+                status == SubmissionStatus.REJECTED_BY_DEAN ||
+                status == SubmissionStatus.FINAL_REJECTED;
     }
 
     private void forwardToNextLevel(Submission submission, SubmissionStatus currentStatus) {
         String nextLevel = determineNextLevel(currentStatus);
         log.info("Forwarding submission {} to {}", submission.getSubmissionId(), nextLevel);
-        
+
         // Here you could add notification logic, workflow tracking, etc.
         switch (nextLevel) {
             case "DEPARTMENT_SECRETARY":
@@ -387,7 +397,8 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     private void handleFinalApproval(Submission submission) {
         log.info("Submission {} has received final approval", submission.getSubmissionId());
-        // Implement final approval logic (e.g., generate graduation certificate, notify student, etc.)
+        // Implement final approval logic (e.g., generate graduation certificate, notify
+        // student, etc.)
     }
 
     private void handleRejection(Submission submission, String reviewerRole) {
@@ -397,55 +408,62 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     // Helper methods to get submissions for each role with specific status
     private List<SubmissionResponse> getSubmissionsForAdvisor(String advisorEmpId, SubmissionStatus status) {
-        // Implementation similar to existing getSubmissionsByAdvisor but filtered by status
+        // Implementation similar to existing getSubmissionsByAdvisor but filtered by
+        // status
         Advisor advisor = advisorRepository.findByEmpId(advisorEmpId)
                 .orElseThrow(() -> new ResourceNotFoundException("Advisor not found with empId: " + advisorEmpId));
-        
+
         AdvisorList advisorList = advisor.getAdvisorList();
         if (advisorList == null) {
             return List.of();
         }
-        
+
         List<Submission> submissions = submissionRepository.findByAdvisorListIdAndStatus(
                 advisorList.getAdvisorListId(), status);
         return submissions.stream().map(this::convertToResponse).collect(Collectors.toList());
     }
 
-    private List<SubmissionResponse> getSubmissionsForDepartmentSecretary(String deptSecretaryEmpId, SubmissionStatus status) {
+    private List<SubmissionResponse> getSubmissionsForDepartmentSecretary(String deptSecretaryEmpId,
+            SubmissionStatus status) {
         DepartmentSecretary departmentSecretary = departmentSecretaryRepository.findByEmpId(deptSecretaryEmpId)
-                .orElseThrow(() -> new ResourceNotFoundException("Department Secretary not found with empId: " + deptSecretaryEmpId));
-        
-        // Simple approach: Find all advisors under this department secretary and get their submissions
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Department Secretary not found with empId: " + deptSecretaryEmpId));
+
+        // Simple approach: Find all advisors under this department secretary and get
+        // their submissions
         List<Advisor> advisors = advisorRepository.findByDepartmentSecretaryEmpId(deptSecretaryEmpId);
         List<Submission> allSubmissions = new ArrayList<>();
-        
+
         log.debug("Department Secretary {} has {} advisors", deptSecretaryEmpId, advisors.size());
-        
+
         for (Advisor advisor : advisors) {
             if (advisor.getAdvisorList() != null) {
                 List<Submission> advisorSubmissions = submissionRepository.findByAdvisorListIdAndStatus(
                         advisor.getAdvisorList().getAdvisorListId(), status);
-                log.debug("Advisor {} (AdvisorList {}) has {} submissions with status {}", 
-                         advisor.getEmpId(), advisor.getAdvisorList().getAdvisorListId(), 
-                         advisorSubmissions.size(), status);
+                log.debug("Advisor {} (AdvisorList {}) has {} submissions with status {}",
+                        advisor.getEmpId(), advisor.getAdvisorList().getAdvisorListId(),
+                        advisorSubmissions.size(), status);
                 allSubmissions.addAll(advisorSubmissions);
             }
         }
-        
+
         log.debug("Total submissions found for Department Secretary {}: {}", deptSecretaryEmpId, allSubmissions.size());
         return allSubmissions.stream().map(this::convertToResponse).collect(Collectors.toList());
     }
 
     private List<SubmissionResponse> getSubmissionsForDeanOfficer(String deanOfficerEmpId, SubmissionStatus status) {
         DeanOfficer deanOfficer = deanOfficerRepository.findByEmpId(deanOfficerEmpId)
-                .orElseThrow(() -> new ResourceNotFoundException("Dean Officer not found with empId: " + deanOfficerEmpId));
-        
-        // Simple approach: Find all department secretaries under this dean officer, then their advisors
-        List<DepartmentSecretary> departmentSecretaries = departmentSecretaryRepository.findByDeanOfficerEmpId(deanOfficerEmpId);
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Dean Officer not found with empId: " + deanOfficerEmpId));
+
+        // Simple approach: Find all department secretaries under this dean officer,
+        // then their advisors
+        List<DepartmentSecretary> departmentSecretaries = departmentSecretaryRepository
+                .findByDeanOfficerEmpId(deanOfficerEmpId);
         List<Submission> allSubmissions = new ArrayList<>();
-        
+
         log.debug("Dean Officer {} has {} department secretaries", deanOfficerEmpId, departmentSecretaries.size());
-        
+
         for (DepartmentSecretary deptSecretary : departmentSecretaries) {
             List<Advisor> advisors = advisorRepository.findByDepartmentSecretaryEmpId(deptSecretary.getEmpId());
             for (Advisor advisor : advisors) {
@@ -456,15 +474,17 @@ public class SubmissionServiceImpl implements SubmissionService {
                 }
             }
         }
-        
+
         log.debug("Total submissions found for Dean Officer {}: {}", deanOfficerEmpId, allSubmissions.size());
         return allSubmissions.stream().map(this::convertToResponse).collect(Collectors.toList());
     }
 
-    private List<SubmissionResponse> getSubmissionsForStudentAffairs(String studentAffairsEmpId, SubmissionStatus status) {
+    private List<SubmissionResponse> getSubmissionsForStudentAffairs(String studentAffairsEmpId,
+            SubmissionStatus status) {
         StudentAffairs studentAffairs = studentAffairsRepository.findByEmpId(studentAffairsEmpId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student Affairs not found with empId: " + studentAffairsEmpId));
-        
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Student Affairs not found with empId: " + studentAffairsEmpId));
+
         // Student Affairs sees all submissions that have been approved by dean officers
         List<Submission> submissions = submissionRepository.findByStatus(status);
         return submissions.stream().map(this::convertToResponse).collect(Collectors.toList());
@@ -473,7 +493,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     private SubmissionResponse convertToResponse(Submission submission) {
         Student student = submission.getStudent();
         String studentName = student.getFirstName() + " " + student.getLastName();
-        
+
         List<SubmissionResponse.FileInfo> fileInfos = List.of();
         if (submission.getFiles() != null) {
             fileInfos = submission.getFiles().stream()
@@ -486,7 +506,7 @@ public class SubmissionServiceImpl implements SubmissionService {
                             .build())
                     .collect(Collectors.toList());
         }
-        
+
         return SubmissionResponse.builder()
                 .submissionId(submission.getSubmissionId())
                 .submissionDate(submission.getSubmissionDate())
@@ -494,7 +514,8 @@ public class SubmissionServiceImpl implements SubmissionService {
                 .status(submission.getStatus())
                 .studentNumber(student.getStudentNumber())
                 .studentName(studentName)
-                .advisorListId(submission.getAdvisorList() != null ? submission.getAdvisorList().getAdvisorListId() : null)
+                .advisorListId(
+                        submission.getAdvisorList() != null ? submission.getAdvisorList().getAdvisorListId() : null)
                 .files(fileInfos)
                 .build();
     }
@@ -525,20 +546,22 @@ public class SubmissionServiceImpl implements SubmissionService {
         // Get current user role from Spring Security context
         String userRole = getCurrentUserRole();
         String userEmpId = getCurrentUserEmpId();
-        
+
         log.info("User with role {} and empId {} approving submission: {}", userRole, userEmpId, submissionId);
-        
+
         switch (userRole) {
             case "ADVISOR":
                 return updateSubmissionStatusByAdvisor(submissionId, SubmissionStatus.APPROVED_BY_ADVISOR, null);
             case "DEPARTMENT_SECRETARY":
-                return updateSubmissionStatusByDepartmentSecretary(submissionId, SubmissionStatus.APPROVED_BY_DEPT, null);
+                return updateSubmissionStatusByDepartmentSecretary(submissionId, SubmissionStatus.APPROVED_BY_DEPT,
+                        null);
             case "DEAN_OFFICER":
                 return updateSubmissionStatusByDeanOfficer(submissionId, SubmissionStatus.APPROVED_BY_DEAN, null);
             case "STUDENT_AFFAIRS":
                 return updateSubmissionStatusByStudentAffairs(submissionId, SubmissionStatus.FINAL_APPROVED, null);
             default:
-                throw new IllegalArgumentException("User role " + userRole + " is not authorized to approve submissions");
+                throw new IllegalArgumentException(
+                        "User role " + userRole + " is not authorized to approve submissions");
         }
     }
 
@@ -548,18 +571,22 @@ public class SubmissionServiceImpl implements SubmissionService {
         // Get current user role from Spring Security context
         String userRole = getCurrentUserRole();
         String userEmpId = getCurrentUserEmpId();
-        
+
         log.info("User with role {} and empId {} rejecting submission: {}", userRole, userEmpId, submissionId);
-        
+
         switch (userRole) {
             case "ADVISOR":
-                return updateSubmissionStatusByAdvisor(submissionId, SubmissionStatus.REJECTED_BY_ADVISOR, rejectionReason);
+                return updateSubmissionStatusByAdvisor(submissionId, SubmissionStatus.REJECTED_BY_ADVISOR,
+                        rejectionReason);
             case "DEPARTMENT_SECRETARY":
-                return updateSubmissionStatusByDepartmentSecretary(submissionId, SubmissionStatus.REJECTED_BY_DEPT, rejectionReason);
+                return updateSubmissionStatusByDepartmentSecretary(submissionId, SubmissionStatus.REJECTED_BY_DEPT,
+                        rejectionReason);
             case "DEAN_OFFICER":
-                return updateSubmissionStatusByDeanOfficer(submissionId, SubmissionStatus.REJECTED_BY_DEAN, rejectionReason);
+                return updateSubmissionStatusByDeanOfficer(submissionId, SubmissionStatus.REJECTED_BY_DEAN,
+                        rejectionReason);
             case "STUDENT_AFFAIRS":
-                return updateSubmissionStatusByStudentAffairs(submissionId, SubmissionStatus.FINAL_REJECTED, rejectionReason);
+                return updateSubmissionStatusByStudentAffairs(submissionId, SubmissionStatus.FINAL_REJECTED,
+                        rejectionReason);
             default:
                 throw new IllegalArgumentException("Role " + userRole + " is not authorized to reject submissions");
         }
@@ -631,38 +658,36 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     private String getCurrentUserRole() {
         // Get the current authentication from Spring Security context
-        org.springframework.security.core.Authentication authentication = 
-            org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-        
+        org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new IllegalStateException("No authenticated user found");
         }
-        
-        // Extract role from authorities (assuming roles are stored as "ROLE_ADVISOR", "ROLE_DEPARTMENT_SECRETARY", etc.)
+
+        // Extract role from authorities
         return authentication.getAuthorities().stream()
                 .map(authority -> authority.getAuthority())
-                .filter(auth -> auth.startsWith("ROLE_"))
-                .map(role -> role.substring(5)) // Remove "ROLE_" prefix
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("No valid role found for current user"));
     }
 
     private String getCurrentUserEmpId() {
         // Get the current user's email from Spring Security context
-        org.springframework.security.core.Authentication authentication = 
-            org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-        
+        org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new IllegalStateException("No authenticated user found");
         }
-        
+
         String userEmail = authentication.getName();
         String userRole = getCurrentUserRole();
-        
+
         // Find the user by email using UserRepository
         com.agms.backend.model.users.User user = userRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userEmail));
-        
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userEmail));
+
         // Extract empId based on role
         switch (userRole) {
             case "ADVISOR":
