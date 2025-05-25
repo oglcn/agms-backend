@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.*;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -64,7 +65,7 @@ public class FileStorageService {
             File fileEntity = File.builder()
                 .fileName(originalFilename)
                 .fileType(file.getContentType())
-                .uploadDate(LocalDate.now())
+                .uploadDate(new Timestamp(System.currentTimeMillis()))
                 .uploader(uploader)
                 .filePath(uniqueFilename)
                 .build();
