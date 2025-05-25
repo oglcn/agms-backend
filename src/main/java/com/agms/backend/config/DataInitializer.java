@@ -90,7 +90,7 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Found {} student affairs in ubys.json to initialize", studentAffairsList.size());
 
             for (StudentAffairs studentAffairs : studentAffairsList) {
-                studentAffairs.setPassword(passwordEncoder.encode("password123"));
+                studentAffairs.setPassword(passwordEncoder.encode("Password123!"));
                 studentAffairsRepository.save(studentAffairs);
                 log.debug("Initialized StudentAffairs: {}", studentAffairs.getEmpId());
             }
@@ -112,7 +112,7 @@ public class DataInitializer implements CommandLineRunner {
             StudentAffairs studentAffairs = studentAffairsRepository.findAll().get(0);
 
             for (DeanOfficer deanOfficer : deanOfficers) {
-                deanOfficer.setPassword(passwordEncoder.encode("password123"));
+                deanOfficer.setPassword(passwordEncoder.encode("Password123!"));
                 deanOfficer.setStudentAffairs(studentAffairs);
 
                 // The faculty field should already be set from UBYS data
@@ -140,7 +140,7 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Found {} department secretaries in ubys.json to initialize", departmentSecretaries.size());
 
             for (DepartmentSecretary departmentSecretary : departmentSecretaries) {
-                departmentSecretary.setPassword(passwordEncoder.encode("password123"));
+                departmentSecretary.setPassword(passwordEncoder.encode("Password123!"));
 
                 // The department field should already be set from UBYS data
                 String department = departmentSecretary.getDepartment();
@@ -185,7 +185,7 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Found {} advisors in ubys.json to initialize", advisors.size());
 
             for (Advisor advisor : advisors) {
-                advisor.setPassword(passwordEncoder.encode("password123"));
+                advisor.setPassword(passwordEncoder.encode("Password123!"));
 
                 // The department field should already be set from UBYS data
                 String department = advisor.getDepartment();
@@ -230,7 +230,7 @@ public class DataInitializer implements CommandLineRunner {
 
             for (Student student : studentsFromUbys) {
                 try {
-                    student.setPassword(passwordEncoder.encode("password123"));
+                    student.setPassword(passwordEncoder.encode("Password123!"));
 
                     // Get the advisorId from the original UBYS data (object-oriented approach)
                     Map<String, Object> studentData = (Map<String, Object>) studentsSection
