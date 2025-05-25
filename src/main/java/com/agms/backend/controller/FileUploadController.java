@@ -23,12 +23,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/files")
 @Tag(name = "File Management", description = "APIs for file upload and download")
 @SecurityRequirement(name = "bearerAuth")
 public class FileUploadController {
+
+    private static final Logger log = LoggerFactory.getLogger(FileUploadController.class);
 
     @Autowired
     private FileStorageService fileStorageService;
@@ -92,11 +96,14 @@ public class FileUploadController {
     public ResponseEntity<Void> deleteFile(
             @Parameter(description = "Name of the file to delete") 
             @PathVariable String filename) {
+        log.info("Received delete request for file: {}", filename);
         try {
             fileStorageService.deleteFile(filename);
+            log.info("Successfully deleted file: {}", filename);
             return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to delete file");
+        } catch (RuntimeException e) {
+            log.error("Failed to delete file {}: {}", filename, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to delete file: " + e.getMessage());
         }
     }
 

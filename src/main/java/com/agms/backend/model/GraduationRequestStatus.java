@@ -1,4 +1,4 @@
-package com.agms.backend.model.users;
+package com.agms.backend.model;
 
 public enum GraduationRequestStatus {
     NOT_REQUESTED,

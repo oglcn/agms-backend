@@ -6,7 +6,7 @@ import com.agms.backend.dto.AuthenticationResponse;
 import com.agms.backend.dto.RegisterRequest;
 import com.agms.backend.dto.ResetPasswordRequest;
 import com.agms.backend.dto.NavigateToResetPasswordRequest;
-import com.agms.backend.model.users.GraduationRequestStatus;
+import com.agms.backend.model.GraduationRequestStatus;
 import com.agms.backend.model.users.Role;
 import com.agms.backend.model.users.Student;
 import com.agms.backend.model.users.Advisor;

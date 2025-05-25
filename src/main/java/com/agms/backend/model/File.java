@@ -28,14 +28,14 @@ public class File {
     @Column(nullable = false)
     private LocalDate uploadDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploaderId")
     private User uploader;
 
     @Column(nullable = false)
     private String filePath;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "submissionId")
     private Submission submission;
 } 

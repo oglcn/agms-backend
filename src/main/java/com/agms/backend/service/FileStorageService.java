@@ -3,11 +3,14 @@ package com.agms.backend.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.agms.backend.model.File;
 import com.agms.backend.model.users.User;
 import com.agms.backend.repository.FileRepository;
 import com.agms.backend.dto.FileResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
@@ -20,6 +23,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class FileStorageService {
+
+    private static final Logger log = LoggerFactory.getLogger(FileStorageService.class);
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -132,12 +137,40 @@ public class FileStorageService {
         }
     }
 
+    @Transactional
     public void deleteFile(String filename) {
+        log.info("Starting file deletion process for: {}", filename);
+        
         try {
+            // First, find the file in the database
+            File fileEntity = fileRepository.findByFilePath(filename)
+                .orElseThrow(() -> new RuntimeException("File not found in database: " + filename));
+            
+            log.info("Found file in database with ID: {}", fileEntity.getFileId());
+            
+            // Delete the physical file
             Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
-            Files.deleteIfExists(filePath);
+            boolean fileDeleted = Files.deleteIfExists(filePath);
+            log.info("Physical file deletion result: {}", fileDeleted ? "success" : "file not found");
+            
+            // Delete the database record
+            fileRepository.deleteById(fileEntity.getFileId());
+            log.info("Database record deleted successfully for file ID: {}", fileEntity.getFileId());
+            
+            // Verify deletion
+            boolean stillExists = fileRepository.existsById(fileEntity.getFileId());
+            if (stillExists) {
+                log.error("Database record still exists after deletion for file ID: {}", fileEntity.getFileId());
+                throw new RuntimeException("Failed to delete database record");
+            }
+            log.info("Verified database record deletion for file ID: {}", fileEntity.getFileId());
+            
         } catch (IOException e) {
-            throw new RuntimeException("Error deleting file: " + filename, e);
+            log.error("Error deleting physical file: {}", e.getMessage());
+            throw new RuntimeException("Error deleting physical file: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Error during file deletion process: {}", e.getMessage());
+            throw new RuntimeException("Error during file deletion: " + e.getMessage());
         }
     }
 
