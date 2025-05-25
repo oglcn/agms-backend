@@ -1535,15 +1535,8 @@ public class SubmissionServiceImpl implements SubmissionService {
         DepartmentList departmentList = departmentListRepository.findBySecretaryEmpId(secretaryEmpId)
             .orElseThrow(() -> new ResourceNotFoundException("Department list not found for secretary: " + secretaryEmpId));
 
-        // Check if department list is finalized
-        if (!departmentList.getIsFinalized()) {
-            log.warn("Department list {} is not finalized yet", departmentList.getDeptListId());
-            return TopStudentsResponse.builder()
-                .topStudents(List.of())
-                .topStudentsFromDepartments(List.of())
-                .topStudentsFromFaculties(List.of())
-                .build();
-        }
+        // Note: Showing top students from currently finalized lists (for testing purposes)
+        log.debug("Getting top students from finalized advisor lists under department: {}", departmentList.getDeptListId());
 
         // Get all advisor lists under this department
         List<AdvisorList> advisorLists = advisorListRepository.findByDepartmentListDeptListId(
@@ -1571,15 +1564,8 @@ public class SubmissionServiceImpl implements SubmissionService {
         FacultyList facultyList = facultyListRepository.findByDeanOfficerEmpId(deanOfficerEmpId)
             .orElseThrow(() -> new ResourceNotFoundException("Faculty list not found for dean officer: " + deanOfficerEmpId));
 
-        // Check if faculty list is finalized
-        if (!facultyList.getIsFinalized()) {
-            log.warn("Faculty list {} is not finalized yet", facultyList.getFacultyListId());
-            return TopStudentsResponse.builder()
-                .topStudents(List.of())
-                .topStudentsFromDepartments(List.of())
-                .topStudentsFromFaculties(List.of())
-                .build();
-        }
+        // Note: Showing top students from currently finalized lists (for testing purposes)
+        log.debug("Getting top students from finalized department lists under faculty: {}", facultyList.getFacultyListId());
 
         // Get all department lists under this faculty
         List<DepartmentList> departmentLists = departmentListRepository.findByFacultyListFacultyListId(
@@ -1665,9 +1651,11 @@ public class SubmissionServiceImpl implements SubmissionService {
         List<TopStudentsResponse.TopStudentInfo> studentInfos = new ArrayList<>();
 
         for (AdvisorList advisorList : advisorLists) {
-            // Get all finally approved submissions from this advisor list
-            List<Submission> approvedSubmissions = submissionRepository.findByAdvisorListIdAndStatus(
-                advisorList.getAdvisorListId(), SubmissionStatus.FINAL_APPROVED);
+            // Get all approved submissions from this advisor list (any approval level)
+            List<Submission> approvedSubmissions = submissionRepository.findByAdvisorListId(advisorList.getAdvisorListId())
+                .stream()
+                .filter(submission -> isApprovalStatus(submission.getStatus()))
+                .collect(Collectors.toList());
 
             for (Submission submission : approvedSubmissions) {
                 Student student = submission.getStudent();
