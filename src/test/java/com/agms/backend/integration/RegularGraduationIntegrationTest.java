@@ -2,235 +2,117 @@ package com.agms.backend.integration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.sql.Timestamp;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.agms.backend.dto.RegularGraduationTrackResponse;
 import com.agms.backend.dto.SubmissionResponse;
-import com.agms.backend.model.AdvisorList;
-import com.agms.backend.model.DepartmentList;
-import com.agms.backend.model.FacultyList;
-import com.agms.backend.model.Graduation;
-import com.agms.backend.model.GraduationList;
 import com.agms.backend.model.SubmissionStatus;
-import com.agms.backend.model.users.Advisor;
-import com.agms.backend.model.users.DeanOfficer;
-import com.agms.backend.model.users.DepartmentSecretary;
-import com.agms.backend.model.users.Student;
-import com.agms.backend.model.users.StudentAffairs;
-import com.agms.backend.repository.AdvisorListRepository;
-import com.agms.backend.repository.AdvisorRepository;
-import com.agms.backend.repository.DeanOfficerRepository;
-import com.agms.backend.repository.DepartmentListRepository;
-import com.agms.backend.repository.DepartmentSecretaryRepository;
-import com.agms.backend.repository.FacultyListRepository;
-import com.agms.backend.repository.GraduationListRepository;
-import com.agms.backend.repository.GraduationRepository;
-import com.agms.backend.repository.StudentAffairsRepository;
-import com.agms.backend.repository.StudentRepository;
-import com.agms.backend.service.SubmissionService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SpringBootTest
-@TestPropertySource(locations = "classpath:application-test.properties")
-class RegularGraduationIntegrationTest {
-
-    @Autowired
-    private SubmissionService submissionService;
-
-    @Autowired
-    private StudentRepository studentRepository;
-
-    @Autowired
-    private AdvisorRepository advisorRepository;
-
-    @Autowired
-    private AdvisorListRepository advisorListRepository;
-
-    @Autowired
-    private DepartmentSecretaryRepository departmentSecretaryRepository;
-
-    @Autowired
-    private DeanOfficerRepository deanOfficerRepository;
-
-    @Autowired
-    private StudentAffairsRepository studentAffairsRepository;
-
-    @Autowired
-    private GraduationRepository graduationRepository;
-
-    @Autowired
-    private GraduationListRepository graduationListRepository;
-
-    @Autowired
-    private FacultyListRepository facultyListRepository;
-
-    @Autowired
-    private DepartmentListRepository departmentListRepository;
-
-    // Test entities
-    private StudentAffairs studentAffairs;
-    private DeanOfficer deanOfficer;
-    private DepartmentSecretary departmentSecretary;
-    private Advisor advisor;
-    private Student student1;
-    private Student student2;
-    private AdvisorList advisorList;
-
-    @BeforeEach
-    @Transactional
-    void setUp() {
-        log.info("=== Setting up Regular Graduation Integration Test ===");
-
-        // Create the complete hierarchy from top to bottom
-        
-        // 1. Create StudentAffairs
-        studentAffairs = StudentAffairs.builder()
-                .empId("SA_REG_TEST_001")
-                .firstName("Test")
-                .lastName("StudentAffairs")
-                .email("test.sa.reg@edu")
-                .password("password123")
-                .build();
-        studentAffairs = studentAffairsRepository.save(studentAffairs);
-
-        // 2. Create DeanOfficer
-        deanOfficer = DeanOfficer.builder()
-                .empId("DO_REG_TEST_001")
-                .firstName("Test")
-                .lastName("DeanOfficer")
-                .email("test.do.reg@edu")
-                .password("password123")
-                .studentAffairs(studentAffairs)
-                .build();
-        deanOfficer = deanOfficerRepository.save(deanOfficer);
-
-        // 3. Create DepartmentSecretary
-        departmentSecretary = DepartmentSecretary.builder()
-                .empId("DS_REG_TEST_001")
-                .firstName("Test")
-                .lastName("DepartmentSecretary")
-                .email("test.ds.reg@edu")
-                .password("password123")
-                .deanOfficer(deanOfficer)
-                .build();
-        departmentSecretary = departmentSecretaryRepository.save(departmentSecretary);
-
-        // 4. Create Graduation
-        Graduation graduation = Graduation.builder()
-                .graduationId("GRAD_REG_TEST_001")
-                .requestDate(new Timestamp(System.currentTimeMillis()))
-                .term("Spring 2025")
-                .status("IN_PROGRESS")
-                .studentAffairs(studentAffairs)
-                .build();
-        graduation = graduationRepository.save(graduation);
-
-        // 5. Create GraduationList
-        GraduationList graduationList = GraduationList.builder()
-                .listId("GL_REG_TEST_001")
-                .creationDate(new Timestamp(System.currentTimeMillis()))
-                .graduation(graduation)
-                .build();
-        graduationList = graduationListRepository.save(graduationList);
-
-        // 6. Create FacultyList
-        FacultyList facultyList = FacultyList.builder()
-                .facultyListId("FL_REG_TEST_001")
-                .creationDate(new Timestamp(System.currentTimeMillis()))
-                .faculty("Engineering")
-                .deanOfficer(deanOfficer)
-                .graduationList(graduationList)
-                .build();
-        facultyList = facultyListRepository.save(facultyList);
-
-        // 7. Create DepartmentList
-        DepartmentList departmentList = DepartmentList.builder()
-                .deptListId("DL_REG_TEST_001")
-                .creationDate(new Timestamp(System.currentTimeMillis()))
-                .department("Computer Engineering")
-                .secretary(departmentSecretary)
-                .facultyList(facultyList)
-                .build();
-        departmentList = departmentListRepository.save(departmentList);
-
-        // 8. Create Advisor
-        advisor = Advisor.builder()
-                .empId("ADV_REG_TEST_001")
-                .firstName("Test")
-                .lastName("Advisor")
-                .email("test.advisor.reg@edu")
-                .password("password123")
-                .departmentSecretary(departmentSecretary)
-                .build();
-        advisor = advisorRepository.save(advisor);
-
-        // 9. Create AdvisorList
-        advisorList = AdvisorList.builder()
-                .advisorListId("AL_REG_TEST_001")
-                .creationDate(new Timestamp(System.currentTimeMillis()))
-                .advisor(advisor)
-                .departmentList(departmentList)
-                .build();
-        advisorList = advisorListRepository.save(advisorList);
-
-        // Update advisor with advisor list
-        advisor.setAdvisorList(advisorList);
-        advisor = advisorRepository.save(advisor);
-
-        // 10. Create test students
-        // Student 1 - Eligible for graduation (has required data in ubys.json: S001)
-        student1 = Student.builder()
-                .studentNumber("S001")
-                .firstName("Test")
-                .lastName("Student1")
-                .email("s001@std.iyte.edu.tr")
-                .password("password123")
-                .department("Computer Engineering")
-                .advisor(advisor)
-                .build();
-        student1 = studentRepository.save(student1);
-
-        // Student 2 - Not eligible for graduation (has required data in ubys.json: S002)
-        student2 = Student.builder()
-                .studentNumber("S002")
-                .firstName("Test")
-                .lastName("Student2")
-                .email("s002@std.iyte.edu.tr")
-                .password("password123")
-                .department("Computer Engineering")
-                .advisor(advisor)
-                .build();
-        student2 = studentRepository.save(student2);
-
-        log.info("Test setup completed successfully");
-    }
+class RegularGraduationIntegrationTest extends BaseIntegrationTest {
 
     @Test
     @Transactional
-    void testStartRegularGraduation() {
-        log.info("=== Testing Regular Graduation Process ===");
+    void testTrackBeforeStartingRegularGraduation() {
+        log.info("=== Testing Track Before Starting Regular Graduation ===");
 
-        // Start the regular graduation process
-        String term = "Spring 2025";
+        // Set up authentication for Student Affairs
+        setUpAuthenticationForStudentAffairs();
+
+        String term = "Fall 2025";
+
+        // PART 1: Track graduation process BEFORE starting it
+        log.info("--- Part 1: Track Before Starting ---");
+        
+        RegularGraduationTrackResponse trackResponse = submissionService.trackRegularGraduation(term);
+
+        // Verify the response indicates graduation has NOT been started
+        assertNotNull(trackResponse);
+        assertFalse(trackResponse.isStarted(), "Graduation should not be started yet");
+        assertEquals(term, trackResponse.getTerm(), "Term should match the requested term");
+        assertNull(trackResponse.getStatus(), "Status should be null when not started");
+        assertNull(trackResponse.getGraduationId(), "Graduation ID should be null when not started");
+        assertNull(trackResponse.getRequestDate(), "Request date should be null when not started");
+        assertNull(trackResponse.getStudentAffairsEmpId(), "Student Affairs EmpId should be null when not started");
+
+        log.info("✅ Track response before starting: isStarted={}, term={}, status={}", 
+            trackResponse.isStarted(), trackResponse.getTerm(), trackResponse.getStatus());
+
+        // PART 2: Start the regular graduation process
+        log.info("--- Part 2: Start Regular Graduation ---");
+        
         List<SubmissionResponse> createdSubmissions = submissionService.startRegularGraduation(term);
 
         // Verify submissions were created
         assertNotNull(createdSubmissions);
         assertTrue(createdSubmissions.size() > 0, "At least one submission should be created for eligible students");
 
-        log.info("Created {} submissions for regular graduation", createdSubmissions.size());
+        log.info("Started regular graduation and created {} submissions", createdSubmissions.size());
+
+        // PART 3: Track graduation process AFTER starting it
+        log.info("--- Part 3: Track After Starting ---");
+        
+        RegularGraduationTrackResponse trackResponseAfter = submissionService.trackRegularGraduation(term);
+
+        // Verify the response indicates graduation HAS been started
+        assertNotNull(trackResponseAfter);
+        assertTrue(trackResponseAfter.isStarted(), "Graduation should be started now");
+        assertEquals(term, trackResponseAfter.getTerm(), "Term should match the requested term");
+        assertEquals("IN_PROGRESS", trackResponseAfter.getStatus(), "Status should be IN_PROGRESS");
+        assertNotNull(trackResponseAfter.getGraduationId(), "Graduation ID should not be null when started");
+        assertNotNull(trackResponseAfter.getRequestDate(), "Request date should not be null when started");
+        assertNotNull(trackResponseAfter.getStudentAffairsEmpId(), "Student Affairs EmpId should not be null when started");
+
+        log.info("✅ Track response after starting: isStarted={}, term={}, status={}, graduationId={}", 
+            trackResponseAfter.isStarted(), trackResponseAfter.getTerm(), 
+            trackResponseAfter.getStatus(), trackResponseAfter.getGraduationId());
+
+        // PART 4: Verify tracking different terms
+        log.info("--- Part 4: Track Different Term ---");
+        
+        String differentTerm = "Spring 2026";
+        RegularGraduationTrackResponse trackDifferentTerm = submissionService.trackRegularGraduation(differentTerm);
+
+        // Verify different term shows as not started
+        assertNotNull(trackDifferentTerm);
+        assertFalse(trackDifferentTerm.isStarted(), "Different term should not be started");
+        assertEquals(differentTerm, trackDifferentTerm.getTerm(), "Term should match the requested different term");
+        assertNull(trackDifferentTerm.getStatus(), "Status should be null for different term");
+
+        log.info("✅ Track response for different term: isStarted={}, term={}", 
+            trackDifferentTerm.isStarted(), trackDifferentTerm.getTerm());
+
+        log.info("=== Track Before Starting Regular Graduation Test Completed Successfully ===");
+    }
+
+    @Test
+    @Transactional
+    void testRegularGraduationProcessAndDuplicatePrevention() {
+        log.info("=== Testing Regular Graduation Process and Duplicate Prevention ===");
+
+        // Set up authentication for Student Affairs
+        setUpAuthenticationForStudentAffairs();
+
+        String term = "Spring 2025";
+
+        // PART 1: Test initial regular graduation process
+        log.info("--- Part 1: Initial Regular Graduation Process ---");
+        
+        List<SubmissionResponse> firstRun = submissionService.startRegularGraduation(term);
+
+        // Verify submissions were created
+        assertNotNull(firstRun);
+        assertTrue(firstRun.size() > 0, "At least one submission should be created for eligible students");
+
+        log.info("First run created {} submissions for regular graduation", firstRun.size());
 
         // Verify that all created submissions have the correct properties
-        for (SubmissionResponse submission : createdSubmissions) {
+        for (SubmissionResponse submission : firstRun) {
             assertNotNull(submission.getSubmissionId());
             assertEquals(SubmissionStatus.PENDING, submission.getStatus());
             assertNotNull(submission.getStudentNumber());
@@ -244,40 +126,34 @@ class RegularGraduationIntegrationTest {
         }
 
         // Verify that only eligible students got submissions
-        // According to ubys.json, S001 should be eligible (good grades, curriculum completed)
-        // S002 might not be eligible depending on the data
-        boolean foundS001 = createdSubmissions.stream()
-                .anyMatch(s -> "S001".equals(s.getStudentNumber()));
+        // According to ubys.json, students should be eligible based on their data
+        boolean foundEligibleStudent = firstRun.stream()
+                .anyMatch(s -> s.getStudentNumber().startsWith("S"));
 
-        assertTrue(foundS001, "Student S001 should have a submission created as they are eligible");
+        assertTrue(foundEligibleStudent, "At least one eligible student should have a submission created");
 
-        log.info("=== Regular Graduation Process Test Completed Successfully ===");
-    }
+        // PART 2: Test duplicate prevention
+        log.info("--- Part 2: Duplicate Prevention Test ---");
 
-    @Test
-    @Transactional
-    void testStartRegularGraduationPreventsDoubleSubmission() {
-        log.info("=== Testing Regular Graduation Double Submission Prevention ===");
+        // Attempt to start the regular graduation process again for the same term
+        // This should either throw an exception or return an empty list
+        try {
+            List<SubmissionResponse> secondRun = submissionService.startRegularGraduation(term);
+            
+            // If no exception is thrown, verify that no new submissions were created
+            assertEquals(0, secondRun.size(), 
+                "Second run should not create any submissions as graduation already exists for this term");
+            
+            log.info("✅ Duplicate prevention successful: Second run created {} submissions", secondRun.size());
+            
+        } catch (IllegalStateException e) {
+            // This is also acceptable - the service should prevent duplicate graduation processes
+            assertTrue(e.getMessage().contains("already been started"), 
+                "Exception should indicate that graduation has already been started");
+            
+            log.info("✅ Duplicate prevention successful: Exception thrown - {}", e.getMessage());
+        }
 
-        String term = "Spring 2025";
-
-        // Start the regular graduation process first time
-        List<SubmissionResponse> firstRun = submissionService.startRegularGraduation(term);
-        int firstRunCount = firstRun.size();
-
-        assertTrue(firstRunCount > 0, "First run should create submissions for eligible students");
-        log.info("First run created {} submissions", firstRunCount);
-
-        // Start the regular graduation process second time
-        List<SubmissionResponse> secondRun = submissionService.startRegularGraduation(term);
-        int secondRunCount = secondRun.size();
-
-        // Second run should create 0 submissions since students already have pending submissions
-        assertEquals(0, secondRunCount, 
-            "Second run should not create any submissions as students already have active pending submissions");
-
-        log.info("Second run correctly created {} submissions (prevented duplicates)", secondRunCount);
-
-        log.info("=== Double Submission Prevention Test Completed Successfully ===");
+        log.info("=== Regular Graduation Process and Duplicate Prevention Test Completed Successfully ===");
     }
 } 

@@ -1,6 +1,7 @@
 package com.agms.backend.service;
 
 import com.agms.backend.dto.CreateSubmissionRequest;
+import com.agms.backend.dto.RegularGraduationTrackResponse;
 import com.agms.backend.dto.SubmissionResponse;
 import com.agms.backend.dto.SubordinateStatusResponse;
 import com.agms.backend.model.Submission;
@@ -112,6 +113,12 @@ public interface SubmissionService {
      * This method is called by Student Affairs to initiate the regular graduation workflow
      */
     List<SubmissionResponse> startRegularGraduation(String term);
+
+    /**
+     * Track regular graduation process status for a specific term
+     * Returns information about whether regular graduation has been started and its current status
+     */
+    RegularGraduationTrackResponse trackRegularGraduation(String term);
 
     // List finalization methods
     

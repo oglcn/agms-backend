@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.agms.backend.dto.CreateSubmissionRequest;
+import com.agms.backend.dto.RegularGraduationTrackResponse;
 import com.agms.backend.dto.StartRegularGraduationRequest;
 import com.agms.backend.dto.SubmissionResponse;
 import com.agms.backend.dto.SubordinateStatusResponse;
@@ -306,9 +307,27 @@ public class SubmissionController {
             return ResponseEntity.status(HttpStatus.CREATED).body(createdSubmissions);
         } catch (IllegalStateException e) {
             log.warn("Cannot start regular graduation: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (Exception e) {
             log.error("Error starting regular graduation: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Track regular graduation process status for a specific term
+     */
+    @GetMapping("/regular-graduation/track")
+    @PreAuthorize("hasRole('STUDENT_AFFAIRS') or hasRole('DEAN_OFFICER') or hasRole('DEPARTMENT_SECRETARY') or hasRole('ADVISOR')")
+    @Operation(summary = "Track regular graduation process status - check if regular graduation has been started for a specific term")
+    public ResponseEntity<RegularGraduationTrackResponse> trackRegularGraduation(@RequestParam String term) {
+        log.debug("Tracking regular graduation process for term: {}", term);
+
+        try {
+            RegularGraduationTrackResponse response = submissionService.trackRegularGraduation(term);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error tracking regular graduation: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
