@@ -4,6 +4,7 @@ import com.agms.backend.dto.CreateSubmissionRequest;
 import com.agms.backend.dto.RegularGraduationTrackResponse;
 import com.agms.backend.dto.SubmissionResponse;
 import com.agms.backend.dto.SubordinateStatusResponse;
+import com.agms.backend.dto.TopStudentsResponse;
 import com.agms.backend.exception.ResourceNotFoundException;
 import com.agms.backend.model.AdvisorList;
 import com.agms.backend.model.DepartmentList;
@@ -37,7 +38,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -1458,5 +1461,341 @@ public class SubmissionServiceImpl implements SubmissionService {
 
         log.debug("Found {} dean officers for student affairs", responses.size());
         return responses;
+    }
+
+    @Override
+    public TopStudentsResponse getTopStudentsFromFinalizedLists() {
+        String userRole = getCurrentUserRole();
+        String userEmpId = getCurrentUserEmpId();
+
+        log.debug("Getting top students from finalized lists for user with role {} and empId {}", userRole, userEmpId);
+
+        switch (userRole) {
+            case "DEPARTMENT_SECRETARY":
+                return getTopStudentsForDepartmentSecretary(userEmpId);
+            case "DEAN_OFFICER":
+                return getTopStudentsForDeanOfficer(userEmpId);
+            case "STUDENT_AFFAIRS":
+                return getTopStudentsForStudentAffairs();
+            default:
+                throw new IllegalArgumentException("Role " + userRole + " does not have access to top students data");
+        }
+    }
+
+    private TopStudentsResponse getTopStudentsForDepartmentSecretary(String secretaryEmpId) {
+        log.debug("Getting top 3 students for department secretary: {}", secretaryEmpId);
+
+        // Find the department list for this secretary
+        DepartmentList departmentList = departmentListRepository.findBySecretaryEmpId(secretaryEmpId)
+            .orElseThrow(() -> new ResourceNotFoundException("Department list not found for secretary: " + secretaryEmpId));
+
+        // Check if department list is finalized
+        if (!departmentList.getIsFinalized()) {
+            log.warn("Department list {} is not finalized yet", departmentList.getDeptListId());
+            return TopStudentsResponse.builder()
+                .topStudents(List.of())
+                .topStudentsFromDepartments(List.of())
+                .topStudentsFromFaculties(List.of())
+                .build();
+        }
+
+        // Get all advisor lists under this department
+        List<AdvisorList> advisorLists = advisorListRepository.findByDepartmentListDeptListId(
+            departmentList.getDeptListId());
+
+        // Get all finalized advisor lists
+        List<AdvisorList> finalizedAdvisorLists = advisorLists.stream()
+            .filter(AdvisorList::getIsFinalized)
+            .collect(Collectors.toList());
+
+        // Get top 3 students from this department
+        List<TopStudentsResponse.TopStudentInfo> topStudents = getTopStudentsFromAdvisorLists(finalizedAdvisorLists, 3);
+
+        return TopStudentsResponse.builder()
+            .topStudents(topStudents)
+            .topStudentsFromDepartments(List.of())
+            .topStudentsFromFaculties(List.of())
+            .build();
+    }
+
+    private TopStudentsResponse getTopStudentsForDeanOfficer(String deanOfficerEmpId) {
+        log.debug("Getting top students and departments for dean officer: {}", deanOfficerEmpId);
+
+        // Find the faculty list for this dean officer
+        FacultyList facultyList = facultyListRepository.findByDeanOfficerEmpId(deanOfficerEmpId)
+            .orElseThrow(() -> new ResourceNotFoundException("Faculty list not found for dean officer: " + deanOfficerEmpId));
+
+        // Check if faculty list is finalized
+        if (!facultyList.getIsFinalized()) {
+            log.warn("Faculty list {} is not finalized yet", facultyList.getFacultyListId());
+            return TopStudentsResponse.builder()
+                .topStudents(List.of())
+                .topStudentsFromDepartments(List.of())
+                .topStudentsFromFaculties(List.of())
+                .build();
+        }
+
+        // Get all department lists under this faculty
+        List<DepartmentList> departmentLists = departmentListRepository.findByFacultyListFacultyListId(
+            facultyList.getFacultyListId());
+
+        // Get all finalized department lists
+        List<DepartmentList> finalizedDepartmentLists = departmentLists.stream()
+            .filter(DepartmentList::getIsFinalized)
+            .collect(Collectors.toList());
+
+        // Get all advisor lists from finalized departments
+        List<AdvisorList> allAdvisorLists = new ArrayList<>();
+        for (DepartmentList deptList : finalizedDepartmentLists) {
+            List<AdvisorList> advisorLists = advisorListRepository.findByDepartmentListDeptListId(deptList.getDeptListId());
+            List<AdvisorList> finalizedAdvisorLists = advisorLists.stream()
+                .filter(AdvisorList::getIsFinalized)
+                .collect(Collectors.toList());
+            allAdvisorLists.addAll(finalizedAdvisorLists);
+        }
+
+        // Get top 3 students from all departments in this faculty (overall top 3)
+        List<TopStudentsResponse.TopStudentInfo> topStudents = getTopStudentsFromAdvisorLists(allAdvisorLists, 3);
+
+        // Get top 3 students from each department in this faculty
+        List<TopStudentsResponse.TopDepartmentInfo> topStudentsFromDepartments = getTopStudentsFromEachDepartment(finalizedDepartmentLists, 3);
+
+        return TopStudentsResponse.builder()
+            .topStudents(topStudents)
+            .topStudentsFromDepartments(topStudentsFromDepartments)
+            .topStudentsFromFaculties(List.of())
+            .build();
+    }
+
+    private TopStudentsResponse getTopStudentsForStudentAffairs() {
+        log.debug("Getting top students, departments, and faculties for student affairs");
+
+        // Get all faculty lists
+        List<FacultyList> facultyLists = facultyListRepository.findAll();
+
+        // Get all finalized faculty lists
+        List<FacultyList> finalizedFacultyLists = facultyLists.stream()
+            .filter(FacultyList::getIsFinalized)
+            .collect(Collectors.toList());
+
+        // Get all department lists from finalized faculties
+        List<DepartmentList> allDepartmentLists = new ArrayList<>();
+        for (FacultyList facultyList : finalizedFacultyLists) {
+            List<DepartmentList> departmentLists = departmentListRepository.findByFacultyListFacultyListId(
+                facultyList.getFacultyListId());
+            List<DepartmentList> finalizedDepartmentLists = departmentLists.stream()
+                .filter(DepartmentList::getIsFinalized)
+                .collect(Collectors.toList());
+            allDepartmentLists.addAll(finalizedDepartmentLists);
+        }
+
+        // Get all advisor lists from finalized departments
+        List<AdvisorList> allAdvisorLists = new ArrayList<>();
+        for (DepartmentList deptList : allDepartmentLists) {
+            List<AdvisorList> advisorLists = advisorListRepository.findByDepartmentListDeptListId(deptList.getDeptListId());
+            List<AdvisorList> finalizedAdvisorLists = advisorLists.stream()
+                .filter(AdvisorList::getIsFinalized)
+                .collect(Collectors.toList());
+            allAdvisorLists.addAll(finalizedAdvisorLists);
+        }
+
+        // Get top 3 students from all faculties (overall top 3)
+        List<TopStudentsResponse.TopStudentInfo> topStudents = getTopStudentsFromAdvisorLists(allAdvisorLists, 3);
+
+        // Get top 3 students from each department across all faculties
+        List<TopStudentsResponse.TopDepartmentInfo> topStudentsFromDepartments = getTopStudentsFromEachDepartment(allDepartmentLists, 3);
+
+        // Get top 3 students from each faculty
+        List<TopStudentsResponse.TopFacultyInfo> topStudentsFromFaculties = getTopStudentsFromEachFaculty(finalizedFacultyLists, 3);
+
+        return TopStudentsResponse.builder()
+            .topStudents(topStudents)
+            .topStudentsFromDepartments(topStudentsFromDepartments)
+            .topStudentsFromFaculties(topStudentsFromFaculties)
+            .build();
+    }
+
+    private List<TopStudentsResponse.TopStudentInfo> getTopStudentsFromAdvisorLists(List<AdvisorList> advisorLists, int limit) {
+        List<TopStudentsResponse.TopStudentInfo> studentInfos = new ArrayList<>();
+
+        for (AdvisorList advisorList : advisorLists) {
+            // Get all finally approved submissions from this advisor list
+            List<Submission> approvedSubmissions = submissionRepository.findByAdvisorListIdAndStatus(
+                advisorList.getAdvisorListId(), SubmissionStatus.FINAL_APPROVED);
+
+            for (Submission submission : approvedSubmissions) {
+                Student student = submission.getStudent();
+                
+                try {
+                    // Get enhanced student data with GPA from ubys service
+                    Student enhancedStudent = ubysService.getStudentWithTransientAttributes(student.getStudentNumber());
+                    
+                    // Only include students with valid GPA data
+                    if (enhancedStudent.getGpa() > 0) {
+                        Advisor advisor = advisorList.getAdvisor();
+                        String advisorName = advisor.getFirstName() + " " + advisor.getLastName();
+                        
+                        TopStudentsResponse.TopStudentInfo studentInfo = TopStudentsResponse.TopStudentInfo.builder()
+                            .studentNumber(student.getStudentNumber())
+                            .firstName(student.getFirstName())
+                            .lastName(student.getLastName())
+                            .email(student.getEmail())
+                            .department(student.getDepartment())
+                            .faculty(getFacultyForStudent(student))
+                            .gpa(enhancedStudent.getGpa())
+                            .totalCredits(enhancedStudent.getTotalCredit())
+                            .semester(enhancedStudent.getSemester())
+                            .advisorName(advisorName)
+                            .advisorEmpId(advisor.getEmpId())
+                            .build();
+                        
+                        studentInfos.add(studentInfo);
+                    }
+                } catch (Exception e) {
+                    log.warn("Could not get enhanced data for student {}: {}", student.getStudentNumber(), e.getMessage());
+                }
+            }
+        }
+
+        // Sort by semester ascending (earliest graduation first), then by GPA descending as tiebreaker
+        // Priority: Lower semester number = earlier graduation = higher rank
+        // Tiebreaker: Higher GPA = higher rank
+        studentInfos.sort(
+            Comparator.comparing((TopStudentsResponse.TopStudentInfo student) -> student.getSemester())
+                .thenComparing(TopStudentsResponse.TopStudentInfo::getGpa, Comparator.reverseOrder())
+        );
+        
+        // Assign ranks and limit to top N
+        for (int i = 0; i < studentInfos.size() && i < limit; i++) {
+            studentInfos.get(i).setRank(i + 1);
+        }
+
+        return studentInfos.stream().limit(limit).collect(Collectors.toList());
+    }
+
+    private List<TopStudentsResponse.TopDepartmentInfo> getTopStudentsFromEachDepartment(List<DepartmentList> departmentLists, int limit) {
+        List<TopStudentsResponse.TopDepartmentInfo> departmentInfos = new ArrayList<>();
+        
+        for (DepartmentList departmentList : departmentLists) {
+            String departmentName = departmentList.getSecretary().getDepartment();
+            
+            // Get all advisor lists under this department
+            List<AdvisorList> advisorLists = advisorListRepository.findByDepartmentListDeptListId(
+                departmentList.getDeptListId());
+            
+            List<AdvisorList> finalizedAdvisorLists = advisorLists.stream()
+                .filter(AdvisorList::getIsFinalized)
+                .collect(Collectors.toList());
+            
+            // Get top 3 students from this department
+            List<TopStudentsResponse.TopStudentInfo> topStudents = getTopStudentsFromAdvisorLists(finalizedAdvisorLists, limit);
+            
+            if (!topStudents.isEmpty()) {
+                double averageGpa = topStudents.stream()
+                    .mapToDouble(TopStudentsResponse.TopStudentInfo::getGpa)
+                    .average()
+                    .orElse(0.0);
+                
+                String faculty = topStudents.get(0).getFaculty(); // All students in same department have same faculty
+                
+                TopStudentsResponse.TopDepartmentInfo departmentInfo = TopStudentsResponse.TopDepartmentInfo.builder()
+                    .departmentName(departmentName)
+                    .faculty(faculty)
+                    .averageGpa(Math.round(averageGpa * 100.0) / 100.0)
+                    .totalStudents(topStudents.size())
+                    .rank(1) // Each department shows its own top students, no ranking between departments
+                    .topStudents(topStudents)
+                    .build();
+                
+                departmentInfos.add(departmentInfo);
+            }
+        }
+
+        return departmentInfos;
+    }
+
+    private List<TopStudentsResponse.TopFacultyInfo> getTopStudentsFromEachFaculty(List<FacultyList> facultyLists, int limit) {
+        List<TopStudentsResponse.TopFacultyInfo> facultyInfos = new ArrayList<>();
+        
+        for (FacultyList facultyList : facultyLists) {
+            String facultyName = facultyList.getFaculty();
+            
+            // Get all department lists under this faculty
+            List<DepartmentList> departmentLists = departmentListRepository.findByFacultyListFacultyListId(
+                facultyList.getFacultyListId());
+            
+            List<DepartmentList> finalizedDepartmentLists = departmentLists.stream()
+                .filter(DepartmentList::getIsFinalized)
+                .collect(Collectors.toList());
+            
+            // Get all advisor lists from finalized departments in this faculty
+            List<AdvisorList> allAdvisorLists = new ArrayList<>();
+            for (DepartmentList deptList : finalizedDepartmentLists) {
+                List<AdvisorList> advisorLists = advisorListRepository.findByDepartmentListDeptListId(deptList.getDeptListId());
+                List<AdvisorList> finalizedAdvisorLists = advisorLists.stream()
+                    .filter(AdvisorList::getIsFinalized)
+                    .collect(Collectors.toList());
+                allAdvisorLists.addAll(finalizedAdvisorLists);
+            }
+            
+            // Get top 3 students from this faculty
+            List<TopStudentsResponse.TopStudentInfo> topStudents = getTopStudentsFromAdvisorLists(allAdvisorLists, limit);
+            
+            if (!topStudents.isEmpty()) {
+                double averageGpa = topStudents.stream()
+                    .mapToDouble(TopStudentsResponse.TopStudentInfo::getGpa)
+                    .average()
+                    .orElse(0.0);
+                
+                // Get top 3 students from each department in this faculty
+                List<TopStudentsResponse.TopDepartmentInfo> topDepartments = getTopStudentsFromEachDepartment(finalizedDepartmentLists, limit);
+                
+                TopStudentsResponse.TopFacultyInfo facultyInfo = TopStudentsResponse.TopFacultyInfo.builder()
+                    .facultyName(facultyName)
+                    .averageGpa(Math.round(averageGpa * 100.0) / 100.0)
+                    .totalStudents(topStudents.size())
+                    .totalDepartments(finalizedDepartmentLists.size())
+                    .rank(1) // Each faculty shows its own top students, no ranking between faculties
+                    .topStudentsFromDepartments(topDepartments)
+                    .build();
+                
+                facultyInfos.add(facultyInfo);
+            }
+        }
+
+        return facultyInfos;
+    }
+
+    private String getFacultyForStudent(Student student) {
+        try {
+            // Get the student's advisor
+            Advisor advisor = student.getAdvisor();
+            if (advisor == null) {
+                return "Unknown";
+            }
+            
+            // Get the advisor's advisor list
+            AdvisorList advisorList = advisor.getAdvisorList();
+            if (advisorList == null) {
+                return "Unknown";
+            }
+            
+            // Get the department list
+            DepartmentList departmentList = advisorList.getDepartmentList();
+            if (departmentList == null) {
+                return "Unknown";
+            }
+            
+            // Get the faculty list
+            FacultyList facultyList = departmentList.getFacultyList();
+            if (facultyList == null) {
+                return "Unknown";
+            }
+            
+            return facultyList.getFaculty();
+        } catch (Exception e) {
+            log.warn("Could not determine faculty for student {}: {}", student.getStudentNumber(), e.getMessage());
+            return "Unknown";
+        }
     }
 }

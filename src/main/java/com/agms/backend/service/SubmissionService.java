@@ -4,6 +4,7 @@ import com.agms.backend.dto.CreateSubmissionRequest;
 import com.agms.backend.dto.RegularGraduationTrackResponse;
 import com.agms.backend.dto.SubmissionResponse;
 import com.agms.backend.dto.SubordinateStatusResponse;
+import com.agms.backend.dto.TopStudentsResponse;
 import com.agms.backend.model.Submission;
 import com.agms.backend.model.SubmissionStatus;
 
@@ -148,4 +149,12 @@ public interface SubmissionService {
      * - STUDENT_AFFAIRS: returns finalization status of dean officers
      */
     List<SubordinateStatusResponse> getSubordinateFinalizationStatus();
+    
+    /**
+     * Get top 3 students from finalized lists based on user role
+     * - DEPARTMENT_SECRETARY: returns top 3 students from their department
+     * - DEAN_OFFICER: returns top 3 students from departments and top 3 departments in their faculty
+     * - STUDENT_AFFAIRS: returns top 3 students, top 3 departments, and top 3 faculties
+     */
+    TopStudentsResponse getTopStudentsFromFinalizedLists();
 } 
