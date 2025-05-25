@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Configuration
@@ -339,13 +340,29 @@ public class DataInitializer implements CommandLineRunner {
         return advisorListRepository.save(advisorList);
     }
 
+    @org.springframework.transaction.annotation.Transactional
     private void initializeGraduationHierarchy() {
         log.debug("Initializing graduation hierarchy...");
 
         try {
+            String currentTerm = "2024-Spring";
+            
+            // Check if graduation hierarchy already exists for this term
+            Optional<Graduation> existingGraduation = graduationRepository.findByTerm(currentTerm);
+            if (existingGraduation.isPresent()) {
+                log.info("Graduation hierarchy already exists for term: {}, skipping initialization", currentTerm);
+                return;
+            }
+            
+            // Check if any graduation lists already exist
+            List<GraduationList> existingGraduationLists = graduationListRepository.findAll();
+            if (!existingGraduationLists.isEmpty()) {
+                log.info("Graduation lists already exist, skipping graduation hierarchy initialization");
+                return;
+            }
+
             // Create a default graduation for current term
             StudentAffairs studentAffairs = studentAffairsRepository.findAll().get(0);
-            String currentTerm = "2024-Spring";
             String graduationId = "GRAD_" + currentTerm.replace("-", "_");
 
             Graduation graduation = createGraduation(graduationId, new Timestamp(System.currentTimeMillis()),
@@ -379,6 +396,11 @@ public class DataInitializer implements CommandLineRunner {
                     for (Advisor advisor : advisors) {
                         String advisorListId = "AL_" + advisor.getEmpId();
                         AdvisorList advisorList = createAdvisorList(advisorListId, advisor, departmentList);
+                        
+                        // Set the bidirectional relationship
+                        advisor.setAdvisorList(advisorList);
+                        advisorRepository.save(advisor);
+                        
                         log.debug("Created AdvisorList: {} for advisor: {}", advisorListId, advisor.getEmpId());
                     }
                 }

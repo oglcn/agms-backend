@@ -14,7 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Graduation")
+@Table(name = "Graduation", uniqueConstraints = {
+    @UniqueConstraint(columnNames = "term", name = "uk_graduation_term")
+})
 public class Graduation {
     @Id
     private String graduationId;
@@ -22,7 +24,7 @@ public class Graduation {
     @Column(nullable = false)
     private Timestamp requestDate;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String term;
 
     @Column(nullable = false)

@@ -26,7 +26,7 @@ public class Advisor extends User {
     @Column(name = "department")
     private String department;
 
-    @OneToOne(mappedBy = "advisor")
+    @OneToOne(mappedBy = "advisor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private AdvisorList advisorList;
 

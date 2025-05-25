@@ -957,58 +957,104 @@ public class SubmissionServiceImpl implements SubmissionService {
             throw e;
         }
 
-        // Create graduation list
-        String graduationListId = "GL_" + graduationId;
-        com.agms.backend.model.GraduationList graduationList = com.agms.backend.model.GraduationList.builder()
-                .listId(graduationListId)
-                .creationDate(new Timestamp(System.currentTimeMillis()))
-                .graduation(graduation)
-                .build();
-        graduationList = graduationListRepository.save(graduationList);
-
-        // Create faculty lists for each dean officer
-        List<DeanOfficer> deanOfficers = deanOfficerRepository.findAll();
-        for (DeanOfficer deanOfficer : deanOfficers) {
-            String facultyListId = "FL_" + graduationId + "_" + deanOfficer.getEmpId();
-            FacultyList facultyList = FacultyList.builder()
-                    .facultyListId(facultyListId)
+        // Check if graduation list already exists (from DataInitializer)
+        List<com.agms.backend.model.GraduationList> existingGraduationLists = graduationListRepository.findAll();
+        com.agms.backend.model.GraduationList graduationList = null;
+        
+        if (!existingGraduationLists.isEmpty()) {
+            // Reuse existing graduation list and update its graduation reference
+            graduationList = existingGraduationLists.get(0);
+            graduationList.setGraduation(graduation);
+            graduationList = graduationListRepository.save(graduationList);
+            log.info("Reusing existing graduation list: {} for term: {}", graduationList.getListId(), term);
+        } else {
+            // Create new graduation list
+            String graduationListId = "GL_" + graduationId;
+            graduationList = com.agms.backend.model.GraduationList.builder()
+                    .listId(graduationListId)
                     .creationDate(new Timestamp(System.currentTimeMillis()))
-                    .faculty(deanOfficer.getFaculty())
-                    .deanOfficer(deanOfficer)
-                    .graduationList(graduationList)
+                    .graduation(graduation)
                     .build();
-            facultyList = facultyListRepository.save(facultyList);
+            graduationList = graduationListRepository.save(graduationList);
+            log.info("Created new graduation list: {} for term: {}", graduationListId, term);
+        }
 
-            // Create department lists for each department secretary under this dean officer
-            List<DepartmentSecretary> departmentSecretaries = departmentSecretaryRepository.findByDeanOfficerEmpId(deanOfficer.getEmpId());
-            for (DepartmentSecretary departmentSecretary : departmentSecretaries) {
-                String departmentListId = "DL_" + graduationId + "_" + departmentSecretary.getEmpId();
-                DepartmentList departmentList = DepartmentList.builder()
-                        .deptListId(departmentListId)
+        // Check if faculty lists already exist (from DataInitializer)
+        List<FacultyList> existingFacultyLists = facultyListRepository.findAll();
+        
+        if (!existingFacultyLists.isEmpty()) {
+            // Reuse existing faculty lists and update their graduation list reference
+            for (FacultyList existingFacultyList : existingFacultyLists) {
+                existingFacultyList.setGraduationList(graduationList);
+                facultyListRepository.save(existingFacultyList);
+                log.info("Reusing existing faculty list: {} for faculty: {}", 
+                    existingFacultyList.getFacultyListId(), existingFacultyList.getFaculty());
+            }
+        } else {
+            // Create new faculty lists for each dean officer
+            List<DeanOfficer> deanOfficers = deanOfficerRepository.findAll();
+            for (DeanOfficer deanOfficer : deanOfficers) {
+                String facultyListId = "FL_" + graduationId + "_" + deanOfficer.getEmpId();
+                FacultyList facultyList = FacultyList.builder()
+                        .facultyListId(facultyListId)
                         .creationDate(new Timestamp(System.currentTimeMillis()))
-                        .department(departmentSecretary.getDepartment())
-                        .secretary(departmentSecretary)
-                        .facultyList(facultyList)
+                        .faculty(deanOfficer.getFaculty())
+                        .deanOfficer(deanOfficer)
+                        .graduationList(graduationList)
                         .build();
-                departmentList = departmentListRepository.save(departmentList);
+                facultyList = facultyListRepository.save(facultyList);
 
-                // Create advisor lists for each advisor under this department secretary
-                List<Advisor> advisors = advisorRepository.findByDepartmentSecretaryEmpId(departmentSecretary.getEmpId());
-                for (Advisor advisor : advisors) {
-                    // Check if advisor already has an advisor list
-                    if (advisor.getAdvisorList() == null) {
-                        String advisorListId = "AL_" + graduationId + "_" + advisor.getEmpId();
-                        AdvisorList advisorList = AdvisorList.builder()
-                                .advisorListId(advisorListId)
-                                .creationDate(new Timestamp(System.currentTimeMillis()))
-                                .advisor(advisor)
-                                .departmentList(departmentList)
-                                .build();
-                        advisorList = advisorListRepository.save(advisorList);
+                // Create department lists for each department secretary under this dean officer
+                List<DepartmentSecretary> departmentSecretaries = departmentSecretaryRepository.findByDeanOfficerEmpId(deanOfficer.getEmpId());
+                for (DepartmentSecretary departmentSecretary : departmentSecretaries) {
+                    String departmentListId = "DL_" + graduationId + "_" + departmentSecretary.getEmpId();
+                    DepartmentList departmentList = DepartmentList.builder()
+                            .deptListId(departmentListId)
+                            .creationDate(new Timestamp(System.currentTimeMillis()))
+                            .department(departmentSecretary.getDepartment())
+                            .secretary(departmentSecretary)
+                            .facultyList(facultyList)
+                            .build();
+                    departmentList = departmentListRepository.save(departmentList);
 
-                        // Update advisor with the new advisor list
-                        advisor.setAdvisorList(advisorList);
-                        advisorRepository.save(advisor);
+                    // Create advisor lists for each advisor under this department secretary
+                    List<Advisor> advisors = advisorRepository.findByDepartmentSecretaryEmpId(departmentSecretary.getEmpId());
+                    for (Advisor advisor : advisors) {
+                        // Check if advisor already has an advisor list
+                        if (advisor.getAdvisorList() == null) {
+                            // Check if there's an existing advisor list for this advisor (from DataInitializer)
+                            Optional<AdvisorList> existingAdvisorListOpt = advisorListRepository.findByAdvisorEmpId(advisor.getEmpId());
+                            
+                            if (existingAdvisorListOpt.isPresent()) {
+                                // Reuse existing advisor list and update its department list reference
+                                AdvisorList existingAdvisorList = existingAdvisorListOpt.get();
+                                existingAdvisorList.setDepartmentList(departmentList);
+                                existingAdvisorList = advisorListRepository.save(existingAdvisorList);
+                                
+                                // Set the bidirectional relationship
+                                advisor.setAdvisorList(existingAdvisorList);
+                                advisorRepository.save(advisor);
+                                
+                                log.info("Reusing existing advisor list: {} for advisor: {}", 
+                                    existingAdvisorList.getAdvisorListId(), advisor.getEmpId());
+                            } else {
+                                // Create new advisor list
+                                String advisorListId = "AL_" + graduationId + "_" + advisor.getEmpId();
+                                AdvisorList advisorList = AdvisorList.builder()
+                                        .advisorListId(advisorListId)
+                                        .creationDate(new Timestamp(System.currentTimeMillis()))
+                                        .advisor(advisor)
+                                        .departmentList(departmentList)
+                                        .build();
+                                advisorList = advisorListRepository.save(advisorList);
+
+                                // Update advisor with the new advisor list
+                                advisor.setAdvisorList(advisorList);
+                                advisorRepository.save(advisor);
+                                
+                                log.info("Created new advisor list: {} for advisor: {}", advisorListId, advisor.getEmpId());
+                            }
+                        }
                     }
                 }
             }
