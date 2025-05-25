@@ -1,8 +1,7 @@
 package com.agms.backend.model;
 
 public enum SubmissionStatus {
-    // Initial states
-    NOT_REQUESTED,
+    // Initial state
     PENDING,                    // Submitted by student, waiting for advisor review
     
     // Advisor level

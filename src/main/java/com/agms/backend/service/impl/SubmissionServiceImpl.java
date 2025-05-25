@@ -46,6 +46,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final DeanOfficerRepository deanOfficerRepository;
     private final StudentAffairsRepository studentAffairsRepository;
     private final DepartmentSecretaryRepository departmentSecretaryRepository;
+    private final com.agms.backend.repository.UserRepository userRepository;
 
     @Override
     @Transactional
@@ -206,30 +207,54 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public SubmissionResponse updateSubmissionStatusByAdvisor(String submissionId, SubmissionStatus status) {
+    public SubmissionResponse updateSubmissionStatusByAdvisor(String submissionId, SubmissionStatus status, String rejectionReason) {
         validateAdvisorStatusTransition(status);
-        return updateSubmissionWithWorkflow(submissionId, status, "ADVISOR");
+        
+        // If rejecting and rejection reason is provided, update the content field
+        if (isRejectionStatus(status) && rejectionReason != null && !rejectionReason.trim().isEmpty()) {
+            return updateSubmissionWithWorkflowAndReason(submissionId, status, "ADVISOR", rejectionReason);
+        } else {
+            return updateSubmissionWithWorkflow(submissionId, status, "ADVISOR");
+        }
     }
 
     @Override
     @Transactional
-    public SubmissionResponse updateSubmissionStatusByDepartmentSecretary(String submissionId, SubmissionStatus status) {
+    public SubmissionResponse updateSubmissionStatusByDepartmentSecretary(String submissionId, SubmissionStatus status, String rejectionReason) {
         validateDepartmentSecretaryStatusTransition(status);
-        return updateSubmissionWithWorkflow(submissionId, status, "DEPARTMENT_SECRETARY");
+        
+        // If rejecting and rejection reason is provided, update the content field
+        if (isRejectionStatus(status) && rejectionReason != null && !rejectionReason.trim().isEmpty()) {
+            return updateSubmissionWithWorkflowAndReason(submissionId, status, "DEPARTMENT_SECRETARY", rejectionReason);
+        } else {
+            return updateSubmissionWithWorkflow(submissionId, status, "DEPARTMENT_SECRETARY");
+        }
     }
 
     @Override
     @Transactional
-    public SubmissionResponse updateSubmissionStatusByDeanOfficer(String submissionId, SubmissionStatus status) {
+    public SubmissionResponse updateSubmissionStatusByDeanOfficer(String submissionId, SubmissionStatus status, String rejectionReason) {
         validateDeanOfficerStatusTransition(status);
-        return updateSubmissionWithWorkflow(submissionId, status, "DEAN_OFFICER");
+        
+        // If rejecting and rejection reason is provided, update the content field
+        if (isRejectionStatus(status) && rejectionReason != null && !rejectionReason.trim().isEmpty()) {
+            return updateSubmissionWithWorkflowAndReason(submissionId, status, "DEAN_OFFICER", rejectionReason);
+        } else {
+            return updateSubmissionWithWorkflow(submissionId, status, "DEAN_OFFICER");
+        }
     }
 
     @Override
     @Transactional
-    public SubmissionResponse updateSubmissionStatusByStudentAffairs(String submissionId, SubmissionStatus status) {
+    public SubmissionResponse updateSubmissionStatusByStudentAffairs(String submissionId, SubmissionStatus status, String rejectionReason) {
         validateStudentAffairsStatusTransition(status);
-        return updateSubmissionWithWorkflow(submissionId, status, "STUDENT_AFFAIRS");
+        
+        // If rejecting and rejection reason is provided, update the content field
+        if (isRejectionStatus(status) && rejectionReason != null && !rejectionReason.trim().isEmpty()) {
+            return updateSubmissionWithWorkflowAndReason(submissionId, status, "STUDENT_AFFAIRS", rejectionReason);
+        } else {
+            return updateSubmissionWithWorkflow(submissionId, status, "STUDENT_AFFAIRS");
+        }
     }
 
     private SubmissionResponse updateSubmissionWithWorkflow(String submissionId, SubmissionStatus newStatus, String reviewerRole) {
@@ -243,6 +268,21 @@ public class SubmissionServiceImpl implements SubmissionService {
         handleWorkflowProgression(updatedSubmission, oldStatus, newStatus, reviewerRole);
 
         log.info("Updated submission {} status from {} to {} by {}", submissionId, oldStatus, newStatus, reviewerRole);
+        return convertToResponse(updatedSubmission);
+    }
+
+    private SubmissionResponse updateSubmissionWithWorkflowAndReason(String submissionId, SubmissionStatus newStatus, String reviewerRole, String rejectionReason) {
+        Submission submission = submissionRepository.findById(submissionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Submission not found with ID: " + submissionId));
+
+        SubmissionStatus oldStatus = submission.getStatus();
+        submission.setStatus(newStatus);
+        submission.setContent(rejectionReason);
+        Submission updatedSubmission = submissionRepository.save(submission);
+
+        handleWorkflowProgression(updatedSubmission, oldStatus, newStatus, reviewerRole);
+
+        log.info("Updated submission {} status from {} to {} by {} with reason: {}", submissionId, oldStatus, newStatus, reviewerRole, rejectionReason);
         return convertToResponse(updatedSubmission);
     }
 
@@ -477,5 +517,112 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public List<SubmissionResponse> getSubmissionsByStudentAffairs(String studentAffairsEmpId) {
         return getSubmissionsForStudentAffairs(studentAffairsEmpId, SubmissionStatus.APPROVED_BY_DEAN);
+    }
+
+    @Override
+    @Transactional
+    public SubmissionResponse approveSubmission(String submissionId) {
+        // Get current user role from Spring Security context
+        String userRole = getCurrentUserRole();
+        String userEmpId = getCurrentUserEmpId();
+        
+        log.info("User with role {} and empId {} approving submission: {}", userRole, userEmpId, submissionId);
+        
+        switch (userRole) {
+            case "ADVISOR":
+                return updateSubmissionStatusByAdvisor(submissionId, SubmissionStatus.APPROVED_BY_ADVISOR, null);
+            case "DEPARTMENT_SECRETARY":
+                return updateSubmissionStatusByDepartmentSecretary(submissionId, SubmissionStatus.APPROVED_BY_DEPT, null);
+            case "DEAN_OFFICER":
+                return updateSubmissionStatusByDeanOfficer(submissionId, SubmissionStatus.APPROVED_BY_DEAN, null);
+            case "STUDENT_AFFAIRS":
+                return updateSubmissionStatusByStudentAffairs(submissionId, SubmissionStatus.FINAL_APPROVED, null);
+            default:
+                throw new IllegalArgumentException("User role " + userRole + " is not authorized to approve submissions");
+        }
+    }
+
+    @Override
+    @Transactional
+    public SubmissionResponse rejectSubmission(String submissionId, String rejectionReason) {
+        // Get current user role from Spring Security context
+        String userRole = getCurrentUserRole();
+        String userEmpId = getCurrentUserEmpId();
+        
+        log.info("User with role {} and empId {} rejecting submission: {}", userRole, userEmpId, submissionId);
+        
+        switch (userRole) {
+            case "ADVISOR":
+                return updateSubmissionStatusByAdvisor(submissionId, SubmissionStatus.REJECTED_BY_ADVISOR, rejectionReason);
+            case "DEPARTMENT_SECRETARY":
+                return updateSubmissionStatusByDepartmentSecretary(submissionId, SubmissionStatus.REJECTED_BY_DEPT, rejectionReason);
+            case "DEAN_OFFICER":
+                return updateSubmissionStatusByDeanOfficer(submissionId, SubmissionStatus.REJECTED_BY_DEAN, rejectionReason);
+            case "STUDENT_AFFAIRS":
+                return updateSubmissionStatusByStudentAffairs(submissionId, SubmissionStatus.FINAL_REJECTED, rejectionReason);
+            default:
+                throw new IllegalArgumentException("User role " + userRole + " is not authorized to reject submissions");
+        }
+    }
+
+    private String getCurrentUserRole() {
+        // Get the current authentication from Spring Security context
+        org.springframework.security.core.Authentication authentication = 
+            org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalStateException("No authenticated user found");
+        }
+        
+        // Extract role from authorities (assuming roles are stored as "ROLE_ADVISOR", "ROLE_DEPARTMENT_SECRETARY", etc.)
+        return authentication.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .filter(auth -> auth.startsWith("ROLE_"))
+                .map(role -> role.substring(5)) // Remove "ROLE_" prefix
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No valid role found for current user"));
+    }
+
+    private String getCurrentUserEmpId() {
+        // Get the current user's email from Spring Security context
+        org.springframework.security.core.Authentication authentication = 
+            org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalStateException("No authenticated user found");
+        }
+        
+        String userEmail = authentication.getName();
+        String userRole = getCurrentUserRole();
+        
+        // Find the user by email using UserRepository
+        com.agms.backend.model.users.User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userEmail));
+        
+        // Extract empId based on role
+        switch (userRole) {
+            case "ADVISOR":
+                if (user instanceof com.agms.backend.model.users.Advisor) {
+                    return ((com.agms.backend.model.users.Advisor) user).getEmpId();
+                }
+                throw new IllegalStateException("User is not an Advisor but has ADVISOR role");
+            case "DEPARTMENT_SECRETARY":
+                if (user instanceof com.agms.backend.model.users.DepartmentSecretary) {
+                    return ((com.agms.backend.model.users.DepartmentSecretary) user).getEmpId();
+                }
+                throw new IllegalStateException("User is not a DepartmentSecretary but has DEPARTMENT_SECRETARY role");
+            case "DEAN_OFFICER":
+                if (user instanceof com.agms.backend.model.users.DeanOfficer) {
+                    return ((com.agms.backend.model.users.DeanOfficer) user).getEmpId();
+                }
+                throw new IllegalStateException("User is not a DeanOfficer but has DEAN_OFFICER role");
+            case "STUDENT_AFFAIRS":
+                if (user instanceof com.agms.backend.model.users.StudentAffairs) {
+                    return ((com.agms.backend.model.users.StudentAffairs) user).getEmpId();
+                }
+                throw new IllegalStateException("User is not StudentAffairs but has STUDENT_AFFAIRS role");
+            default:
+                throw new IllegalArgumentException("Unsupported role for empId lookup: " + userRole);
+        }
     }
 } 

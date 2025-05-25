@@ -121,12 +121,6 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void updateGraduationRequestStatus(String studentNumber, String status) {
-        throw new UnsupportedOperationException(
-                "Graduation status is now handled through submissions. Use submission service instead.");
-    }
-
-    @Override
     @Transactional
     public void assignAdvisor(String studentNumber, String advisorId) {
         throw new UnsupportedOperationException(

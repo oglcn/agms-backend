@@ -60,17 +60,30 @@ public interface SubmissionService {
     
     // Workflow methods for each role
 
-    SubmissionResponse updateSubmissionStatusByAdvisor(String submissionId, SubmissionStatus status);
+    SubmissionResponse updateSubmissionStatusByAdvisor(String submissionId, SubmissionStatus status, String rejectionReason);
     
     List<SubmissionResponse> getSubmissionsByDepartmentSecretary(String deptSecretaryEmpId);
-    SubmissionResponse updateSubmissionStatusByDepartmentSecretary(String submissionId, SubmissionStatus status);
+    SubmissionResponse updateSubmissionStatusByDepartmentSecretary(String submissionId, SubmissionStatus status, String rejectionReason);
     
     List<SubmissionResponse> getSubmissionsByDeanOfficer(String deanOfficerEmpId);
-    SubmissionResponse updateSubmissionStatusByDeanOfficer(String submissionId, SubmissionStatus status);
+    SubmissionResponse updateSubmissionStatusByDeanOfficer(String submissionId, SubmissionStatus status, String rejectionReason);
     
+    /**
+     * Get submissions for student affairs
+     */
     List<SubmissionResponse> getSubmissionsByStudentAffairs(String studentAffairsEmpId);
-    SubmissionResponse updateSubmissionStatusByStudentAffairs(String submissionId, SubmissionStatus status);
+    SubmissionResponse updateSubmissionStatusByStudentAffairs(String submissionId, SubmissionStatus status, String rejectionReason);
     
     // Helper method to get submissions pending for a specific role
     List<SubmissionResponse> getSubmissionsPendingForRole(String empId, String role);
+
+    /**
+     * Role-agnostic approval - automatically determines correct status based on authenticated user's role
+     */
+    SubmissionResponse approveSubmission(String submissionId);
+
+    /**
+     * Role-agnostic rejection - automatically determines correct status based on authenticated user's role
+     */
+    SubmissionResponse rejectSubmission(String submissionId, String rejectionReason);
 } 

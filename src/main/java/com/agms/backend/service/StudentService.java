@@ -35,11 +35,6 @@ public interface StudentService {
     StudentProfileResponse getStudentProfileByEmail(String email);
 
     /**
-     * Graduation Management
-     */
-    void updateGraduationRequestStatus(String studentNumber, String status);
-
-    /**
      * Advisor Assignment
      */
     void assignAdvisor(String studentNumber, String advisorId);

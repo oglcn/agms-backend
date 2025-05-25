@@ -211,7 +211,7 @@ public class SubmissionFlowIntegrationTest {
         assertTrue(submissionService.hasActivePendingSubmission("S_TEST_001"));
 
         // Step 5: Advisor approves the submission
-        SubmissionResponse approvedSubmission = submissionService.updateSubmissionStatusByAdvisor(submissionId, SubmissionStatus.APPROVED_BY_ADVISOR);
+        SubmissionResponse approvedSubmission = submissionService.updateSubmissionStatusByAdvisor(submissionId, SubmissionStatus.APPROVED_BY_ADVISOR, null);
         assertEquals(SubmissionStatus.APPROVED_BY_ADVISOR, approvedSubmission.getStatus());
 
         // Step 6: Verify the status was updated
@@ -269,7 +269,7 @@ public class SubmissionFlowIntegrationTest {
         String submissionId = initialSubmission.getSubmissionId();
 
         // Step 2: Advisor rejects the submission
-        SubmissionResponse rejectedSubmission = submissionService.updateSubmissionStatusByAdvisor(submissionId, SubmissionStatus.REJECTED_BY_ADVISOR);
+        SubmissionResponse rejectedSubmission = submissionService.updateSubmissionStatusByAdvisor(submissionId, SubmissionStatus.REJECTED_BY_ADVISOR, null);
         assertEquals(SubmissionStatus.REJECTED_BY_ADVISOR, rejectedSubmission.getStatus());
 
         // Step 3: Student can now create a new submission (since previous is not pending)
@@ -349,13 +349,13 @@ public class SubmissionFlowIntegrationTest {
         
         // Advisor 1 approves first submission
         SubmissionResponse approved1 = submissionService.updateSubmissionStatusByAdvisor(
-                submission1.getSubmissionId(), SubmissionStatus.APPROVED_BY_ADVISOR);
+                submission1.getSubmissionId(), SubmissionStatus.APPROVED_BY_ADVISOR, null);
         assertEquals(SubmissionStatus.APPROVED_BY_ADVISOR, approved1.getStatus());
         log.info("Advisor 1 approved submission: {}", submission1.getSubmissionId());
         
         // Advisor 1 rejects second submission
         SubmissionResponse rejected2 = submissionService.updateSubmissionStatusByAdvisor(
-                submission2.getSubmissionId(), SubmissionStatus.REJECTED_BY_ADVISOR);
+                submission2.getSubmissionId(), SubmissionStatus.REJECTED_BY_ADVISOR, null);
         assertEquals(SubmissionStatus.REJECTED_BY_ADVISOR, rejected2.getStatus());
         log.info("Advisor 1 rejected submission: {}", submission2.getSubmissionId());
         
@@ -363,7 +363,7 @@ public class SubmissionFlowIntegrationTest {
         log.info("Step 4: Advisor 2 reviewing submission");
         
         SubmissionResponse approved3 = submissionService.updateSubmissionStatusByAdvisor(
-                submission3.getSubmissionId(), SubmissionStatus.APPROVED_BY_ADVISOR);
+                submission3.getSubmissionId(), SubmissionStatus.APPROVED_BY_ADVISOR, null);
         assertEquals(SubmissionStatus.APPROVED_BY_ADVISOR, approved3.getStatus());
         log.info("Advisor 2 approved submission: {}", submission3.getSubmissionId());
         
@@ -461,7 +461,7 @@ public class SubmissionFlowIntegrationTest {
         log.info("Step 3: Advisor approving submission");
         
         SubmissionResponse approved = submissionService.updateSubmissionStatusByAdvisor(
-                submissionId, SubmissionStatus.APPROVED_BY_ADVISOR);
+                submissionId, SubmissionStatus.APPROVED_BY_ADVISOR, null);
         assertEquals(SubmissionStatus.APPROVED_BY_ADVISOR, approved.getStatus());
         log.info("Advisor approved submission: {}", submissionId);
         
@@ -490,6 +490,46 @@ public class SubmissionFlowIntegrationTest {
         assertTrue(byStatus.stream().anyMatch(s -> s.getSubmissionId().equals(submissionId)));
         
         log.info("=== Basic Workflow Test Completed Successfully ===");
+    }
+    
+    @Test
+    @Transactional
+    void testRejectionWithReason() {
+        log.info("=== Testing Rejection with Reason ===");
+        
+        // === STEP 1: Student submits graduation request ===
+        CreateSubmissionRequest request = CreateSubmissionRequest.builder()
+                .studentNumber("S_TEST_001")
+                .content("Student graduation request - needs review")
+                .build();
+        SubmissionResponse submission = submissionService.createGraduationSubmission(request);
+        String submissionId = submission.getSubmissionId();
+        
+        // Verify initial content
+        assertEquals("Student graduation request - needs review", submission.getContent());
+        log.info("Initial submission content: {}", submission.getContent());
+        
+        // === STEP 2: Advisor rejects with reason ===
+        String rejectionReason = "Your thesis proposal is incomplete. Please include: 1) Research methodology, 2) Literature review, 3) Timeline. Please resubmit after addressing these issues.";
+        
+        SubmissionResponse rejectedSubmission = submissionService.updateSubmissionStatusByAdvisor(
+                submissionId, 
+                SubmissionStatus.REJECTED_BY_ADVISOR, 
+                rejectionReason
+        );
+        
+        // Verify the content field now contains the rejection reason
+        assertEquals(SubmissionStatus.REJECTED_BY_ADVISOR, rejectedSubmission.getStatus());
+        assertEquals(rejectionReason, rejectedSubmission.getContent());
+        log.info("Rejection reason stored in content: {}", rejectedSubmission.getContent());
+        
+        // === STEP 3: Student can see the rejection reason ===
+        Optional<SubmissionResponse> retrievedSubmission = submissionService.getSubmissionById(submissionId);
+        assertTrue(retrievedSubmission.isPresent());
+        assertEquals(rejectionReason, retrievedSubmission.get().getContent());
+        log.info("Student can view rejection reason: {}", retrievedSubmission.get().getContent());
+        
+        log.info("=== Rejection with Reason Test Completed Successfully ===");
     }
     
     private void createAdditionalTestData() {

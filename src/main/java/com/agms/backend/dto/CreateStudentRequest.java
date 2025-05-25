@@ -1,9 +1,7 @@
 package com.agms.backend.dto;
 
-import com.agms.backend.model.users.GraduationRequestStatus;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,8 +9,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class CreateStudentRequest {
     // User information
     @NotBlank(message = "First name is required")
@@ -22,16 +20,12 @@ public class CreateStudentRequest {
     private String lastName;
     
     @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
+    @Email(message = "Email should be valid")
     private String email;
     
     @NotBlank(message = "Password is required")
     private String password;
     
-        // Student specific information    
-        @NotBlank(message = "Student number is required")    
-        @Pattern(regexp = "^\\d{8}$", message = "Student number must be 8 digits")
+    @NotBlank(message = "Student number is required")
     private String studentNumber;
-    
-    private GraduationRequestStatus graduationRequestStatus;
 } 

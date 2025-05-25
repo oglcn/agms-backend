@@ -3,27 +3,15 @@ package com.agms.backend.service;
 
 import com.agms.backend.dto.AuthenticationRequest;
 import com.agms.backend.dto.AuthenticationResponse;
+import com.agms.backend.dto.NavigateToResetPasswordRequest;
 import com.agms.backend.dto.RegisterRequest;
 import com.agms.backend.dto.ResetPasswordRequest;
-import com.agms.backend.dto.NavigateToResetPasswordRequest;
-import com.agms.backend.model.users.GraduationRequestStatus;
-import com.agms.backend.model.users.Role;
-import com.agms.backend.model.users.Student;
-import com.agms.backend.model.users.Advisor;
-import com.agms.backend.model.users.DeanOfficer;
-import com.agms.backend.model.users.DepartmentSecretary;
-import com.agms.backend.model.users.StudentAffairs;
-import com.agms.backend.model.users.User;
-import com.agms.backend.repository.StudentRepository;
-import com.agms.backend.repository.AdvisorRepository;
-import com.agms.backend.repository.DeanOfficerRepository;
-import com.agms.backend.repository.DepartmentSecretaryRepository;
-import com.agms.backend.repository.StudentAffairsRepository;
-import com.agms.backend.repository.UserRepository;
 import com.agms.backend.exception.EmailAlreadyExistsException;
 import com.agms.backend.exception.ForbiddenException;
-import com.agms.backend.exception.ResourceNotFoundException;
 import com.agms.backend.exception.InvalidRoleException;
+import com.agms.backend.exception.ResourceNotFoundException;
+import com.agms.backend.model.users.*;
+import com.agms.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -80,15 +68,6 @@ public class AuthenticationService {
             case STUDENT:
                 if (request.getStudentNumber() == null || request.getStudentNumber().isEmpty()) {
                     throw new InvalidRoleException("Student number is required for student registration");
-                }
-
-                // Determine the graduation request status
-                GraduationRequestStatus status = GraduationRequestStatus.NOT_REQUESTED;
-                if (request.getGraduationRequestStatus() != null) {
-                    status = request.getGraduationRequestStatus();
-                } else if (request.getGraduationRequestStatusString() != null
-                        && !request.getGraduationRequestStatusString().isEmpty()) {
-                    status = parseGraduationRequestStatus(request.getGraduationRequestStatusString());
                 }
 
                 Student student = Student.builder()
@@ -192,22 +171,6 @@ public class AuthenticationService {
                     String.join(", ", java.util.Arrays.stream(Role.values())
                             .map(Role::name)
                             .toArray(String[]::new)));
-        }
-    }
-
-    /**
-     * Parse a string representation of a graduation request status into a
-     * GraduationRequestStatus enum value
-     */
-    public GraduationRequestStatus parseGraduationRequestStatus(String statusStr) {
-        if (statusStr == null || statusStr.isEmpty()) {
-            return GraduationRequestStatus.NOT_REQUESTED;
-        }
-
-        try {
-            return GraduationRequestStatus.valueOf(statusStr.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return GraduationRequestStatus.NOT_REQUESTED;
         }
     }
 

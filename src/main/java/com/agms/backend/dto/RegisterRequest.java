@@ -1,7 +1,6 @@
 // path: backend/src/main/java/com/agms/backend/dto/RegisterRequest.java
 package com.agms.backend.dto;
 
-import com.agms.backend.model.users.GraduationRequestStatus;
 import com.agms.backend.model.users.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +19,4 @@ public class RegisterRequest {
     private Role role;
     private String roleString;
     private String studentNumber;
-    private GraduationRequestStatus graduationRequestStatus;
-    private String graduationRequestStatusString;
 }

@@ -135,23 +135,6 @@ public class StudentController {
         }
     }
 
-    @Operation(summary = "Update graduation status", description = "Updates the graduation status of a student")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Graduation status updated successfully"),
-            @ApiResponse(responseCode = "404", description = "Student not found")
-    })
-    @PutMapping("/{studentNumber}/graduation-status")
-    public ResponseEntity<HttpStatus> updateGraduationStatus(
-            @Parameter(description = "Student Number", required = true) @PathVariable String studentNumber,
-            @Parameter(description = "New graduation status", required = true) @RequestParam String status) {
-        try {
-            studentService.updateGraduationRequestStatus(studentNumber, status);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
     @Operation(summary = "Assign advisor", description = "Assigns an advisor to a student")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Advisor assigned successfully"),

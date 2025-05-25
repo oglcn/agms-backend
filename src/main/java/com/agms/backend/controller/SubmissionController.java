@@ -169,26 +169,6 @@ public class SubmissionController {
     }
 
     /**
-     * Update submission status by advisor
-     */
-    @PutMapping("/{submissionId}/advisor-review")
-    @PreAuthorize("hasRole('ADVISOR')")
-    @Operation(summary = "Update submission status by advisor")
-    public ResponseEntity<SubmissionResponse> reviewSubmissionByAdvisor(
-            @PathVariable String submissionId,
-            @RequestParam SubmissionStatus status) {
-        log.info("Advisor reviewing submission {} with status: {}", submissionId, status);
-        
-        try {
-            SubmissionResponse response = submissionService.updateSubmissionStatusByAdvisor(submissionId, status);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("Error updating submission status by advisor: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    /**
      * Get submissions pending for department secretary review
      */
     @GetMapping("/department-secretary/{deptSecretaryEmpId}/pending")
@@ -198,26 +178,6 @@ public class SubmissionController {
         log.debug("Getting pending submissions for department secretary: {}", deptSecretaryEmpId);
         List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(deptSecretaryEmpId, "DEPARTMENT_SECRETARY");
         return ResponseEntity.ok(submissions);
-    }
-
-    /**
-     * Update submission status by department secretary
-     */
-    @PutMapping("/{submissionId}/department-review")
-    @PreAuthorize("hasRole('DEPARTMENT_SECRETARY')")
-    @Operation(summary = "Update submission status by department secretary")
-    public ResponseEntity<SubmissionResponse> reviewSubmissionByDepartmentSecretary(
-            @PathVariable String submissionId,
-            @RequestParam SubmissionStatus status) {
-        log.info("Department secretary reviewing submission {} with status: {}", submissionId, status);
-        
-        try {
-            SubmissionResponse response = submissionService.updateSubmissionStatusByDepartmentSecretary(submissionId, status);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("Error updating submission status by department secretary: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
     }
 
     /**
@@ -233,26 +193,6 @@ public class SubmissionController {
     }
 
     /**
-     * Update submission status by dean officer
-     */
-    @PutMapping("/{submissionId}/dean-review")
-    @PreAuthorize("hasRole('DEAN_OFFICER')")
-    @Operation(summary = "Update submission status by dean officer")
-    public ResponseEntity<SubmissionResponse> reviewSubmissionByDeanOfficer(
-            @PathVariable String submissionId,
-            @RequestParam SubmissionStatus status) {
-        log.info("Dean officer reviewing submission {} with status: {}", submissionId, status);
-        
-        try {
-            SubmissionResponse response = submissionService.updateSubmissionStatusByDeanOfficer(submissionId, status);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("Error updating submission status by dean officer: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    /**
      * Get submissions pending for student affairs review
      */
     @GetMapping("/student-affairs/{studentAffairsEmpId}/pending")
@@ -265,21 +205,39 @@ public class SubmissionController {
     }
 
     /**
-     * Update submission status by student affairs (final review)
+     * Approve submission (role-agnostic - automatically determines correct approval status based on user role)
      */
-    @PutMapping("/{submissionId}/final-review")
-    @PreAuthorize("hasRole('STUDENT_AFFAIRS')")
-    @Operation(summary = "Final review of submission by student affairs")
-    public ResponseEntity<SubmissionResponse> finalReviewByStudentAffairs(
-            @PathVariable String submissionId,
-            @RequestParam SubmissionStatus status) {
-        log.info("Student affairs final review of submission {} with status: {}", submissionId, status);
+    @PutMapping("/{submissionId}/approve")
+    @PreAuthorize("hasRole('ADVISOR') or hasRole('DEPARTMENT_SECRETARY') or hasRole('DEAN_OFFICER') or hasRole('STUDENT_AFFAIRS')")
+    @Operation(summary = "Approve submission - automatically handles workflow progression based on user role")
+    public ResponseEntity<SubmissionResponse> approveSubmission(@PathVariable String submissionId) {
+        log.info("Approving submission: {}", submissionId);
         
         try {
-            SubmissionResponse response = submissionService.updateSubmissionStatusByStudentAffairs(submissionId, status);
+            SubmissionResponse response = submissionService.approveSubmission(submissionId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Error in final review by student affairs: {}", e.getMessage());
+            log.error("Error approving submission: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Reject submission (role-agnostic - automatically determines correct rejection status based on user role)
+     */
+    @PutMapping("/{submissionId}/reject")
+    @PreAuthorize("hasRole('ADVISOR') or hasRole('DEPARTMENT_SECRETARY') or hasRole('DEAN_OFFICER') or hasRole('STUDENT_AFFAIRS')")
+    @Operation(summary = "Reject submission - automatically handles workflow termination based on user role")
+    public ResponseEntity<SubmissionResponse> rejectSubmission(
+            @PathVariable String submissionId,
+            @RequestParam(required = false) String rejectionReason) {
+        log.info("Rejecting submission: {}", submissionId);
+        
+        try {
+            SubmissionResponse response = submissionService.rejectSubmission(submissionId, rejectionReason);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error rejecting submission: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
