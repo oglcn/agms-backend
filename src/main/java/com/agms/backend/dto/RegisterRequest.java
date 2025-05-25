@@ -1,6 +1,7 @@
 // path: backend/src/main/java/com/agms/backend/dto/RegisterRequest.java
 package com.agms.backend.dto;
 
+import com.agms.backend.model.GraduationRequestStatus;
 import com.agms.backend.model.users.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

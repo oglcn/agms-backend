@@ -16,6 +16,7 @@ import java.sql.Timestamp;
 @Table(name = "File")
 public class File {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer fileId;
 
     @Column(nullable = false)
@@ -30,14 +31,14 @@ public class File {
     @Column(nullable = false)
     private Timestamp uploadDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploaderId")
     private User uploader;
 
     @Column(nullable = false)
     private String filePath;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "submissionId")
     private Submission submission;
 }

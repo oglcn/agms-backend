@@ -1,7 +1,8 @@
 package com.agms.backend.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import com.agms.backend.model.GraduationRequestStatus;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
