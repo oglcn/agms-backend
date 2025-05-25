@@ -19,7 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -74,7 +75,7 @@ class SubmissionServiceImplTest {
         // Create test advisor list
         testAdvisorList = AdvisorList.builder()
                 .advisorListId("AL_001")
-                .creationDate(LocalDate.now())
+                .creationDate(new Timestamp(System.currentTimeMillis()))
                 .advisor(testAdvisor)
                 .build();
 
@@ -85,7 +86,7 @@ class SubmissionServiceImplTest {
         // Create test submission
         testSubmission = Submission.builder()
                 .submissionId("SUB_123456789")
-                .submissionDate(LocalDate.now())
+                .submissionDate(new Timestamp(System.currentTimeMillis()))
                 .content("Graduation request for John Doe")
                 .status(SubmissionStatus.PENDING)
                 .student(testStudent)
@@ -97,6 +98,42 @@ class SubmissionServiceImplTest {
                 .studentNumber("S101")
                 .content("Graduation request for John Doe")
                 .build();
+    }
+
+    @Test
+    void testSaveSubmission() {
+        Student studentForTest = Student.builder()
+                .studentNumber("S123")
+                .firstName("Test")
+                .lastName("Student")
+                .email("s123@example.com")
+                .build();
+        Submission submission = Submission.builder()
+                .submissionId("1")
+                .student(studentForTest)
+                .status(SubmissionStatus.PENDING)
+                .submissionDate(new Timestamp(System.currentTimeMillis()))
+                .content("Test submission content")
+                .build();
+        when(submissionRepository.save(any(Submission.class))).thenReturn(submission);
+    }
+
+    @Test
+    void testGetSubmissionById() {
+        Student studentForTest = Student.builder()
+                .studentNumber("S123")
+                .firstName("Test")
+                .lastName("Student")
+                .email("s123@example.com")
+                .build();
+        Submission submission = Submission.builder()
+                .submissionId("1")
+                .student(studentForTest)
+                .status(SubmissionStatus.PENDING)
+                .submissionDate(new Timestamp(System.currentTimeMillis()))
+                .content("Test submission content")
+                .build();
+        when(submissionRepository.findById("1")).thenReturn(Optional.of(submission));
     }
 
     @Test
@@ -229,7 +266,8 @@ class SubmissionServiceImplTest {
         when(submissionRepository.save(any(Submission.class))).thenReturn(testSubmission);
 
         // Act
-        SubmissionResponse response = submissionService.updateSubmissionStatus("SUB_123456789", SubmissionStatus.APPROVED_BY_ADVISOR);
+        SubmissionResponse response = submissionService.updateSubmissionStatus("SUB_123456789",
+                SubmissionStatus.APPROVED_BY_ADVISOR);
 
         // Assert
         assertNotNull(response);
@@ -324,4 +362,4 @@ class SubmissionServiceImplTest {
 
         verify(submissionRepository, never()).deleteById(anyString());
     }
-} 
+}

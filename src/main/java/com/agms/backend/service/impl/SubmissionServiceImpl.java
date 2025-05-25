@@ -24,10 +24,11 @@ import com.agms.backend.repository.SubmissionRepository;
 import com.agms.backend.service.SubmissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -79,7 +80,7 @@ public class SubmissionServiceImpl implements SubmissionService {
         String submissionId = generateSubmissionId();
         Submission submission = Submission.builder()
                 .submissionId(submissionId)
-                .submissionDate(LocalDate.now())
+                .submissionDate(new Timestamp(System.currentTimeMillis()))
                 .content(request.getContent())
                 .status(SubmissionStatus.PENDING)
                 .student(student)
@@ -596,32 +597,32 @@ public class SubmissionServiceImpl implements SubmissionService {
     public List<SubmissionResponse> getMySubmissions() {
         String userRole = getCurrentUserRole();
         String userEmail = getCurrentUserEmail();
-        
+
         log.debug("Getting all submissions for user with role {} and email {}", userRole, userEmail);
-        
+
         switch (userRole) {
             case "STUDENT":
                 // For students, get their own submissions using email to find student
                 Student student = studentRepository.findByEmail(userEmail)
-                    .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+                        .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
                 return getSubmissionsByStudent(student.getStudentNumber());
-                
+
             case "ADVISOR":
                 String advisorEmpId = getCurrentUserEmpId();
                 return getSubmissionsByAdvisor(advisorEmpId);
-                
+
             case "DEPARTMENT_SECRETARY":
                 String deptEmpId = getCurrentUserEmpId();
                 return getSubmissionsByDepartmentSecretary(deptEmpId);
-                
+
             case "DEAN_OFFICER":
                 String deanEmpId = getCurrentUserEmpId();
                 return getSubmissionsByDeanOfficer(deanEmpId);
-                
+
             case "STUDENT_AFFAIRS":
                 String saEmpId = getCurrentUserEmpId();
                 return getSubmissionsByStudentAffairs(saEmpId);
-                
+
             default:
                 throw new IllegalArgumentException("Unsupported role for getting submissions: " + userRole);
         }
@@ -631,26 +632,26 @@ public class SubmissionServiceImpl implements SubmissionService {
     public List<SubmissionResponse> getMyPendingSubmissions() {
         String userRole = getCurrentUserRole();
         String userEmpId = getCurrentUserEmpId();
-        
+
         log.debug("Getting pending submissions for user with role {} and empId {}", userRole, userEmpId);
-        
+
         switch (userRole) {
             case "ADVISOR":
                 // Advisors see submissions with status PENDING
                 return getSubmissionsPendingForRole(userEmpId, "ADVISOR");
-                
+
             case "DEPARTMENT_SECRETARY":
                 // Department Secretaries see submissions with status APPROVED_BY_ADVISOR
                 return getSubmissionsPendingForRole(userEmpId, "DEPARTMENT_SECRETARY");
-                
+
             case "DEAN_OFFICER":
                 // Dean Officers see submissions with status APPROVED_BY_DEPT
                 return getSubmissionsPendingForRole(userEmpId, "DEAN_OFFICER");
-                
+
             case "STUDENT_AFFAIRS":
                 // Student Affairs see submissions with status APPROVED_BY_DEAN
                 return getSubmissionsPendingForRole(userEmpId, "STUDENT_AFFAIRS");
-                
+
             default:
                 throw new IllegalArgumentException("Role " + userRole + " does not have pending submissions to review");
         }
@@ -716,13 +717,13 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     private String getCurrentUserEmail() {
-        org.springframework.security.core.Authentication authentication = 
-            org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-        
+        org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new IllegalStateException("No authenticated user found");
         }
-        
+
         return authentication.getName();
     }
-} 
+}

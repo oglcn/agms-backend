@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.agms.backend.model.users.User;
-import java.time.LocalDate;
+import java.sql.Timestamp;
 
 @Data
 @Builder
@@ -24,8 +24,11 @@ public class File {
     @Column(nullable = false)
     private String fileType;
 
+    @Lob
+    private byte[] data;
+
     @Column(nullable = false)
-    private LocalDate uploadDate;
+    private Timestamp uploadDate;
 
     @ManyToOne
     @JoinColumn(name = "uploaderId")
@@ -37,4 +40,4 @@ public class File {
     @ManyToOne
     @JoinColumn(name = "submissionId")
     private Submission submission;
-} 
+}

@@ -10,11 +10,13 @@ import com.agms.backend.service.AdvisorService;
 import com.agms.backend.service.UserService;
 import com.agms.backend.service.DepartmentService;
 import com.agms.backend.exception.ResourceNotFoundException;
+import com.agms.backend.repository.DepartmentListRepository;
+import com.agms.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -70,9 +72,10 @@ public class AdvisorServiceImpl implements AdvisorService {
         DepartmentList departmentList = departmentService.findDepartmentListById(departmentListId);
 
         AdvisorList advisorList = AdvisorList.builder()
+                .advisorListId("AL_" + advisor.getEmpId())
+                .creationDate(new Timestamp(System.currentTimeMillis()))
                 .advisor(advisor)
                 .departmentList(departmentList)
-                .creationDate(LocalDate.now())
                 .build();
 
         return advisorListRepository.save(advisorList);

@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Data
@@ -16,7 +16,7 @@ import java.util.List;
 public class SubmissionResponse {
 
     private String submissionId;
-    private LocalDate submissionDate;
+    private Timestamp submissionDate;
     private String content;
     private SubmissionStatus status;
     /**
@@ -34,7 +34,7 @@ public class SubmissionResponse {
         private String fileId;
         private String fileName;
         private String fileType;
-        private LocalDate uploadDate;
+        private Timestamp uploadDate;
         private String uploaderName;
     }
 

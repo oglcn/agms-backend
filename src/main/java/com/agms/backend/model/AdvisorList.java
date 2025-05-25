@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.agms.backend.model.users.Advisor;
 import com.agms.backend.model.users.Student;
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Data
@@ -21,7 +21,7 @@ public class AdvisorList {
     private String advisorListId;
 
     @Column(nullable = false)
-    private LocalDate creationDate;
+    private Timestamp creationDate;
 
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "advisorId", nullable = false)
@@ -33,4 +33,4 @@ public class AdvisorList {
 
     @OneToMany(mappedBy = "advisorList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Submission> submissions;
-} 
+}

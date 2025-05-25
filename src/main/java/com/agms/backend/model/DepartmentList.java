@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.agms.backend.model.users.DepartmentSecretary;
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Data
@@ -20,7 +20,7 @@ public class DepartmentList {
     private String deptListId;
 
     @Column(nullable = false)
-    private LocalDate creationDate;
+    private Timestamp creationDate;
 
     @Column(nullable = false)
     private String department;
@@ -35,4 +35,4 @@ public class DepartmentList {
 
     @OneToMany(mappedBy = "departmentList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AdvisorList> advisorLists;
-} 
+}

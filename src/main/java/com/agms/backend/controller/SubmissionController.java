@@ -45,7 +45,7 @@ public class SubmissionController {
     public ResponseEntity<SubmissionResponse> createGraduationSubmission(
             @Valid @RequestBody CreateSubmissionRequest request) {
         log.info("Creating graduation submission for student: {}", request.getStudentNumber());
-        
+
         try {
             SubmissionResponse response = submissionService.createGraduationSubmission(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -66,7 +66,7 @@ public class SubmissionController {
     @Operation(summary = "Get all submissions for a specific student")
     public ResponseEntity<List<SubmissionResponse>> getSubmissionsByStudent(@PathVariable String studentNumber) {
         log.debug("Getting submissions for student: {}", studentNumber);
-        
+
         List<SubmissionResponse> submissions = submissionService.getSubmissionsByStudent(studentNumber);
         return ResponseEntity.ok(submissions);
     }
@@ -79,7 +79,7 @@ public class SubmissionController {
     @Operation(summary = "Get all submissions for a specific advisor")
     public ResponseEntity<List<SubmissionResponse>> getSubmissionsByAdvisor(@PathVariable String advisorEmpId) {
         log.debug("Getting submissions for advisor: {}", advisorEmpId);
-        
+
         List<SubmissionResponse> submissions = submissionService.getSubmissionsByAdvisor(advisorEmpId);
         return ResponseEntity.ok(submissions);
     }
@@ -92,7 +92,7 @@ public class SubmissionController {
     @Operation(summary = "Get a specific submission by its ID")
     public ResponseEntity<SubmissionResponse> getSubmissionById(@PathVariable String submissionId) {
         log.debug("Getting submission by ID: {}", submissionId);
-        
+
         Optional<SubmissionResponse> submission = submissionService.getSubmissionById(submissionId);
         return submission.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -106,7 +106,7 @@ public class SubmissionController {
     @Operation(summary = "Get all submissions filtered by a specific status")
     public ResponseEntity<List<SubmissionResponse>> getSubmissionsByStatus(@PathVariable SubmissionStatus status) {
         log.debug("Getting submissions with status: {}", status);
-        
+
         List<SubmissionResponse> submissions = submissionService.getSubmissionsByStatus(status);
         return ResponseEntity.ok(submissions);
     }
@@ -119,7 +119,7 @@ public class SubmissionController {
     @Operation(summary = "Check if a student has any active pending submissions")
     public ResponseEntity<Boolean> hasActivePendingSubmission(@PathVariable String studentNumber) {
         log.debug("Checking if student {} has active pending submission", studentNumber);
-        
+
         boolean hasPending = submissionService.hasActivePendingSubmission(studentNumber);
         return ResponseEntity.ok(hasPending);
     }
@@ -132,7 +132,7 @@ public class SubmissionController {
     @Operation(summary = "Get the latest submission for a specific student")
     public ResponseEntity<SubmissionResponse> getLatestSubmissionByStudent(@PathVariable String studentNumber) {
         log.debug("Getting latest submission for student: {}", studentNumber);
-        
+
         Optional<SubmissionResponse> submission = submissionService.getLatestSubmissionByStudent(studentNumber);
         return submission.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -146,7 +146,7 @@ public class SubmissionController {
     @Operation(summary = "Delete a specific submission (admin operation)")
     public ResponseEntity<Void> deleteSubmission(@PathVariable String submissionId) {
         log.info("Deleting submission: {}", submissionId);
-        
+
         try {
             submissionService.deleteSubmission(submissionId);
             return ResponseEntity.noContent().build();
@@ -164,7 +164,7 @@ public class SubmissionController {
     @Operation(summary = "Get all submissions for current user - automatically detects role and returns appropriate submissions")
     public ResponseEntity<List<SubmissionResponse>> getMySubmissions() {
         log.debug("Getting submissions for current authenticated user");
-        
+
         try {
             List<SubmissionResponse> submissions = submissionService.getMySubmissions();
             return ResponseEntity.ok(submissions);
@@ -182,7 +182,7 @@ public class SubmissionController {
     @Operation(summary = "Get pending submissions for current user - automatically detects role and returns submissions awaiting review")
     public ResponseEntity<List<SubmissionResponse>> getMyPendingSubmissions() {
         log.debug("Getting pending submissions for current authenticated user");
-        
+
         try {
             List<SubmissionResponse> submissions = submissionService.getMyPendingSubmissions();
             return ResponseEntity.ok(submissions);
@@ -199,9 +199,11 @@ public class SubmissionController {
     @PreAuthorize("hasRole('DEPARTMENT_SECRETARY')")
     @Operation(summary = "Get submissions pending for department secretary review")
     @Deprecated
-    public ResponseEntity<List<SubmissionResponse>> getPendingSubmissionsForDepartmentSecretary(@PathVariable String deptSecretaryEmpId) {
+    public ResponseEntity<List<SubmissionResponse>> getPendingSubmissionsForDepartmentSecretary(
+            @PathVariable String deptSecretaryEmpId) {
         log.debug("Getting pending submissions for department secretary: {}", deptSecretaryEmpId);
-        List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(deptSecretaryEmpId, "DEPARTMENT_SECRETARY");
+        List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(deptSecretaryEmpId,
+                "DEPARTMENT_SECRETARY");
         return ResponseEntity.ok(submissions);
     }
 
@@ -212,9 +214,11 @@ public class SubmissionController {
     @PreAuthorize("hasRole('DEAN_OFFICER')")
     @Operation(summary = "Get submissions pending for dean officer review")
     @Deprecated
-    public ResponseEntity<List<SubmissionResponse>> getPendingSubmissionsForDeanOfficer(@PathVariable String deanOfficerEmpId) {
+    public ResponseEntity<List<SubmissionResponse>> getPendingSubmissionsForDeanOfficer(
+            @PathVariable String deanOfficerEmpId) {
         log.debug("Getting pending submissions for dean officer: {}", deanOfficerEmpId);
-        List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(deanOfficerEmpId, "DEAN_OFFICER");
+        List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(deanOfficerEmpId,
+                "DEAN_OFFICER");
         return ResponseEntity.ok(submissions);
     }
 
@@ -225,21 +229,24 @@ public class SubmissionController {
     @PreAuthorize("hasRole('STUDENT_AFFAIRS')")
     @Operation(summary = "Get submissions pending for student affairs review")
     @Deprecated
-    public ResponseEntity<List<SubmissionResponse>> getPendingSubmissionsForStudentAffairs(@PathVariable String studentAffairsEmpId) {
+    public ResponseEntity<List<SubmissionResponse>> getPendingSubmissionsForStudentAffairs(
+            @PathVariable String studentAffairsEmpId) {
         log.debug("Getting pending submissions for student affairs: {}", studentAffairsEmpId);
-        List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(studentAffairsEmpId, "STUDENT_AFFAIRS");
+        List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(studentAffairsEmpId,
+                "STUDENT_AFFAIRS");
         return ResponseEntity.ok(submissions);
     }
 
     /**
-     * Approve submission (role-agnostic - automatically determines correct approval status based on user role)
+     * Approve submission (role-agnostic - automatically determines correct approval
+     * status based on user role)
      */
     @PutMapping("/{submissionId}/approve")
     @PreAuthorize("hasRole('ADVISOR') or hasRole('DEPARTMENT_SECRETARY') or hasRole('DEAN_OFFICER') or hasRole('STUDENT_AFFAIRS')")
     @Operation(summary = "Approve submission - automatically handles workflow progression based on user role")
     public ResponseEntity<SubmissionResponse> approveSubmission(@PathVariable String submissionId) {
         log.info("Approving submission: {}", submissionId);
-        
+
         try {
             SubmissionResponse response = submissionService.approveSubmission(submissionId);
             return ResponseEntity.ok(response);
@@ -250,7 +257,8 @@ public class SubmissionController {
     }
 
     /**
-     * Reject submission (role-agnostic - automatically determines correct rejection status based on user role)
+     * Reject submission (role-agnostic - automatically determines correct rejection
+     * status based on user role)
      */
     @PutMapping("/{submissionId}/reject")
     @PreAuthorize("hasRole('ADVISOR') or hasRole('DEPARTMENT_SECRETARY') or hasRole('DEAN_OFFICER') or hasRole('STUDENT_AFFAIRS')")
@@ -258,8 +266,6 @@ public class SubmissionController {
     public ResponseEntity<SubmissionResponse> rejectSubmission(
             @PathVariable String submissionId,
             @RequestParam(required = false) String rejectionReason) {
-        log.info("Rejecting submission: {}", submissionId);
-        
         try {
             SubmissionResponse response = submissionService.rejectSubmission(submissionId, rejectionReason);
             return ResponseEntity.ok(response);

@@ -15,11 +15,13 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -65,8 +67,9 @@ public class RoleAgnosticSubmissionTest {
     @BeforeEach
     @Transactional
     void setUp() {
-        // Create the complete hierarchy from top to bottom (copied from SubmissionFlowIntegrationTest)
-        
+        // Create the complete hierarchy from top to bottom (copied from
+        // SubmissionFlowIntegrationTest)
+
         // 1. Create StudentAffairs
         StudentAffairs studentAffairs = StudentAffairs.builder()
                 .empId("SA_TEST_001")
@@ -77,7 +80,7 @@ public class RoleAgnosticSubmissionTest {
                 .build();
         studentAffairs = studentAffairsRepository.save(studentAffairs);
 
-        // 2. Create DeanOfficer  
+        // 2. Create DeanOfficer
         DeanOfficer deanOfficer = DeanOfficer.builder()
                 .empId("DO_TEST_001")
                 .firstName("Test")
@@ -102,7 +105,7 @@ public class RoleAgnosticSubmissionTest {
         // 4. Create Graduation
         Graduation graduation = Graduation.builder()
                 .graduationId("GRAD_TEST_001")
-                .requestDate(LocalDate.now())
+                .requestDate(new Timestamp(System.currentTimeMillis()))
                 .term("Spring 2025")
                 .studentAffairs(studentAffairs)
                 .build();
@@ -111,7 +114,7 @@ public class RoleAgnosticSubmissionTest {
         // 5. Create GraduationList
         GraduationList graduationList = GraduationList.builder()
                 .listId("GL_TEST_001")
-                .creationDate(LocalDate.now())
+                .creationDate(new Timestamp(System.currentTimeMillis()))
                 .graduation(graduation)
                 .build();
         graduationList = graduationListRepository.save(graduationList);
@@ -119,7 +122,7 @@ public class RoleAgnosticSubmissionTest {
         // 6. Create FacultyList
         FacultyList facultyList = FacultyList.builder()
                 .facultyListId("FL_TEST_001")
-                .creationDate(LocalDate.now())
+                .creationDate(new Timestamp(System.currentTimeMillis()))
                 .faculty("Engineering")
                 .deanOfficer(deanOfficer)
                 .graduationList(graduationList)
@@ -129,7 +132,7 @@ public class RoleAgnosticSubmissionTest {
         // 7. Create DepartmentList
         DepartmentList departmentList = DepartmentList.builder()
                 .deptListId("DL_TEST_001")
-                .creationDate(LocalDate.now())
+                .creationDate(new Timestamp(System.currentTimeMillis()))
                 .department("Computer Engineering")
                 .secretary(departmentSecretary)
                 .facultyList(facultyList)
@@ -150,13 +153,14 @@ public class RoleAgnosticSubmissionTest {
         // 9. Create AdvisorList
         AdvisorList testAdvisorList = AdvisorList.builder()
                 .advisorListId("AL_TEST_001")
-                .creationDate(LocalDate.now())
+                .creationDate(new Timestamp(System.currentTimeMillis()))
                 .advisor(testAdvisor)
                 .departmentList(departmentList)
                 .build();
         testAdvisorList = advisorListRepository.save(testAdvisorList);
 
-        // 10. Update advisor with the saved advisor list to complete the bidirectional relationship
+        // 10. Update advisor with the saved advisor list to complete the bidirectional
+        // relationship
         testAdvisor.setAdvisorList(testAdvisorList);
         testAdvisor = advisorRepository.save(testAdvisor);
 
@@ -176,123 +180,128 @@ public class RoleAgnosticSubmissionTest {
                 .studentNumber("S_TEST_001")
                 .content("Test submission for role-agnostic testing")
                 .build();
-        
+
         SubmissionResponse response = submissionService.createGraduationSubmission(request);
         testSubmissionId = response.getSubmissionId();
     }
 
     @Test
-    @WithMockUser(username = "test.advisor@edu", roles = {"ADVISOR"})
+    @WithMockUser(username = "test.advisor@edu", roles = { "ADVISOR" })
     void testAdvisorApproveSubmission() {
         // Test that advisor can approve submission using role-agnostic method
         SubmissionResponse response = submissionService.approveSubmission(testSubmissionId);
-        
+
         assertThat(response.getStatus()).isEqualTo(SubmissionStatus.APPROVED_BY_ADVISOR);
         assertThat(response.getSubmissionId()).isEqualTo(testSubmissionId);
     }
 
     @Test
-    @WithMockUser(username = "test.advisor@edu", roles = {"ADVISOR"})
+    @WithMockUser(username = "test.advisor@edu", roles = { "ADVISOR" })
     void testAdvisorRejectSubmissionWithReason() {
         String rejectionReason = "Missing required documents";
-        
-        // Test that advisor can reject submission with reason using role-agnostic method
+
+        // Test that advisor can reject submission with reason using role-agnostic
+        // method
         SubmissionResponse response = submissionService.rejectSubmission(testSubmissionId, rejectionReason);
-        
+
         assertThat(response.getStatus()).isEqualTo(SubmissionStatus.REJECTED_BY_ADVISOR);
         assertThat(response.getContent()).isEqualTo(rejectionReason);
         assertThat(response.getSubmissionId()).isEqualTo(testSubmissionId);
     }
 
     @Test
-    @WithMockUser(username = "test.ds@edu", roles = {"DEPARTMENT_SECRETARY"})
+    @WithMockUser(username = "test.ds@edu", roles = { "DEPARTMENT_SECRETARY" })
     void testDepartmentSecretaryApproveSubmission() {
         // First approve by advisor to get to APPROVED_BY_ADVISOR status
         submissionService.updateSubmissionStatusByAdvisor(testSubmissionId, SubmissionStatus.APPROVED_BY_ADVISOR, null);
-        
-        // Test that department secretary can approve submission using role-agnostic method
+
+        // Test that department secretary can approve submission using role-agnostic
+        // method
         SubmissionResponse response = submissionService.approveSubmission(testSubmissionId);
-        
+
         assertThat(response.getStatus()).isEqualTo(SubmissionStatus.APPROVED_BY_DEPT);
         assertThat(response.getSubmissionId()).isEqualTo(testSubmissionId);
     }
 
     @Test
-    @WithMockUser(username = "test.do@edu", roles = {"DEAN_OFFICER"})
+    @WithMockUser(username = "test.do@edu", roles = { "DEAN_OFFICER" })
     void testDeanOfficerRejectSubmission() {
         // Progress submission to APPROVED_BY_DEPT status
         submissionService.updateSubmissionStatusByAdvisor(testSubmissionId, SubmissionStatus.APPROVED_BY_ADVISOR, null);
-        submissionService.updateSubmissionStatusByDepartmentSecretary(testSubmissionId, SubmissionStatus.APPROVED_BY_DEPT, null);
-        
+        submissionService.updateSubmissionStatusByDepartmentSecretary(testSubmissionId,
+                SubmissionStatus.APPROVED_BY_DEPT, null);
+
         String rejectionReason = "Does not meet faculty standards";
-        
+
         // Test that dean officer can reject submission using role-agnostic method
         SubmissionResponse response = submissionService.rejectSubmission(testSubmissionId, rejectionReason);
-        
+
         assertThat(response.getStatus()).isEqualTo(SubmissionStatus.REJECTED_BY_DEAN);
         assertThat(response.getContent()).isEqualTo(rejectionReason);
         assertThat(response.getSubmissionId()).isEqualTo(testSubmissionId);
     }
 
     @Test
-    @WithMockUser(username = "test.sa@edu", roles = {"STUDENT_AFFAIRS"})
+    @WithMockUser(username = "test.sa@edu", roles = { "STUDENT_AFFAIRS" })
     void testStudentAffairsFinalApproval() {
         // Progress submission to APPROVED_BY_DEAN status
         submissionService.updateSubmissionStatusByAdvisor(testSubmissionId, SubmissionStatus.APPROVED_BY_ADVISOR, null);
-        submissionService.updateSubmissionStatusByDepartmentSecretary(testSubmissionId, SubmissionStatus.APPROVED_BY_DEPT, null);
-        submissionService.updateSubmissionStatusByDeanOfficer(testSubmissionId, SubmissionStatus.APPROVED_BY_DEAN, null);
-        
+        submissionService.updateSubmissionStatusByDepartmentSecretary(testSubmissionId,
+                SubmissionStatus.APPROVED_BY_DEPT, null);
+        submissionService.updateSubmissionStatusByDeanOfficer(testSubmissionId, SubmissionStatus.APPROVED_BY_DEAN,
+                null);
+
         // Test that student affairs can give final approval using role-agnostic method
         SubmissionResponse response = submissionService.approveSubmission(testSubmissionId);
-        
+
         assertThat(response.getStatus()).isEqualTo(SubmissionStatus.FINAL_APPROVED);
         assertThat(response.getSubmissionId()).isEqualTo(testSubmissionId);
     }
 
     @Test
-    @WithMockUser(username = "test.student@edu", roles = {"STUDENT"})
+    @WithMockUser(username = "test.student@edu", roles = { "STUDENT" })
     void testStudentRoleCannotApproveSubmission() {
         // Test that student role cannot approve submissions
         assertThatThrownBy(() -> {
             submissionService.approveSubmission(testSubmissionId);
         }).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("Unsupported role for empId lookup: STUDENT");
+                .hasMessageContaining("Unsupported role for empId lookup: STUDENT");
     }
 
     @Test
-    @WithMockUser(username = "test.student@edu", roles = {"STUDENT"})
+    @WithMockUser(username = "test.student@edu", roles = { "STUDENT" })
     void testStudentRoleCannotRejectSubmission() {
         // Test that student role cannot reject submissions
         assertThatThrownBy(() -> {
             submissionService.rejectSubmission(testSubmissionId, "Student trying to reject");
         }).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("Unsupported role for empId lookup: STUDENT");
+                .hasMessageContaining("Unsupported role for empId lookup: STUDENT");
     }
 
     @Test
     void testRoleAgnosticMethodDetectsUserRole() {
         // This test verifies that the role detection logic works correctly
         // by testing different roles in sequence
-        
+
         // Test as advisor
         org.springframework.security.core.context.SecurityContextHolder.getContext()
-            .setAuthentication(new org.springframework.security.authentication.TestingAuthenticationToken(
-                "test.advisor@edu", "password", "ROLE_ADVISOR"));
-        
+                .setAuthentication(new org.springframework.security.authentication.TestingAuthenticationToken(
+                        "test.advisor@edu", "password", "ROLE_ADVISOR"));
+
         SubmissionResponse advisorResponse = submissionService.approveSubmission(testSubmissionId);
         assertThat(advisorResponse.getStatus()).isEqualTo(SubmissionStatus.APPROVED_BY_ADVISOR);
-        
+
         // Reset submission for next test
         testSubmissionId = createNewTestSubmission();
-        
+
         // Progress to department secretary level
         submissionService.updateSubmissionStatusByAdvisor(testSubmissionId, SubmissionStatus.APPROVED_BY_ADVISOR, null);
-        
+
         // Test as department secretary
         org.springframework.security.core.context.SecurityContextHolder.getContext()
-            .setAuthentication(new org.springframework.security.authentication.TestingAuthenticationToken(
-                "test.ds@edu", "password", "ROLE_DEPARTMENT_SECRETARY"));
-        
+                .setAuthentication(new org.springframework.security.authentication.TestingAuthenticationToken(
+                        "test.ds@edu", "password", "ROLE_DEPARTMENT_SECRETARY"));
+
         SubmissionResponse deptResponse = submissionService.approveSubmission(testSubmissionId);
         assertThat(deptResponse.getStatus()).isEqualTo(SubmissionStatus.APPROVED_BY_DEPT);
     }
@@ -302,57 +311,56 @@ public class RoleAgnosticSubmissionTest {
                 .studentNumber("S_TEST_001")
                 .content("New test submission")
                 .build();
-        
+
         SubmissionResponse response = submissionService.createGraduationSubmission(request);
         return response.getSubmissionId();
     }
 
     @Test
-    @WithMockUser(username = "test.advisor@edu", roles = {"ADVISOR"})
+    @WithMockUser(username = "test.advisor@edu", roles = { "ADVISOR" })
     void testMySubmissionsForAdvisor() {
         // Test that advisor can get their submissions using role-agnostic endpoint
         List<SubmissionResponse> submissions = submissionService.getMySubmissions();
-        
+
         assertThat(submissions).isNotEmpty();
         assertThat(submissions).anyMatch(sub -> sub.getSubmissionId().equals(testSubmissionId));
     }
 
     @Test
-    @WithMockUser(username = "test.advisor@edu", roles = {"ADVISOR"})
+    @WithMockUser(username = "test.advisor@edu", roles = { "ADVISOR" })
     void testMyPendingSubmissionsForAdvisor() {
-        // Test that advisor can get their pending submissions using role-agnostic endpoint
+        // Test that advisor can get their pending submissions using role-agnostic
+        // endpoint
         List<SubmissionResponse> pendingSubmissions = submissionService.getMyPendingSubmissions();
-        
+
         assertThat(pendingSubmissions).isNotEmpty();
-        assertThat(pendingSubmissions).anyMatch(sub -> 
-            sub.getSubmissionId().equals(testSubmissionId) && 
-            sub.getStatus() == SubmissionStatus.PENDING);
+        assertThat(pendingSubmissions).anyMatch(sub -> sub.getSubmissionId().equals(testSubmissionId) &&
+                sub.getStatus() == SubmissionStatus.PENDING);
     }
 
     @Test
-    @WithMockUser(username = "test.ds@edu", roles = {"DEPARTMENT_SECRETARY"})
+    @WithMockUser(username = "test.ds@edu", roles = { "DEPARTMENT_SECRETARY" })
     void testMyPendingSubmissionsForDepartmentSecretary() {
         // First approve by advisor to get submission to department secretary level
         submissionService.updateSubmissionStatusByAdvisor(testSubmissionId, SubmissionStatus.APPROVED_BY_ADVISOR, null);
-        
+
         // Test that department secretary can get their pending submissions
         List<SubmissionResponse> pendingSubmissions = submissionService.getMyPendingSubmissions();
-        
+
         assertThat(pendingSubmissions).isNotEmpty();
-        assertThat(pendingSubmissions).anyMatch(sub -> 
-            sub.getSubmissionId().equals(testSubmissionId) && 
-            sub.getStatus() == SubmissionStatus.APPROVED_BY_ADVISOR);
+        assertThat(pendingSubmissions).anyMatch(sub -> sub.getSubmissionId().equals(testSubmissionId) &&
+                sub.getStatus() == SubmissionStatus.APPROVED_BY_ADVISOR);
     }
 
     @Test
-    @WithMockUser(username = "test.student@edu", roles = {"STUDENT"})
+    @WithMockUser(username = "test.student@edu", roles = { "STUDENT" })
     void testMySubmissionsForStudent() {
         // Test that student can get their own submissions using role-agnostic endpoint
         List<SubmissionResponse> submissions = submissionService.getMySubmissions();
-        
+
         assertThat(submissions).isNotEmpty();
         assertThat(submissions).anyMatch(sub -> sub.getSubmissionId().equals(testSubmissionId));
         // Student should only see their own submissions
         assertThat(submissions).allMatch(sub -> "S_TEST_001".equals(sub.getStudentNumber()));
     }
-} 
+}

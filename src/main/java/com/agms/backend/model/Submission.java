@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.agms.backend.model.users.Student;
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Data
@@ -20,7 +20,7 @@ public class Submission {
     private String submissionId;
 
     @Column(nullable = false)
-    private LocalDate submissionDate;
+    private Timestamp submissionDate;
 
     @Column(columnDefinition = "TEXT")
     private String content;

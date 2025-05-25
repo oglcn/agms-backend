@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.agms.backend.model.users.StudentAffairs;
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Data
@@ -20,10 +20,13 @@ public class Graduation {
     private String graduationId;
 
     @Column(nullable = false)
-    private LocalDate requestDate;
+    private Timestamp requestDate;
 
     @Column(nullable = false)
     private String term;
+
+    @Column(nullable = false)
+    private String type;
 
     @ManyToOne
     @JoinColumn(name = "studentAffairsId")
@@ -31,4 +34,4 @@ public class Graduation {
 
     @OneToMany(mappedBy = "graduation")
     private List<GraduationList> graduationLists;
-} 
+}

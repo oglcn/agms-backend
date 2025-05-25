@@ -12,16 +12,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.sql.Timestamp;
 
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class DataInitializer {
+@Component
+public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
@@ -37,29 +39,26 @@ public class DataInitializer {
     private final UbysService ubysService;
     private final PasswordEncoder passwordEncoder;
 
-    @Bean
-    @Transactional
-    public CommandLineRunner initializeData() {
-        return args -> {
-            try {
-                if (userRepository.count() == 0) {
-                    log.info("Starting data initialization...");
+    @Override
+    public void run(String... args) {
+        try {
+            if (userRepository.count() == 0) {
+                log.info("Starting data initialization...");
 
-                    // Initialize all entities from ubys.json in the correct order
-                    initializeAllEntitiesFromUbys();
+                // Initialize all entities from ubys.json in the correct order
+                initializeAllEntitiesFromUbys();
 
-                    log.info("Data initialization completed successfully!");
-                } else {
-                    log.info("Database is not empty. Skipping data initialization.");
-                }
-            } catch (DataIntegrityViolationException e) {
-                log.error("Database integrity violation during initialization: {}", e.getMessage());
-                throw new RuntimeException("Failed to initialize data due to integrity violation", e);
-            } catch (Exception e) {
-                log.error("Error during data initialization: {}", e.getMessage());
-                throw new RuntimeException("Failed to initialize data", e);
+                log.info("Data initialization completed successfully!");
+            } else {
+                log.info("Database is not empty. Skipping data initialization.");
             }
-        };
+        } catch (DataIntegrityViolationException e) {
+            log.error("Database integrity violation during initialization: {}", e.getMessage());
+            throw new RuntimeException("Failed to initialize data due to integrity violation", e);
+        } catch (Exception e) {
+            log.error("Error during data initialization: {}", e.getMessage());
+            throw new RuntimeException("Failed to initialize data", e);
+        }
     }
 
     private void initializeAllEntitiesFromUbys() {
@@ -400,13 +399,13 @@ public class DataInitializer {
     // here
     // For example: createGraduation, createGraduationList, etc. as needed
 
-    private Graduation createGraduation(String graduationId, LocalDate requestDate, String term,
-            String studentAffairsId) {
-        var studentAffairs = studentAffairsRepository.findByEmpId(studentAffairsId).orElseThrow();
+    private Graduation createGraduation(String graduationId, Timestamp requestDate, String term,
+            String type, StudentAffairs studentAffairs) {
         var graduation = Graduation.builder()
                 .graduationId(graduationId)
                 .requestDate(requestDate)
                 .term(term)
+                .type(type)
                 .studentAffairs(studentAffairs)
                 .build();
         return graduationRepository.save(graduation);
@@ -415,43 +414,40 @@ public class DataInitializer {
     private GraduationList createGraduationList(String listId, Graduation graduation) {
         var graduationList = GraduationList.builder()
                 .listId(listId)
-                .creationDate(LocalDate.now())
+                .creationDate(new Timestamp(System.currentTimeMillis()))
                 .graduation(graduation)
                 .build();
         return graduationListRepository.save(graduationList);
     }
 
-    private FacultyList createFacultyList(String facultyListId, String faculty, String deanOfficerId,
+    private FacultyList createFacultyList(String facultyListId, String faculty, DeanOfficer deanOfficer,
             GraduationList graduationList) {
-        var deanOfficer = deanOfficerRepository.findByEmpId(deanOfficerId).orElseThrow();
         var facultyList = FacultyList.builder()
                 .facultyListId(facultyListId)
-                .creationDate(LocalDate.now())
                 .faculty(faculty)
+                .creationDate(new Timestamp(System.currentTimeMillis()))
                 .deanOfficer(deanOfficer)
                 .graduationList(graduationList)
                 .build();
         return facultyListRepository.save(facultyList);
     }
 
-    private DepartmentList createDepartmentList(String deptListId, String department, String secretaryId,
-            FacultyList facultyList) {
-        var secretary = secretaryRepository.findByEmpId(secretaryId).orElseThrow();
+    private DepartmentList createDepartmentList(String deptListId, String department,
+            DepartmentSecretary departmentSecretary, FacultyList facultyList) {
         var departmentList = DepartmentList.builder()
                 .deptListId(deptListId)
-                .creationDate(LocalDate.now())
                 .department(department)
-                .secretary(secretary)
+                .creationDate(new Timestamp(System.currentTimeMillis()))
+                .secretary(departmentSecretary)
                 .facultyList(facultyList)
                 .build();
         return departmentListRepository.save(departmentList);
     }
 
-    private AdvisorList createAdvisorList(String advisorListId, String advisorId, DepartmentList departmentList) {
-        var advisor = advisorRepository.findByEmpId(advisorId).orElseThrow();
+    private AdvisorList createAdvisorList(String advisorListId, Advisor advisor, DepartmentList departmentList) {
         var advisorList = AdvisorList.builder()
                 .advisorListId(advisorListId)
-                .creationDate(LocalDate.now())
+                .creationDate(new Timestamp(System.currentTimeMillis()))
                 .advisor(advisor)
                 .departmentList(departmentList)
                 .build();
@@ -464,57 +460,85 @@ public class DataInitializer {
         try {
             // Create a default graduation for current term
             StudentAffairs studentAffairs = studentAffairsRepository.findAll().get(0);
-            Graduation graduation = createGraduation("GRAD_2025_SPRING", LocalDate.now(), "Spring 2025",
-                    studentAffairs.getEmpId());
+            Graduation graduation = createGraduation("GRAD_2025_SPRING", new Timestamp(System.currentTimeMillis()),
+                    "Spring 2025", "Graduate", studentAffairs);
 
             // Create graduation list
-            GraduationList graduationList = createGraduationList("GL_2025_SPRING", graduation);
+            GraduationList graduationList = createGraduationList("GL_MAIN", graduation);
 
             // Create faculty lists for each dean officer
-            List<DeanOfficer> deanOfficers = deanOfficerRepository.findAll();
             Map<String, FacultyList> facultyListMap = new HashMap<>();
-
+            List<DeanOfficer> deanOfficers = deanOfficerRepository.findAll();
             for (DeanOfficer deanOfficer : deanOfficers) {
                 String facultyName = getFacultyName(deanOfficer.getEmpId());
                 String facultyListId = "FL_" + deanOfficer.getEmpId();
-                FacultyList facultyList = createFacultyList(facultyListId, facultyName, deanOfficer.getEmpId(),
-                        graduationList);
+                FacultyList facultyList = createFacultyList(facultyListId, facultyName, deanOfficer, graduationList);
                 facultyListMap.put(deanOfficer.getEmpId(), facultyList);
                 log.debug("Created FacultyList: {} for dean officer: {}", facultyListId, deanOfficer.getEmpId());
             }
 
             // Create department lists for each department secretary
-            List<DepartmentSecretary> departmentSecretaries = secretaryRepository.findAll();
             Map<String, DepartmentList> departmentListMap = new HashMap<>();
-
+            List<DepartmentSecretary> departmentSecretaries = secretaryRepository.findAll();
             for (DepartmentSecretary secretary : departmentSecretaries) {
-                String deanOfficerId = getDeanOfficerForSecretary(secretary.getEmpId());
-                FacultyList facultyList = facultyListMap.get(deanOfficerId);
-
-                if (facultyList != null) {
-                    String departmentName = getDepartmentName(secretary.getEmpId());
-                    String deptListId = "DL_" + secretary.getEmpId();
-                    DepartmentList departmentList = createDepartmentList(deptListId, departmentName,
-                            secretary.getEmpId(), facultyList);
-                    departmentListMap.put(secretary.getEmpId(), departmentList);
-                    log.debug("Created DepartmentList: {} for secretary: {}", deptListId, secretary.getEmpId());
+                // Find the corresponding FacultyList using the dean officer of the secretary
+                DeanOfficer deanOfficer = secretary.getDeanOfficer();
+                if (deanOfficer != null) {
+                    FacultyList facultyList = facultyListMap.get(deanOfficer.getEmpId());
+                    if (facultyList != null) {
+                        String departmentName = getDepartmentName(secretary.getEmpId());
+                        String deptListId = "DL_" + secretary.getEmpId();
+                        DepartmentList departmentList = createDepartmentList(deptListId, departmentName, secretary,
+                                facultyList);
+                        departmentListMap.put(secretary.getEmpId(), departmentList);
+                        log.debug("Created DepartmentList: {} for secretary: {}", deptListId, secretary.getEmpId());
+                    }
                 }
             }
 
             // Create advisor lists for each advisor
             List<Advisor> advisors = advisorRepository.findAll();
-
             for (Advisor advisor : advisors) {
-                String departmentSecretaryId = getDepartmentSecretaryForAdvisor(advisor.getEmpId());
-                DepartmentList departmentList = departmentListMap.get(departmentSecretaryId);
-
-                if (departmentList != null) {
-                    String advisorListId = "AL_" + advisor.getEmpId();
-                    AdvisorList advisorList = createAdvisorList(advisorListId, advisor.getEmpId(), departmentList);
-                    log.debug("Created AdvisorList: {} for advisor: {}", advisorListId, advisor.getEmpId());
-                } else {
-                    log.warn("Could not find department list for advisor: {}", advisor.getEmpId());
+                // Find the corresponding DepartmentList using the department secretary of the
+                // advisor
+                DepartmentSecretary secretary = advisor.getDepartmentSecretary();
+                if (secretary != null) {
+                    DepartmentList departmentList = departmentListMap.get(secretary.getEmpId());
+                    if (departmentList != null) {
+                        String advisorListId = "AL_" + advisor.getEmpId();
+                        AdvisorList advisorList = createAdvisorList(advisorListId, advisor, departmentList);
+                        log.debug("Created AdvisorList: {} for advisor: {}", advisorListId, advisor.getEmpId());
+                    }
                 }
+            }
+
+            // Example: Create two graduations for different terms for testing
+            // Assuming studentAffairs1 and studentAffairs2 are fetched or created elsewhere
+            // For demonstration, let's use the first two available student affairs officers
+            // if they exist
+            List<StudentAffairs> studentAffairsList = studentAffairsRepository.findAll();
+            StudentAffairs studentAffairs1 = null;
+            StudentAffairs studentAffairs2 = null;
+            if (studentAffairsList.size() > 0)
+                studentAffairs1 = studentAffairsList.get(0);
+            if (studentAffairsList.size() > 1)
+                studentAffairs2 = studentAffairsList.get(1);
+
+            // Ensure studentAffairs1 and studentAffairs2 are not null before using them
+            if (studentAffairs1 != null && studentAffairs2 != null) {
+                Graduation graduation1 = createGraduation("GRAD_TEST_SPRING", new Timestamp(System.currentTimeMillis()),
+                        "Spring 2024", "TestType", studentAffairs1);
+                Graduation graduation2 = createGraduation("GRAD_TEST_FALL", new Timestamp(System.currentTimeMillis()),
+                        "Fall 2024", "TestType", studentAffairs2);
+                graduationRepository.saveAll(List.of(graduation1, graduation2));
+            } else if (studentAffairs1 != null) {
+                // Fallback if only one student affairs officer exists
+                Graduation graduation1 = createGraduation("GRAD_TEST_SPRING", new Timestamp(System.currentTimeMillis()),
+                        "Spring 2024", "TestType", studentAffairs1);
+                graduationRepository.save(graduation1);
+                log.warn("Only one StudentAffairs officer found, created one test graduation.");
+            } else {
+                log.warn("No StudentAffairs officers found to create example test graduations.");
             }
 
             log.info("Graduation hierarchy initialized successfully");
