@@ -659,6 +659,7 @@
     "S101": {
       "studentNumber": "S101",
       "advisorId": "ADV101",
+      "department": "Computer Engineering",
       "user": {
         "id": "U107",
         "firstName": "Necla",
@@ -697,10 +698,11 @@
     "S102": {
       "studentNumber": "S102",
       "advisorId": "ADV101",
+      "department": "Computer Engineering",
       "user": {
         "id": "U108",
         "firstName": "Omarkam",
-        "lastName": "Ibi\u00c5\u0178",
+        "lastName": "İbiş",
         "email": "omeribis@std.iyte.edu.tr",
         "role": "STUDENT"
       },
@@ -729,10 +731,11 @@
     "S103": {
       "studentNumber": "S103",
       "advisorId": "ADV101",
+      "department": "Computer Engineering",
       "user": {
         "id": "U109",
-        "firstName": "Yi\u00c4\u0178it",
-        "lastName": "Sar\u00c4\u00b1yar",
+        "firstName": "Yiğit",
+        "lastName": "Sarıyar",
         "email": "yigitsariyar@std.iyte.edu.tr",
         "role": "STUDENT"
       },
@@ -767,6 +770,7 @@
     "S104": {
       "studentNumber": "S104",
       "advisorId": "ADV101",
+      "department": "Computer Engineering",
       "user": {
         "id": "U110",
         "firstName": "Kaan",
@@ -805,10 +809,11 @@
     "S105": {
       "studentNumber": "S105",
       "advisorId": "ADV102",
+      "department": "Computer Engineering",
       "user": {
         "id": "U111",
         "firstName": "Nedret",
-        "lastName": "\u00c3\u2021ift\u00c3\u00a7i",
+        "lastName": "Çiftçi",
         "email": "nedretciftci@std.iyte.edu.tr",
         "role": "STUDENT"
       },
@@ -843,10 +848,11 @@
     "S106": {
       "studentNumber": "S106",
       "advisorId": "ADV102",
+      "department": "Computer Engineering",
       "user": {
         "id": "U112",
         "firstName": "Ahmet Kerem",
-        "lastName": "\u00c5\u017eayl\u00c4\u00b1",
+        "lastName": "Şaylı",
         "email": "ahmetsayli@std.iyte.edu.tr",
         "role": "STUDENT"
       },
@@ -881,10 +887,11 @@
     "S107": {
       "studentNumber": "S107",
       "advisorId": "ADV103",
+      "department": "Computer Engineering",
       "user": {
         "id": "U115",
-        "firstName": "O\u00c4\u0178ul Can",
-        "lastName": "K\u00c3\u00bc\u00c3\u00a7\u00c3\u00bckb\u00c4\u00b1y\u00c4\u00b1klar",
+        "firstName": "Oğul Can",
+        "lastName": "Küçükbıyıklar",
         "email": "ogulkucukbiyiklar@std.iyte.edu.tr",
         "role": "STUDENT"
       },
@@ -919,9 +926,10 @@
     "S108": {
       "studentNumber": "S108",
       "advisorId": "ADV103",
+      "department": "Computer Engineering",
       "user": {
         "id": "U116",
-        "firstName": "Meri\u00c3\u00a7",
+        "firstName": "Meriç",
         "lastName": "Kelemeden",
         "email": "merickelemeden@std.iyte.edu.tr",
         "role": "STUDENT"
@@ -957,6 +965,7 @@
     "S109": {
       "studentNumber": "S109",
       "advisorId": "ADV104",
+      "department": "Electronics and Communication Engineering",
       "user": {
         "id": "U118",
         "firstName": "Student",
@@ -995,6 +1004,7 @@
     "S110": {
       "studentNumber": "S110",
       "advisorId": "ADV105",
+      "department": "Electronics and Communication Engineering",
       "user": {
         "id": "U119",
         "firstName": "Student",
@@ -1033,6 +1043,7 @@
     "S111": {
       "studentNumber": "S111",
       "advisorId": "ADV106",
+      "department": "Civil Engineering",
       "user": {
         "id": "U122",
         "firstName": "Student",
@@ -1071,6 +1082,7 @@
     "S112": {
       "studentNumber": "S112",
       "advisorId": "ADV106",
+      "department": "Civil Engineering",
       "user": {
         "id": "U123",
         "firstName": "Student",
@@ -1109,6 +1121,7 @@
     "S113": {
       "studentNumber": "S113",
       "advisorId": "ADV107",
+      "department": "Civil Engineering",
       "user": {
         "id": "U125",
         "firstName": "Student",
@@ -1147,6 +1160,7 @@
     "S114": {
       "studentNumber": "S114",
       "advisorId": "ADV107",
+      "department": "Civil Engineering",
       "user": {
         "id": "U126",
         "firstName": "Student",
@@ -1185,6 +1199,7 @@
     "S115": {
       "studentNumber": "S115",
       "advisorId": "ADV108",
+      "department": "Mechanical Engineering",
       "user": {
         "id": "U129",
         "firstName": "Student",
@@ -1223,6 +1238,7 @@
     "S116": {
       "studentNumber": "S116",
       "advisorId": "ADV108",
+      "department": "Mechanical Engineering",
       "user": {
         "id": "U130",
         "firstName": "Student",
@@ -1261,6 +1277,7 @@
     "S117": {
       "studentNumber": "S117",
       "advisorId": "ADV109",
+      "department": "Mechanical Engineering",
       "user": {
         "id": "U132",
         "firstName": "Student",
@@ -1299,6 +1316,7 @@
     "S118": {
       "studentNumber": "S118",
       "advisorId": "ADV109",
+      "department": "Mechanical Engineering",
       "user": {
         "id": "U133",
         "firstName": "Student",
@@ -1337,6 +1355,7 @@
     "S119": {
       "studentNumber": "S119",
       "advisorId": "ADV110",
+      "department": "Bioengineering",
       "user": {
         "id": "U136",
         "firstName": "Student",
@@ -1375,6 +1394,7 @@
     "S120": {
       "studentNumber": "S120",
       "advisorId": "ADV110",
+      "department": "Bioengineering",
       "user": {
         "id": "U137",
         "firstName": "Student",
@@ -1413,6 +1433,7 @@
     "S121": {
       "studentNumber": "S121",
       "advisorId": "ADV111",
+      "department": "Bioengineering",
       "user": {
         "id": "U139",
         "firstName": "Student",
@@ -1451,6 +1472,7 @@
     "S122": {
       "studentNumber": "S122",
       "advisorId": "ADV111",
+      "department": "Bioengineering",
       "user": {
         "id": "U140",
         "firstName": "Student",
@@ -1489,6 +1511,7 @@
     "S123": {
       "studentNumber": "S123",
       "advisorId": "ADV112",
+      "department": "Environmental Engineering",
       "user": {
         "id": "U143",
         "firstName": "Student",
@@ -1527,6 +1550,7 @@
     "S124": {
       "studentNumber": "S124",
       "advisorId": "ADV112",
+      "department": "Environmental Engineering",
       "user": {
         "id": "U144",
         "firstName": "Student",
@@ -1565,6 +1589,7 @@
     "S125": {
       "studentNumber": "S125",
       "advisorId": "ADV113",
+      "department": "Environmental Engineering",
       "user": {
         "id": "U146",
         "firstName": "Student",
@@ -1603,6 +1628,7 @@
     "S126": {
       "studentNumber": "S126",
       "advisorId": "ADV113",
+      "department": "Environmental Engineering",
       "user": {
         "id": "U147",
         "firstName": "Student",
@@ -1641,6 +1667,7 @@
     "S127": {
       "studentNumber": "S127",
       "advisorId": "ADV114",
+      "department": "Energy Systems Engineering",
       "user": {
         "id": "U150",
         "firstName": "Student",
@@ -1679,6 +1706,7 @@
     "S128": {
       "studentNumber": "S128",
       "advisorId": "ADV114",
+      "department": "Energy Systems Engineering",
       "user": {
         "id": "U151",
         "firstName": "Student",
@@ -1717,6 +1745,7 @@
     "S129": {
       "studentNumber": "S129",
       "advisorId": "ADV115",
+      "department": "Energy Systems Engineering",
       "user": {
         "id": "U153",
         "firstName": "Student",
@@ -1755,6 +1784,7 @@
     "S130": {
       "studentNumber": "S130",
       "advisorId": "ADV115",
+      "department": "Energy Systems Engineering",
       "user": {
         "id": "U154",
         "firstName": "Student",
@@ -1793,6 +1823,7 @@
     "S131": {
       "studentNumber": "S131",
       "advisorId": "ADV116",
+      "department": "Food Engineering",
       "user": {
         "id": "U157",
         "firstName": "Student",
@@ -1831,6 +1862,7 @@
     "S132": {
       "studentNumber": "S132",
       "advisorId": "ADV116",
+      "department": "Food Engineering",
       "user": {
         "id": "U158",
         "firstName": "Student",
@@ -1869,6 +1901,7 @@
     "S133": {
       "studentNumber": "S133",
       "advisorId": "ADV117",
+      "department": "Food Engineering",
       "user": {
         "id": "U160",
         "firstName": "Student",
@@ -1907,6 +1940,7 @@
     "S134": {
       "studentNumber": "S134",
       "advisorId": "ADV117",
+      "department": "Food Engineering",
       "user": {
         "id": "U161",
         "firstName": "Student",
@@ -1945,6 +1979,7 @@
     "S135": {
       "studentNumber": "S135",
       "advisorId": "ADV118",
+      "department": "Chemical Engineering",
       "user": {
         "id": "U164",
         "firstName": "Student",
@@ -1983,6 +2018,7 @@
     "S136": {
       "studentNumber": "S136",
       "advisorId": "ADV118",
+      "department": "Chemical Engineering",
       "user": {
         "id": "U165",
         "firstName": "Student",
@@ -2021,6 +2057,7 @@
     "S137": {
       "studentNumber": "S137",
       "advisorId": "ADV119",
+      "department": "Chemical Engineering",
       "user": {
         "id": "U167",
         "firstName": "Student",
@@ -2059,6 +2096,7 @@
     "S138": {
       "studentNumber": "S138",
       "advisorId": "ADV119",
+      "department": "Chemical Engineering",
       "user": {
         "id": "U168",
         "firstName": "Student",
@@ -2097,6 +2135,7 @@
     "S139": {
       "studentNumber": "S139",
       "advisorId": "ADV120",
+      "department": "Materials Science and Engineering",
       "user": {
         "id": "U171",
         "firstName": "Student",
@@ -2135,6 +2174,7 @@
     "S140": {
       "studentNumber": "S140",
       "advisorId": "ADV120",
+      "department": "Materials Science and Engineering",
       "user": {
         "id": "U172",
         "firstName": "Student",
@@ -2173,6 +2213,7 @@
     "S141": {
       "studentNumber": "S141",
       "advisorId": "ADV121",
+      "department": "Materials Science and Engineering",
       "user": {
         "id": "U174",
         "firstName": "Student",
@@ -2211,6 +2252,7 @@
     "S142": {
       "studentNumber": "S142",
       "advisorId": "ADV121",
+      "department": "Materials Science and Engineering",
       "user": {
         "id": "U175",
         "firstName": "Student",
@@ -2249,6 +2291,7 @@
     "S143": {
       "studentNumber": "S143",
       "advisorId": "ADV122",
+      "department": "Physics",
       "user": {
         "id": "U179",
         "firstName": "Student",
@@ -2287,6 +2330,7 @@
     "S144": {
       "studentNumber": "S144",
       "advisorId": "ADV122",
+      "department": "Physics",
       "user": {
         "id": "U180",
         "firstName": "Student",
@@ -2325,6 +2369,7 @@
     "S145": {
       "studentNumber": "S145",
       "advisorId": "ADV123",
+      "department": "Physics",
       "user": {
         "id": "U182",
         "firstName": "Student",
@@ -2363,6 +2408,7 @@
     "S146": {
       "studentNumber": "S146",
       "advisorId": "ADV123",
+      "department": "Physics",
       "user": {
         "id": "U183",
         "firstName": "Student",
@@ -2401,6 +2447,7 @@
     "S147": {
       "studentNumber": "S147",
       "advisorId": "ADV124",
+      "department": "Photonics",
       "user": {
         "id": "U186",
         "firstName": "Student",
@@ -2439,6 +2486,7 @@
     "S148": {
       "studentNumber": "S148",
       "advisorId": "ADV124",
+      "department": "Photonics",
       "user": {
         "id": "U187",
         "firstName": "Student",
@@ -2477,6 +2525,7 @@
     "S149": {
       "studentNumber": "S149",
       "advisorId": "ADV125",
+      "department": "Photonics",
       "user": {
         "id": "U189",
         "firstName": "Student",
@@ -2515,6 +2564,7 @@
     "S150": {
       "studentNumber": "S150",
       "advisorId": "ADV125",
+      "department": "Photonics",
       "user": {
         "id": "U190",
         "firstName": "Student",
@@ -2553,6 +2603,7 @@
     "S151": {
       "studentNumber": "S151",
       "advisorId": "ADV126",
+      "department": "Chemistry",
       "user": {
         "id": "U193",
         "firstName": "Student",
@@ -2591,6 +2642,7 @@
     "S152": {
       "studentNumber": "S152",
       "advisorId": "ADV126",
+      "department": "Chemistry",
       "user": {
         "id": "U194",
         "firstName": "Student",
@@ -2629,6 +2681,7 @@
     "S153": {
       "studentNumber": "S153",
       "advisorId": "ADV127",
+      "department": "Chemistry",
       "user": {
         "id": "U196",
         "firstName": "Student",
@@ -2667,6 +2720,7 @@
     "S154": {
       "studentNumber": "S154",
       "advisorId": "ADV127",
+      "department": "Chemistry",
       "user": {
         "id": "U197",
         "firstName": "Student",
@@ -2705,6 +2759,7 @@
     "S155": {
       "studentNumber": "S155",
       "advisorId": "ADV128",
+      "department": "Mathematics",
       "user": {
         "id": "U200",
         "firstName": "Student",
@@ -2743,6 +2798,7 @@
     "S156": {
       "studentNumber": "S156",
       "advisorId": "ADV128",
+      "department": "Mathematics",
       "user": {
         "id": "U201",
         "firstName": "Student",
@@ -2781,6 +2837,7 @@
     "S157": {
       "studentNumber": "S157",
       "advisorId": "ADV129",
+      "department": "Mathematics",
       "user": {
         "id": "U203",
         "firstName": "Student",
@@ -2819,6 +2876,7 @@
     "S158": {
       "studentNumber": "S158",
       "advisorId": "ADV129",
+      "department": "Mathematics",
       "user": {
         "id": "U204",
         "firstName": "Student",
@@ -2857,6 +2915,7 @@
     "S159": {
       "studentNumber": "S159",
       "advisorId": "ADV130",
+      "department": "Molecular Biology and Genetics",
       "user": {
         "id": "U207",
         "firstName": "Student",
@@ -2895,6 +2954,7 @@
     "S160": {
       "studentNumber": "S160",
       "advisorId": "ADV130",
+      "department": "Molecular Biology and Genetics",
       "user": {
         "id": "U208",
         "firstName": "Student",
@@ -2933,6 +2993,7 @@
     "S161": {
       "studentNumber": "S161",
       "advisorId": "ADV131",
+      "department": "Molecular Biology and Genetics",
       "user": {
         "id": "U210",
         "firstName": "Student",
@@ -2971,6 +3032,7 @@
     "S162": {
       "studentNumber": "S162",
       "advisorId": "ADV131",
+      "department": "Molecular Biology and Genetics",
       "user": {
         "id": "U211",
         "firstName": "Student",
@@ -3009,6 +3071,7 @@
     "S163": {
       "studentNumber": "S163",
       "advisorId": "ADV132",
+      "department": "Industrial Design",
       "user": {
         "id": "U215",
         "firstName": "Student",
@@ -3047,6 +3110,7 @@
     "S164": {
       "studentNumber": "S164",
       "advisorId": "ADV132",
+      "department": "Industrial Design",
       "user": {
         "id": "U216",
         "firstName": "Student",
@@ -3085,6 +3149,7 @@
     "S165": {
       "studentNumber": "S165",
       "advisorId": "ADV133",
+      "department": "Industrial Design",
       "user": {
         "id": "U218",
         "firstName": "Student",
@@ -3123,6 +3188,7 @@
     "S166": {
       "studentNumber": "S166",
       "advisorId": "ADV133",
+      "department": "Industrial Design",
       "user": {
         "id": "U219",
         "firstName": "Student",
@@ -3161,6 +3227,7 @@
     "S167": {
       "studentNumber": "S167",
       "advisorId": "ADV134",
+      "department": "Architecture",
       "user": {
         "id": "U222",
         "firstName": "Student",
@@ -3199,6 +3266,7 @@
     "S168": {
       "studentNumber": "S168",
       "advisorId": "ADV134",
+      "department": "Architecture",
       "user": {
         "id": "U223",
         "firstName": "Student",
@@ -3237,6 +3305,7 @@
     "S169": {
       "studentNumber": "S169",
       "advisorId": "ADV135",
+      "department": "Architecture",
       "user": {
         "id": "U225",
         "firstName": "Student",
@@ -3275,6 +3344,7 @@
     "S170": {
       "studentNumber": "S170",
       "advisorId": "ADV135",
+      "department": "Architecture",
       "user": {
         "id": "U226",
         "firstName": "Student",
@@ -3313,6 +3383,7 @@
     "S171": {
       "studentNumber": "S171",
       "advisorId": "ADV136",
+      "department": "City and Regional Planning",
       "user": {
         "id": "U229",
         "firstName": "Student",
@@ -3351,6 +3422,7 @@
     "S172": {
       "studentNumber": "S172",
       "advisorId": "ADV136",
+      "department": "City and Regional Planning",
       "user": {
         "id": "U230",
         "firstName": "Student",
@@ -3389,6 +3461,7 @@
     "S173": {
       "studentNumber": "S173",
       "advisorId": "ADV137",
+      "department": "City and Regional Planning",
       "user": {
         "id": "U232",
         "firstName": "Student",
@@ -3427,6 +3500,7 @@
     "S174": {
       "studentNumber": "S174",
       "advisorId": "ADV137",
+      "department": "City and Regional Planning",
       "user": {
         "id": "U233",
         "firstName": "Student",

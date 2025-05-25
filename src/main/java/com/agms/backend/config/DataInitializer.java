@@ -106,7 +106,7 @@ public class DataInitializer implements CommandLineRunner {
             for (DeanOfficer deanOfficer : deanOfficers) {
                 deanOfficer.setPassword(passwordEncoder.encode("password123"));
                 deanOfficer.setStudentAffairs(studentAffairs);
-                
+
                 // The faculty field should already be set from UBYS data
                 String faculty = deanOfficer.getFaculty();
                 if (faculty == null) {
@@ -137,7 +137,8 @@ public class DataInitializer implements CommandLineRunner {
                 // The department field should already be set from UBYS data
                 String department = departmentSecretary.getDepartment();
                 if (department == null) {
-                    log.warn("DepartmentSecretary {} has no department field from UBYS data", departmentSecretary.getEmpId());
+                    log.warn("DepartmentSecretary {} has no department field from UBYS data",
+                            departmentSecretary.getEmpId());
                     continue;
                 }
 
@@ -147,9 +148,9 @@ public class DataInitializer implements CommandLineRunner {
                     DeanOfficer deanOfficer = deanOfficerRepository.findByFaculty(facultyName).orElse(null);
                     if (deanOfficer != null) {
                         departmentSecretary.setDeanOfficer(deanOfficer);
-                        log.debug("Auto-matched DepartmentSecretary {} (dept: {}) with DeanOfficer {} (faculty: {})", 
-                            departmentSecretary.getEmpId(), department, 
-                            deanOfficer.getEmpId(), facultyName);
+                        log.debug("Auto-matched DepartmentSecretary {} (dept: {}) with DeanOfficer {} (faculty: {})",
+                                departmentSecretary.getEmpId(), department,
+                                deanOfficer.getEmpId(), facultyName);
                     } else {
                         log.warn("No dean officer found for faculty: {}", facultyName);
                     }
@@ -158,8 +159,8 @@ public class DataInitializer implements CommandLineRunner {
                 }
 
                 secretaryRepository.save(departmentSecretary);
-                log.debug("Initialized DepartmentSecretary: {} for department: {}", 
-                    departmentSecretary.getEmpId(), department);
+                log.debug("Initialized DepartmentSecretary: {} for department: {}",
+                        departmentSecretary.getEmpId(), department);
             }
 
         } catch (Exception e) {
@@ -189,8 +190,8 @@ public class DataInitializer implements CommandLineRunner {
                 DepartmentSecretary departmentSecretary = secretaryRepository.findByDepartment(department).orElse(null);
                 if (departmentSecretary != null) {
                     advisor.setDepartmentSecretary(departmentSecretary);
-                    log.debug("Auto-matched Advisor {} with DepartmentSecretary {} (dept: {})", 
-                        advisor.getEmpId(), departmentSecretary.getEmpId(), department);
+                    log.debug("Auto-matched Advisor {} with DepartmentSecretary {} (dept: {})",
+                            advisor.getEmpId(), departmentSecretary.getEmpId(), department);
                 } else {
                     log.warn("No department secretary found for department: {}", department);
                 }
@@ -212,7 +213,7 @@ public class DataInitializer implements CommandLineRunner {
             // Get the raw UBYS data to access advisorId information
             Map<String, Object> ubysData = ubysService.getAllData();
             Map<String, Object> studentsSection = (Map<String, Object>) ubysData.get("students");
-            
+
             List<Student> studentsFromUbys = ubysService.getAllStudentsForDbInitialization();
             log.info("Found {} students in ubys.json to initialize", studentsFromUbys.size());
 
@@ -224,9 +225,10 @@ public class DataInitializer implements CommandLineRunner {
                     student.setPassword(passwordEncoder.encode("password123"));
 
                     // Get the advisorId from the original UBYS data (object-oriented approach)
-                    Map<String, Object> studentData = (Map<String, Object>) studentsSection.get(student.getStudentNumber());
+                    Map<String, Object> studentData = (Map<String, Object>) studentsSection
+                            .get(student.getStudentNumber());
                     String advisorId = studentData != null ? (String) studentData.get("advisorId") : null;
-                    
+
                     if (advisorId != null) {
                         // Find the specific advisor by empId
                         Advisor assignedAdvisor = advisorRepository.findByEmpId(advisorId).orElse(null);
@@ -234,19 +236,20 @@ public class DataInitializer implements CommandLineRunner {
                             // Verify that the advisor's department matches the student's department
                             if (assignedAdvisor.getDepartment().equals(student.getDepartment())) {
                                 student.setAdvisor(assignedAdvisor);
-                                
+
                                 if (successCount % 10 == 0) {
-                                    log.debug("Assigned student {} (dept: {}) to advisor {} (dept: {})", 
-                                        student.getStudentNumber(), student.getDepartment(),
-                                        assignedAdvisor.getEmpId(), assignedAdvisor.getDepartment());
+                                    log.debug("Assigned student {} (dept: {}) to advisor {} (dept: {})",
+                                            student.getStudentNumber(), student.getDepartment(),
+                                            assignedAdvisor.getEmpId(), assignedAdvisor.getDepartment());
                                 }
                             } else {
-                                log.warn("Department mismatch: Student {} (dept: {}) assigned to advisor {} (dept: {})", 
-                                    student.getStudentNumber(), student.getDepartment(),
-                                    assignedAdvisor.getEmpId(), assignedAdvisor.getDepartment());
+                                log.warn("Department mismatch: Student {} (dept: {}) assigned to advisor {} (dept: {})",
+                                        student.getStudentNumber(), student.getDepartment(),
+                                        assignedAdvisor.getEmpId(), assignedAdvisor.getDepartment());
                             }
                         } else {
-                            log.warn("Advisor with ID {} not found for student {}", advisorId, student.getStudentNumber());
+                            log.warn("Advisor with ID {} not found for student {}", advisorId,
+                                    student.getStudentNumber());
                         }
                     } else {
                         log.warn("Student {} has no advisorId field from UBYS data", student.getStudentNumber());
@@ -348,19 +351,22 @@ public class DataInitializer implements CommandLineRunner {
             List<DeanOfficer> deanOfficers = deanOfficerRepository.findAll();
             for (DeanOfficer deanOfficer : deanOfficers) {
                 String facultyListId = "FL_" + deanOfficer.getEmpId();
-                FacultyList facultyList = createFacultyList(facultyListId, deanOfficer.getFaculty(), 
-                    deanOfficer, graduationList);
+                FacultyList facultyList = createFacultyList(facultyListId, deanOfficer.getFaculty(),
+                        deanOfficer, graduationList);
                 log.debug("Created FacultyList: {} for faculty: {}", facultyListId, deanOfficer.getFaculty());
 
-                // Create department lists for each department secretary under this specific dean officer
-                List<DepartmentSecretary> departmentSecretaries = secretaryRepository.findByDeanOfficerEmpId(deanOfficer.getEmpId());
+                // Create department lists for each department secretary under this specific
+                // dean officer
+                List<DepartmentSecretary> departmentSecretaries = secretaryRepository
+                        .findByDeanOfficerEmpId(deanOfficer.getEmpId());
                 for (DepartmentSecretary secretary : departmentSecretaries) {
                     String deptListId = "DL_" + secretary.getEmpId();
                     DepartmentList departmentList = createDepartmentList(deptListId, secretary.getDepartment(),
-                        secretary, facultyList);
+                            secretary, facultyList);
                     log.debug("Created DepartmentList: {} for department: {}", deptListId, secretary.getDepartment());
 
-                    // Create advisor lists for each advisor under this specific department secretary
+                    // Create advisor lists for each advisor under this specific department
+                    // secretary
                     List<Advisor> advisors = advisorRepository.findByDepartmentSecretaryEmpId(secretary.getEmpId());
                     for (Advisor advisor : advisors) {
                         String advisorListId = "AL_" + advisor.getEmpId();
@@ -379,7 +385,8 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     /**
-     * Maps department names to their corresponding faculty names based on UBYS data structure.
+     * Maps department names to their corresponding faculty names based on UBYS data
+     * structure.
      * This method uses the actual faculty names from the dean officers in UBYS.
      */
     private String getFacultyForDepartment(String department) {
@@ -395,7 +402,7 @@ public class DataInitializer implements CommandLineRunner {
             case "Food Engineering":
             case "Chemical Engineering":
             case "Materials Science and Engineering":
-                return "Engineering";
+                return "Faculty of Engineering";
 
             // Science departments
             case "Physics":
@@ -403,13 +410,13 @@ public class DataInitializer implements CommandLineRunner {
             case "Chemistry":
             case "Mathematics":
             case "Molecular Biology and Genetics":
-                return "Science";
+                return "Faculty of Science";
 
             // Architecture and Design departments
             case "Industrial Design":
             case "Architecture":
             case "City and Regional Planning":
-                return "Architecture and Design";
+                return "Faculty of Architecture and Design";
 
             default:
                 log.warn("Unknown department: {}. Cannot determine faculty.", department);
