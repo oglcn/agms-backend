@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -304,5 +305,54 @@ public class RoleAgnosticSubmissionTest {
         
         SubmissionResponse response = submissionService.createGraduationSubmission(request);
         return response.getSubmissionId();
+    }
+
+    @Test
+    @WithMockUser(username = "test.advisor@edu", roles = {"ADVISOR"})
+    void testMySubmissionsForAdvisor() {
+        // Test that advisor can get their submissions using role-agnostic endpoint
+        List<SubmissionResponse> submissions = submissionService.getMySubmissions();
+        
+        assertThat(submissions).isNotEmpty();
+        assertThat(submissions).anyMatch(sub -> sub.getSubmissionId().equals(testSubmissionId));
+    }
+
+    @Test
+    @WithMockUser(username = "test.advisor@edu", roles = {"ADVISOR"})
+    void testMyPendingSubmissionsForAdvisor() {
+        // Test that advisor can get their pending submissions using role-agnostic endpoint
+        List<SubmissionResponse> pendingSubmissions = submissionService.getMyPendingSubmissions();
+        
+        assertThat(pendingSubmissions).isNotEmpty();
+        assertThat(pendingSubmissions).anyMatch(sub -> 
+            sub.getSubmissionId().equals(testSubmissionId) && 
+            sub.getStatus() == SubmissionStatus.PENDING);
+    }
+
+    @Test
+    @WithMockUser(username = "test.ds@edu", roles = {"DEPARTMENT_SECRETARY"})
+    void testMyPendingSubmissionsForDepartmentSecretary() {
+        // First approve by advisor to get submission to department secretary level
+        submissionService.updateSubmissionStatusByAdvisor(testSubmissionId, SubmissionStatus.APPROVED_BY_ADVISOR, null);
+        
+        // Test that department secretary can get their pending submissions
+        List<SubmissionResponse> pendingSubmissions = submissionService.getMyPendingSubmissions();
+        
+        assertThat(pendingSubmissions).isNotEmpty();
+        assertThat(pendingSubmissions).anyMatch(sub -> 
+            sub.getSubmissionId().equals(testSubmissionId) && 
+            sub.getStatus() == SubmissionStatus.APPROVED_BY_ADVISOR);
+    }
+
+    @Test
+    @WithMockUser(username = "test.student@edu", roles = {"STUDENT"})
+    void testMySubmissionsForStudent() {
+        // Test that student can get their own submissions using role-agnostic endpoint
+        List<SubmissionResponse> submissions = submissionService.getMySubmissions();
+        
+        assertThat(submissions).isNotEmpty();
+        assertThat(submissions).anyMatch(sub -> sub.getSubmissionId().equals(testSubmissionId));
+        // Student should only see their own submissions
+        assertThat(submissions).allMatch(sub -> "S_TEST_001".equals(sub.getStudentNumber()));
     }
 } 

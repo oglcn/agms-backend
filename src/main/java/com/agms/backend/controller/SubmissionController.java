@@ -157,15 +157,39 @@ public class SubmissionController {
     }
 
     /**
-     * Get submissions pending for advisor review
+     * Get all submissions for the current authenticated user (role-agnostic)
      */
-    @GetMapping("/advisor/{advisorEmpId}/pending")
-    @PreAuthorize("hasRole('ADVISOR')")
-    @Operation(summary = "Get submissions pending for advisor review")
-    public ResponseEntity<List<SubmissionResponse>> getPendingSubmissionsForAdvisor(@PathVariable String advisorEmpId) {
-        log.debug("Getting pending submissions for advisor: {}", advisorEmpId);
-        List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(advisorEmpId, "ADVISOR");
-        return ResponseEntity.ok(submissions);
+    @GetMapping("/my-submissions")
+    @PreAuthorize("hasRole('STUDENT') or hasRole('ADVISOR') or hasRole('DEPARTMENT_SECRETARY') or hasRole('DEAN_OFFICER') or hasRole('STUDENT_AFFAIRS')")
+    @Operation(summary = "Get all submissions for current user - automatically detects role and returns appropriate submissions")
+    public ResponseEntity<List<SubmissionResponse>> getMySubmissions() {
+        log.debug("Getting submissions for current authenticated user");
+        
+        try {
+            List<SubmissionResponse> submissions = submissionService.getMySubmissions();
+            return ResponseEntity.ok(submissions);
+        } catch (Exception e) {
+            log.error("Error getting submissions for current user: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Get pending submissions for the current authenticated user (role-agnostic)
+     */
+    @GetMapping("/my-pending")
+    @PreAuthorize("hasRole('ADVISOR') or hasRole('DEPARTMENT_SECRETARY') or hasRole('DEAN_OFFICER') or hasRole('STUDENT_AFFAIRS')")
+    @Operation(summary = "Get pending submissions for current user - automatically detects role and returns submissions awaiting review")
+    public ResponseEntity<List<SubmissionResponse>> getMyPendingSubmissions() {
+        log.debug("Getting pending submissions for current authenticated user");
+        
+        try {
+            List<SubmissionResponse> submissions = submissionService.getMyPendingSubmissions();
+            return ResponseEntity.ok(submissions);
+        } catch (Exception e) {
+            log.error("Error getting pending submissions for current user: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
@@ -174,6 +198,7 @@ public class SubmissionController {
     @GetMapping("/department-secretary/{deptSecretaryEmpId}/pending")
     @PreAuthorize("hasRole('DEPARTMENT_SECRETARY')")
     @Operation(summary = "Get submissions pending for department secretary review")
+    @Deprecated
     public ResponseEntity<List<SubmissionResponse>> getPendingSubmissionsForDepartmentSecretary(@PathVariable String deptSecretaryEmpId) {
         log.debug("Getting pending submissions for department secretary: {}", deptSecretaryEmpId);
         List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(deptSecretaryEmpId, "DEPARTMENT_SECRETARY");
@@ -186,6 +211,7 @@ public class SubmissionController {
     @GetMapping("/dean-officer/{deanOfficerEmpId}/pending")
     @PreAuthorize("hasRole('DEAN_OFFICER')")
     @Operation(summary = "Get submissions pending for dean officer review")
+    @Deprecated
     public ResponseEntity<List<SubmissionResponse>> getPendingSubmissionsForDeanOfficer(@PathVariable String deanOfficerEmpId) {
         log.debug("Getting pending submissions for dean officer: {}", deanOfficerEmpId);
         List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(deanOfficerEmpId, "DEAN_OFFICER");
@@ -198,6 +224,7 @@ public class SubmissionController {
     @GetMapping("/student-affairs/{studentAffairsEmpId}/pending")
     @PreAuthorize("hasRole('STUDENT_AFFAIRS')")
     @Operation(summary = "Get submissions pending for student affairs review")
+    @Deprecated
     public ResponseEntity<List<SubmissionResponse>> getPendingSubmissionsForStudentAffairs(@PathVariable String studentAffairsEmpId) {
         log.debug("Getting pending submissions for student affairs: {}", studentAffairsEmpId);
         List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(studentAffairsEmpId, "STUDENT_AFFAIRS");
@@ -240,5 +267,18 @@ public class SubmissionController {
             log.error("Error rejecting submission: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Get submissions pending for advisor review
+     */
+    @GetMapping("/advisor/{advisorEmpId}/pending")
+    @PreAuthorize("hasRole('ADVISOR')")
+    @Operation(summary = "Get submissions pending for advisor review")
+    @Deprecated
+    public ResponseEntity<List<SubmissionResponse>> getPendingSubmissionsForAdvisor(@PathVariable String advisorEmpId) {
+        log.debug("Getting pending submissions for advisor: {}", advisorEmpId);
+        List<SubmissionResponse> submissions = submissionService.getSubmissionsPendingForRole(advisorEmpId, "ADVISOR");
+        return ResponseEntity.ok(submissions);
     }
 }

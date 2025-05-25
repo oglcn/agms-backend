@@ -86,4 +86,23 @@ public interface SubmissionService {
      * Role-agnostic rejection - automatically determines correct status based on authenticated user's role
      */
     SubmissionResponse rejectSubmission(String submissionId, String rejectionReason);
+
+    /**
+     * Get all submissions for the current authenticated user (role-agnostic)
+     * - STUDENT: returns their own submissions
+     * - ADVISOR: returns all submissions assigned to them
+     * - DEPARTMENT_SECRETARY: returns all submissions under their department
+     * - DEAN_OFFICER: returns all submissions under their faculty
+     * - STUDENT_AFFAIRS: returns all submissions in the system
+     */
+    List<SubmissionResponse> getMySubmissions();
+
+    /**
+     * Get pending submissions for the current authenticated user (role-agnostic)
+     * - ADVISOR: returns submissions with status PENDING
+     * - DEPARTMENT_SECRETARY: returns submissions with status APPROVED_BY_ADVISOR
+     * - DEAN_OFFICER: returns submissions with status APPROVED_BY_DEPT
+     * - STUDENT_AFFAIRS: returns submissions with status APPROVED_BY_DEAN
+     */
+    List<SubmissionResponse> getMyPendingSubmissions();
 } 
